@@ -1,120 +1,70 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   BondVault Pakistan — Design System
-   Clean slate + emerald + white. High contrast, premium feel.
+   BondVault Pakistan — Electric Fusion Design System
+   Palette: Cyan #00F0FF / Green #00FF81 / Amber #FFA900 / Orange #FF6800
+   Font: JetBrains Mono everywhere
    ========================================================================== */
 
 @theme inline {
-  /* ── Slate (Neutral, replaces warm browns) ── */
-  --color-slate-50: #F8FAFC;
-  --color-slate-100: #F1F5F9;
-  --color-slate-200: #E2E8F0;
-  --color-slate-300: #CBD5E1;
-  --color-slate-400: #94A3B8;
-  --color-slate-500: #64748B;
-  --color-slate-600: #475569;
-  --color-slate-700: #334155;
-  --color-slate-800: #1E293B;
-  --color-slate-900: #0F172A;
-  --color-slate-950: #020617;
+  --color-cyan: #00F0FF;
+  --color-green: #00FF81;
+  --color-amber: #FFA900;
+  --color-orange: #FF6800;
+  --color-black: #000000;
+  --color-white: #FFFFFF;
 
-  /* ── Emerald (Primary / CTA / Brand) ── */
-  --color-emerald-50: #ECFDF5;
-  --color-emerald-100: #D1FAE5;
-  --color-emerald-200: #A7F3D0;
-  --color-emerald-300: #6EE7B7;
-  --color-emerald-400: #34D399;
-  --color-emerald-500: #10B981;
-  --color-emerald-600: #059669;
-  --color-emerald-700: #047857;
-  --color-emerald-800: #065F46;
-  --color-emerald-900: #064E3B;
+  --font-sans: "JetBrains Mono", monospace;
+  --font-display: "JetBrains Mono", monospace;
+  --font-mono: "JetBrains Mono", monospace;
 
-  /* ── Amber (Accent / Winners / Celebration) ── */
-  --color-amber-50: #FFFBEB;
-  --color-amber-100: #FEF3C7;
-  --color-amber-200: #FDE68A;
-  --color-amber-300: #FCD34D;
-  --color-amber-400: #FBBF24;
-  --color-amber-500: #F59E0B;
-  --color-amber-600: #D97706;
-  --color-amber-700: #B45309;
-
-  /* ── Rose (Destructive) ── */
-  --color-rose-50: #FFF1F2;
-  --color-rose-100: #FFE4E6;
-  --color-rose-200: #FECDD3;
-  --color-rose-500: #F43F5E;
-  --color-rose-600: #E11D48;
-  --color-rose-700: #BE123C;
-
-  /* ── Denomination Accents ── */
-  --color-denom-100: #CBD5E1;
-  --color-denom-200: #FDE68A;
-  --color-denom-750: #FECDD3;
-  --color-denom-1500: #C4B5FD;
-  --color-denom-7500: #6EE7B7;
-  --color-denom-25000: #FBBF24;
-  --color-denom-40000: #34D399;
-
-  /* ── Fonts ── */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
-
-  /* ── Border Radius ── */
-  --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
 
-  /* ── Animations ── */
   --animate-fade-up: fade-up 0.4s ease-out both;
   --animate-shimmer: shimmer 1.5s ease-in-out infinite;
   --animate-scale-in: scale-in 0.25s ease-out both;
   --animate-slide-up: slide-up 0.35s ease-out both;
 }
 
-/* ── Base Variables ── */
 :root {
   --background: #FFFFFF;
-  --foreground: #0F172A;
-  --muted: #64748B;
-  --border: #E2E8F0;
-  --ring: #10B981;
+  --foreground: #000000;
+  --muted: rgba(0, 0, 0, 0.55);
+  --border: rgba(0, 0, 0, 0.12);
+  --ring: #00F0FF;
   --surface: #FFFFFF;
-  --surface-elevated: #F8FAFC;
+  --surface-elevated: #FBFBFB;
 
-  --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-2: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-3: 0 4px 6px rgba(15, 23, 42, 0.04), 0 2px 4px rgba(15, 23, 42, 0.04);
-  --shadow-4: 0 10px 15px rgba(15, 23, 42, 0.06), 0 4px 6px rgba(15, 23, 42, 0.04);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-4: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
 }
 
-/* ── Dark Mode ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0F172A;
-    --foreground: #F1F5F9;
-    --muted: #64748B;
-    --border: #1E293B;
-    --ring: #34D399;
-    --surface: #1E293B;
-    --surface-elevated: #334155;
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.5);
-    --shadow-4: 0 10px 15px rgba(0, 0, 0, 0.6);
+    --background: #000000;
+    --foreground: #FFFFFF;
+    --muted: rgba(255, 255, 255, 0.55);
+    --border: rgba(255, 255, 255, 0.12);
+    --ring: #00F0FF;
+    --surface: #0A0A0A;
+    --surface-elevated: #141414;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.6);
+    --shadow-4: 0 10px 15px rgba(0, 0, 0, 0.7);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: "JetBrains Mono", monospace;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 @keyframes fade-up {
@@ -149,4 +99,4 @@ body {
 
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 3px; }

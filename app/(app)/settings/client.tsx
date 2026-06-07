@@ -15,7 +15,7 @@ export function SettingsPageClient() {
   return (
     <PageTransition className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h1 className="font-display text-2xl lg:text-3xl font-bold text-slate-900">
+        <h1 className=" text-2xl lg:text-3xl font-bold text-black">
           Settings
         </h1>
         <p className="text-sm text-muted mt-1">Manage your account and preferences</p>
@@ -25,19 +25,19 @@ export function SettingsPageClient() {
       <Card variant="elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-emerald-500" />
+            <Mail className="h-4 w-4 text-cyan" />
             Account
           </CardTitle>
           <CardDescription>Your account details</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-slate-50">
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-black/[0.02]">
               <div>
-                <p className="text-sm font-medium text-slate-800">Email</p>
+                <p className="text-sm font-medium text-black">Email</p>
                 <p className="text-sm text-muted font-mono">ahmad@example.com</p>
               </div>
-              <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full font-medium">
+              <span className="text-xs text-green bg-green/[0.05] px-2 py-1 rounded-full font-medium">
                 Verified
               </span>
             </div>
@@ -71,7 +71,7 @@ export function SettingsPageClient() {
       <Card variant="elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <LogOut className="h-4 w-4 text-emerald-500" />
+            <LogOut className="h-4 w-4 text-cyan" />
             Session
           </CardTitle>
           <CardDescription>Sign out of your account</CardDescription>
@@ -87,7 +87,7 @@ export function SettingsPageClient() {
       {/* Danger zone */}
       <Card variant="elevated">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-red-600">
+          <CardTitle className="flex items-center gap-2 text-orange">
             <Shield className="h-4 w-4" />
             Danger Zone
           </CardTitle>
@@ -105,8 +105,8 @@ export function SettingsPageClient() {
               Delete Account
             </Button>
           ) : (
-            <div className="space-y-3 p-4 rounded-[var(--radius-md)] border border-red-200 bg-red-50 animate-fade-up">
-              <p className="text-sm text-red-700 font-medium">
+            <div className="space-y-3 p-4 rounded-[var(--radius-md)] border-2 border-orange bg-orange/5 animate-fade-up">
+              <p className="text-sm text-black font-medium">
                 Are you absolutely sure? This will permanently delete your account and all bonds.
               </p>
               <div className="flex gap-3">

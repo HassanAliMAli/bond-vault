@@ -30,78 +30,42 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
   const [error, setError] = useState("");
 
   const isDuplicate = existingNumbers.includes(bondNumber);
-  const isValid =
-    denomination &&
-    bondNumber.length >= 4 &&
-    /^\d+$/.test(bondNumber) &&
-    !isDuplicate;
+  const isValid = denomination && bondNumber.length >= 4 && /^\d+$/.test(bondNumber) && !isDuplicate;
 
   const handleSubmit = () => {
-    if (!denomination || !bondNumber) {
-      setError("Please select a denomination and enter a bond number.");
-      return;
-    }
-    if (!/^\d+$/.test(bondNumber)) {
-      setError("Bond number must be digits only.");
-      return;
-    }
-    if (isDuplicate) {
-      setError("This bond number already exists in your vault.");
-      return;
-    }
+    if (!denomination || !bondNumber) { setError("Please select a denomination and enter a bond number."); return; }
+    if (!/^\d+$/.test(bondNumber)) { setError("Bond number must be digits only."); return; }
+    if (isDuplicate) { setError("This bond number already exists in your vault."); return; }
     onSubmit({ denomination, bondNumber });
   };
 
   return (
     <div className="space-y-6">
-      {/* Denomination selector */}
       <div>
-        <label className="block text-sm font-medium text-slate-800 mb-3">
-          Select Denomination
-        </label>
+        <label className="block text-sm font-medium text-black mb-3">Select Denomination</label>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {DENOMINATIONS.map((d, i) => {
             const selected = denomination === d.value;
             return (
               <motion.button
-                key={d.value}
-                type="button"
-                onClick={() => {
-                  setDenomination(d.value);
-                  setError("");
-                }}
+                key={d.value} type="button"
+                onClick={() => { setDenomination(d.value); setError(""); }}
                 className={cn(
                   "relative p-4 rounded-[var(--radius-md)] border-2 text-center transition-all",
-                  selected
-                    ? "border-emerald-400 bg-emerald-50 shadow-elevation-1"
-                    : "border-[var(--border)] bg-surface hover:border-slate-300 hover:bg-slate-50"
+                  selected ? "border-cyan bg-cyan/5 shadow-elevation-1" : "border-black/10 bg-white hover:border-black/20 hover:bg-black/[0.02]"
                 )}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 350,
-                  damping: 26,
-                  delay: i * 0.05,
-                }}
+                transition={{ type: "spring", stiffness: 350, damping: 26, delay: i * 0.05 }}
                 whileTap={{ scale: 0.97 }}
               >
-                <span
-                  className={cn(
-                    "font-display text-lg font-semibold block",
-                    selected ? "text-emerald-700" : "text-slate-700"
-                  )}
-                >
-                  {d.label}
-                </span>
+                <span className={cn("text-lg font-semibold block", selected ? "text-black" : "text-black")}>{d.label}</span>
                 {selected && (
                   <motion.div
-                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-cyan flex items-center justify-center"
+                    initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}
                   >
-                    <Check className="h-3 w-3 text-white" />
+                    <Check className="h-3 w-3 text-black" />
                   </motion.div>
                 )}
               </motion.button>
@@ -110,77 +74,43 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
         </div>
       </div>
 
-      {/* Bond number input */}
       <AnimatePresence>
         {denomination && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
-          >
-            <label className="block text-sm font-medium text-slate-800 mb-3">
-              Bond Number
-            </label>
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}>
+            <label className="block text-sm font-medium text-black mb-3">Bond Number</label>
             <div className="relative">
               <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted" />
               <Input
-                type="text"
-                inputMode="numeric"
+                type="text" inputMode="numeric"
                 value={bondNumber}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "");
-                  setBondNumber(val);
-                  setError("");
-                }}
+                onChange={(e) => { setBondNumber(e.target.value.replace(/\D/g, "")); setError(""); }}
                 placeholder="Enter 6-digit bond number"
-                className="pl-10 font-mono text-lg tracking-widest"
-                maxLength={7}
-                autoFocus
-                error={error}
+                className="pl-10 text-lg tracking-widest"
+                maxLength={7} autoFocus error={error}
               />
             </div>
-
-            {/* Validation feedback */}
             <div className="mt-3 space-y-1.5">
               {bondNumber.length > 0 && /^\d+$/.test(bondNumber) && (
-                <div className="flex items-center gap-2 text-xs text-emerald-600">
-                  <Check className="h-3 w-3" />
-                  Valid number format
-                </div>
+                <div className="flex items-center gap-2 text-xs text-green"><Check className="h-3 w-3" />Valid number format</div>
               )}
               {isDuplicate && (
-                <div className="flex items-center gap-2 text-xs text-amber-600">
-                  <AlertCircle className="h-3 w-3" />
-                  This bond already exists in your vault
-                </div>
+                <div className="flex items-center gap-2 text-xs text-orange"><AlertCircle className="h-3 w-3" />This bond already exists in your vault</div>
               )}
             </div>
-
             {denomination && bondNumber && !isDuplicate && (
               <div className="mt-3 inline-flex items-center gap-2">
                 <DenominationBadge denomination={denomination} />
-                <span className="font-mono text-sm text-slate-700">{bondNumber}</span>
+                <span className="text-sm text-black">{bondNumber}</span>
               </div>
             )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Actions */}
       <div className="flex items-center gap-3 pt-2">
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={handleSubmit}
-          disabled={!isValid}
-          className="flex-1"
-        >
-          Add to Vault
-        </Button>
-        <Button variant="ghost" size="lg" onClick={onCancel}>
-          Cancel
-        </Button>
+        <Button variant="primary" size="lg" onClick={handleSubmit} disabled={!isValid} className="flex-1">Add to Vault</Button>
+        <Button variant="ghost" size="lg" onClick={onCancel}>Cancel</Button>
       </div>
     </div>
   );

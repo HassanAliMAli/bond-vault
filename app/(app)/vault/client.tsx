@@ -80,7 +80,7 @@ export function VaultPageClient() {
   return (
     <PageTransition className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl lg:text-3xl font-bold text-slate-900">
+        <h1 className=" text-2xl lg:text-3xl font-bold text-black">
           Welcome back
         </h1>
         <p className="text-sm text-muted mt-1">Your bond vault at a glance</p>

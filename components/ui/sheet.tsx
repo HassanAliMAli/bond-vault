@@ -18,38 +18,20 @@ interface SheetProps {
 
 function Sheet({ open, onClose, children, title, description, side = "bottom", className }: SheetProps) {
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   const variants = {
     bottom: {
       hidden: { y: "100%" },
-      visible: {
-        y: 0,
-        transition: { type: "spring" as const, stiffness: 350, damping: 30 },
-      },
-      exit: {
-        y: "100%",
-        transition: { type: "spring" as const, stiffness: 500, damping: 35 },
-      },
+      visible: { y: 0, transition: { type: "spring" as const, stiffness: 350, damping: 30 } },
+      exit: { y: "100%", transition: { type: "spring" as const, stiffness: 500, damping: 35 } },
     },
     right: {
       hidden: { x: "100%" },
-      visible: {
-        x: 0,
-        transition: { type: "spring" as const, stiffness: 350, damping: 30 },
-      },
-      exit: {
-        x: "100%",
-        transition: { type: "spring" as const, stiffness: 500, damping: 35 },
-      },
+      visible: { x: 0, transition: { type: "spring" as const, stiffness: 350, damping: 30 } },
+      exit: { x: "100%", transition: { type: "spring" as const, stiffness: 500, damping: 35 } },
     },
   };
 
@@ -63,46 +45,24 @@ function Sheet({ open, onClose, children, title, description, side = "bottom", c
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
           />
           <motion.div
-            className={cn(
-              "fixed z-50 bg-surface shadow-elevation-4 p-6 overflow-y-auto",
-              sheetClass[side],
-              className
-            )}
-            variants={variants[side]}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
+            className={cn("fixed z-50 bg-white border-2 border-black shadow-elevation-4 p-6 overflow-y-auto", sheetClass[side], className)}
+            variants={variants[side]} initial="hidden" animate="visible" exit="exit"
             drag={side === "bottom" ? "y" : undefined}
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.1}
-            onDragEnd={(_, info) => {
-              if (info.velocity.y > 200) onClose();
-            }}
+            onDragEnd={(_, info) => { if (info.velocity.y > 200) onClose(); }}
           >
             <div className="flex items-center justify-between mb-4">
               <div>
-                {title && (
-                  <h2 className="font-display text-lg font-semibold text-slate-900">
-                    {title}
-                  </h2>
-                )}
-                {description && (
-                  <p className="text-sm text-muted mt-1">{description}</p>
-                )}
+                {title && <h2 className="font-semibold text-lg text-black">{title}</h2>}
+                {description && <p className="text-sm text-muted mt-1">{description}</p>}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="shrink-0"
-              >
+              <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0">
                 <X className="h-5 w-5" />
               </Button>
             </div>

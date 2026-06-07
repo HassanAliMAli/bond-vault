@@ -18,7 +18,7 @@ const cardVariants = {
 
 interface CardProps extends HTMLMotionProps<"div"> {
   interactive?: boolean;
-  variant?: "elevated" | "outlined" | "filled" | "glass";
+  variant?: "elevated" | "outlined" | "filled";
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
@@ -26,10 +26,9 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const baseClasses = "rounded-[var(--radius-md)] p-5 transition-colors";
 
     const variantClasses = {
-      elevated: "bg-surface shadow-elevation-1",
-      outlined: "bg-surface border border-[var(--border)]",
-      filled: "bg-slate-50",
-      glass: "bg-white/60 backdrop-blur-xl border border-white/20 shadow-elevation-1",
+      elevated: "bg-white shadow-elevation-1 border border-[var(--border)]",
+      outlined: "bg-white border-2 border-black",
+      filled: "bg-black text-white",
     };
 
     if (interactive) {
@@ -49,11 +48,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     }
 
     return (
-      <motion.div
-        ref={ref}
-        className={cn(baseClasses, variantClasses[variant], className)}
-        {...props}
-      >
+      <motion.div ref={ref} className={cn(baseClasses, variantClasses[variant], className)} {...props}>
         {children}
       </motion.div>
     );
@@ -66,7 +61,7 @@ const CardHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement
 );
 
 const CardTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={cn("font-display text-lg font-semibold leading-tight tracking-tight text-slate-900", className)} {...props} />
+  <h3 className={cn("font-semibold text-lg leading-tight tracking-tight text-black", className)} {...props} />
 );
 
 const CardDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (

@@ -12,19 +12,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700 shadow-elevation-1 hover:shadow-elevation-2",
+          "bg-black text-cyan border-2 border-black hover:bg-cyan hover:text-black active:bg-cyan/80 shadow-elevation-1 hover:shadow-elevation-2",
         secondary:
-          "bg-surface border border-[var(--border)] text-slate-700 hover:bg-slate-50 active:bg-slate-100 shadow-elevation-1",
+          "bg-white text-black border-2 border-black hover:bg-cyan/10 active:bg-cyan/20",
         destructive:
-          "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 active:bg-rose-200",
+          "bg-white text-orange border-2 border-orange hover:bg-orange/10 active:bg-orange/20",
         ghost:
-          "text-slate-600 hover:bg-slate-100 active:bg-slate-200",
-        "ghost-emerald":
-          "text-emerald-600 hover:bg-emerald-50 active:bg-emerald-100",
+          "text-black hover:bg-black/5 active:bg-black/10",
+        "ghost-cyan":
+          "text-black hover:bg-cyan/10 active:bg-cyan/20",
         outline:
-          "border border-emerald-300 text-emerald-700 hover:bg-emerald-50 active:bg-emerald-100",
+          "border-2 border-cyan text-black hover:bg-cyan/10 active:bg-cyan/20",
         link:
-          "text-slate-500 underline-offset-4 hover:underline",
+          "text-black underline-offset-4 hover:underline",
       },
       size: {
         sm: "h-9 px-3 text-xs rounded-[var(--radius-sm)]",
@@ -69,7 +69,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         whileTap={{ scale: 0.97 }}
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         {...props}
       >

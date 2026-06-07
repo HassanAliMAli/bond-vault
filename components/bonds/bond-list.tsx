@@ -4,10 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BondCard } from "./bond-card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Bond {
@@ -46,7 +45,6 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
 
   return (
     <div className="space-y-4">
-      {/* Filter bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
@@ -57,20 +55,16 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
             className="pl-9"
           />
           {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-slate-600"
-            >
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-black">
               <X className="h-4 w-4" />
             </button>
           )}
         </div>
-
         <div className="flex gap-2 items-center">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="h-12 px-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-surface text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200 cursor-pointer"
+            className="h-12 px-3 rounded-[var(--radius-sm)] border-2 border-black/15 bg-white text-sm text-black focus:outline-none focus:ring-2 focus:ring-cyan/30 cursor-pointer"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -79,15 +73,14 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
         </div>
       </div>
 
-      {/* Denomination chips */}
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setDenominationFilter(null)}
           className={cn(
-            "px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+            "px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all",
             !denominationFilter
-              ? "bg-emerald-50 border-emerald-300 text-emerald-700"
-              : "bg-surface border-[var(--border)] text-slate-600 hover:border-slate-300"
+              ? "bg-cyan/10 border-cyan text-black"
+              : "bg-white border-black/10 text-black hover:border-black/20"
           )}
         >
           All
@@ -95,14 +88,12 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
         {DENOMINATIONS.map((d) => (
           <button
             key={d}
-            onClick={() =>
-              setDenominationFilter(denominationFilter === d ? null : d)
-            }
+            onClick={() => setDenominationFilter(denominationFilter === d ? null : d)}
             className={cn(
-              "px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+              "px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all",
               denominationFilter === d
-                ? "bg-emerald-50 border-emerald-300 text-emerald-700"
-                : "bg-surface border-[var(--border)] text-slate-600 hover:border-slate-300"
+                ? "bg-cyan/10 border-cyan text-black"
+                : "bg-white border-black/10 text-black hover:border-black/20"
             )}
           >
             Rs. {d}
@@ -110,29 +101,19 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
         ))}
         {hasFilters && (
           <button
-            onClick={() => {
-              setDenominationFilter(null);
-              setSearch("");
-            }}
-            className="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-700 flex items-center gap-1"
+            onClick={() => { setDenominationFilter(null); setSearch(""); }}
+            className="px-3 py-1.5 rounded-full text-xs font-medium text-black/50 hover:text-black flex items-center gap-1"
           >
-            <X className="h-2.5 w-2.5" />
-            Clear
+            <X className="h-2.5 w-2.5" />Clear
           </button>
         )}
       </div>
 
-      {/* Bond list */}
       {filtered.length > 0 ? (
         <div className="space-y-2">
           <AnimatePresence mode="popLayout">
             {filtered.map((bond, i) => (
-              <BondCard
-                key={bond.id}
-                {...bond}
-                onDelete={onDelete}
-                index={i}
-              />
+              <BondCard key={bond.id} {...bond} onDelete={onDelete} index={i} />
             ))}
           </AnimatePresence>
         </div>
@@ -140,30 +121,17 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
         <EmptyState
           illustration={hasFilters ? "search" : "vault"}
           title={hasFilters ? "No bonds match your filters" : "No bonds yet"}
-          description={
-            hasFilters
-              ? "Try adjusting your search or denomination filter."
-              : "Add your first prize bond to start your portfolio."
-          }
+          description={hasFilters ? "Try adjusting your search or denomination filter." : "Add your first prize bond to start your portfolio."}
           action={
             hasFilters
-              ? {
-                  label: "Clear Filters",
-                  onClick: () => {
-                    setDenominationFilter(null);
-                    setSearch("");
-                  },
-                }
+              ? { label: "Clear Filters", onClick: () => { setDenominationFilter(null); setSearch(""); } }
               : { label: "Add Your First Bond", onClick: onAddNew }
           }
         />
       )}
 
-      {/* Bond count */}
       {filtered.length > 0 && (
-        <p className="text-xs text-muted text-center">
-          Showing {filtered.length} of {bonds.length} bonds
-        </p>
+        <p className="text-xs text-muted text-center">Showing {filtered.length} of {bonds.length} bonds</p>
       )}
     </div>
   );

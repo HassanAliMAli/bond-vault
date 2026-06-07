@@ -19,17 +19,17 @@ function Logo({ size = "md", showText = true }: { size?: "sm" | "md" | "lg"; sho
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="42" height="42" rx="10" fill="#10B981" />
-          <path d="M12 18h18v-2a4 4 0 0 0-4-4H16a4 4 0 0 0-4 4v2Z" fill="white" fillOpacity={0.9} />
+          <rect width="42" height="42" rx="10" fill="black" />
+          <path d="M12 18h18v-2a4 4 0 0 0-4-4H16a4 4 0 0 0-4 4v2Z" fill="#00F0FF" />
           <rect x="10" y="18" width="22" height="14" rx="3" fill="white" />
-          <circle cx="21" cy="24" r="2.5" fill="#10B981" />
-          <path d="M21 26.5v3" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round" />
-          <rect x="15" y="29" width="12" height="1.5" rx="0.75" fill="#10B981" fillOpacity={0.3} />
+          <circle cx="21" cy="24" r="2.5" fill="#00F0FF" />
+          <path d="M21 26.5v3" stroke="#00F0FF" strokeWidth="1.5" strokeLinecap="round" />
+          <rect x="15" y="29" width="12" height="1.5" rx="0.75" fill="#00F0FF" fillOpacity={0.3} />
         </svg>
       </div>
       {showText && (
-        <span className={cn("font-display font-bold tracking-tight whitespace-nowrap", sizeClasses[size])}>
-          Bond<span className="text-emerald-500">Vault</span>
+        <span className={cn("font-semibold tracking-tight whitespace-nowrap", sizeClasses[size])}>
+          Bond<span className="text-cyan">Vault</span>
         </span>
       )}
     </div>
