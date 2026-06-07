@@ -49,7 +49,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               ? "border-orange focus:ring-orange/30"
               : focused
                 ? "border-cyan focus:ring-cyan/30"
-                : "border-black/15 hover:border-black/30",
+                : "border-cyan/20 hover:border-cyan/30",
             "disabled:cursor-not-allowed disabled:opacity-50",
             label && "pt-5",
             className

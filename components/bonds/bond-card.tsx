@@ -27,11 +27,11 @@ export function BondCard({
       exit={{ opacity: 0, scale: 0.95, y: -8 }}
       transition={{ type: "spring", stiffness: 350, damping: 28, delay: index * 0.04 }}
       className={cn(
-        "group relative flex items-center gap-4 p-4 rounded-[var(--radius-md)] bg-white border-2 border-black/10 hover:border-black/20 hover:shadow-elevation-2 transition-all",
+        "group relative flex items-center gap-4 p-4 rounded-[var(--radius-md)] bg-white border-2 border-cyan/15 hover:border-cyan/25 hover:shadow-elevation-2 transition-all",
         className
       )}
     >
-      <div className="hidden sm:flex items-center text-black/20 group-hover:text-black/40 transition-colors">
+      <div className="hidden sm:flex items-center text-cyan/40 group-hover:text-black/60 transition-colors">
         <GripVertical className="h-4 w-4" />
       </div>
       <div className="flex-1 min-w-0 flex items-center gap-3">
@@ -42,7 +42,7 @@ export function BondCard({
       {onDelete && (
         <Button
           variant="ghost" size="icon"
-          className="shrink-0 text-black/30 hover:text-orange hover:bg-orange/10 opacity-0 group-hover:opacity-100 transition-all"
+          className="shrink-0 text-black/60 hover:text-orange hover:bg-orange/10 opacity-0 group-hover:opacity-100 transition-all"
           onClick={() => onDelete(id)}
         >
           <Trash2 className="h-4 w-4" />

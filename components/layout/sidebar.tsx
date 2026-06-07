@@ -24,7 +24,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 h-full bg-black border-r border-white/10">
+    <aside className="hidden lg:flex flex-col w-64 h-full bg-white border-r-2 border-cyan/20">
       <div className="p-5 pt-6">
         <Logo size="sm" />
       </div>
@@ -40,14 +40,14 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-sm font-medium transition-all duration-200 group",
                 isActive
-                  ? "bg-cyan/15 text-cyan border-l-2 border-cyan pl-2.5"
-                  : "text-white/50 hover:bg-white/8 hover:text-white"
+                  ? "bg-cyan/15 text-black border-l-2 border-cyan pl-2.5"
+                  : "text-black/60 hover:bg-cyan/5 hover:text-black"
               )}
             >
               <Icon
                 className={cn(
                   "h-5 w-5 transition-colors",
-                  isActive ? "text-cyan" : "text-white/40 group-hover:text-white/70"
+                  isActive ? "text-cyan" : "text-black/60 group-hover:text-black/60"
                 )}
               />
               {item.label}
@@ -56,13 +56,13 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t-2 border-cyan/10">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-cyan/20 flex items-center justify-center text-cyan text-xs font-semibold">
+          <div className="w-8 h-8 rounded-full bg-cyan/15 flex items-center justify-center text-cyan text-xs font-semibold">
             A
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white/80 truncate">
+            <p className="text-sm font-medium text-black/80 truncate">
               ahmad@example.com
             </p>
           </div>

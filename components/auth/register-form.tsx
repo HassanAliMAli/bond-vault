@@ -31,7 +31,7 @@ function PasswordStrength({ password }: { password: string }) {
     <motion.div className="space-y-2 mt-2" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
       <div className="flex gap-1">
         {[1, 2, 3, 4].map((level) => (
-          <motion.div key={level} className={cn("h-1.5 flex-1 rounded-full", level <= strength ? strengthColor[strength] : "bg-black/10")}
+          <motion.div key={level} className={cn("h-1.5 flex-1 rounded-full", level <= strength ? strengthColor[strength] : "bg-cyan/12")}
             initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.3, delay: level * 0.1 }} />
         ))}
       </div>
@@ -39,7 +39,7 @@ function PasswordStrength({ password }: { password: string }) {
       <div className="space-y-1.5">
         {checks.map((check) => (
           <div key={check.label} className="flex items-center gap-2 text-xs">
-            {check.passed ? <Check className="h-3 w-3 text-green" /> : <X className="h-3 w-3 text-black/20" />}
+            {check.passed ? <Check className="h-3 w-3 text-green" /> : <X className="h-3 w-3 text-cyan/40" />}
             <span className={check.passed ? "text-black" : "text-muted"}>{check.label}</span>
           </div>
         ))}

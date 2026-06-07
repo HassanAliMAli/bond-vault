@@ -16,7 +16,7 @@ export function CheckButton({ onClick, loading, progress = 0, totalBonds = 0 }: 
     return (
       <div className="flex flex-col items-center gap-4">
         <motion.div
-          className="relative w-20 h-20 rounded-full bg-black flex items-center justify-center shadow-elevation-3"
+          className="relative w-20 h-20 rounded-full bg-cyan flex items-center justify-center shadow-elevation-3"
           animate={{
             scale: [1, 1.05, 1],
             boxShadow: [
@@ -34,7 +34,7 @@ export function CheckButton({ onClick, loading, progress = 0, totalBonds = 0 }: 
         <div className="text-center">
           <p className="text-sm font-medium text-black mb-1">Checking your bonds...</p>
           <p className="text-xs text-muted">{Math.round(progress * 100)}% complete · {totalBonds} bonds</p>
-          <div className="mt-2 w-48 h-1.5 bg-black/10 rounded-full overflow-hidden mx-auto">
+          <div className="mt-2 w-48 h-1.5 bg-cyan/12 rounded-full overflow-hidden mx-auto">
             <motion.div
               className="h-full bg-cyan rounded-full"
               initial={{ width: 0 }}

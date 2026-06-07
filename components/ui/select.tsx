@@ -16,8 +16,8 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-12 w-full items-center justify-between rounded-[var(--radius-sm)] border-2 border-black/15 bg-white px-3 py-2 text-sm text-black",
-      "hover:border-black/30 focus:outline-none focus:ring-2 focus:ring-cyan/30 focus:border-cyan",
+      "flex h-12 w-full items-center justify-between rounded-[var(--radius-sm)] border-2 border-cyan/20 bg-white px-3 py-2 text-sm text-black",
+      "hover:border-cyan/30 focus:outline-none focus:ring-2 focus:ring-cyan/30 focus:border-cyan",
       "disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
       className
     )}
@@ -81,7 +81,7 @@ const SelectSeparator = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <SelectPrimitive.Separator ref={ref} className={cn("-mx-1 my-1 h-px bg-black/10", className)} {...props} />
+  <SelectPrimitive.Separator ref={ref} className={cn("-mx-1 my-1 h-px bg-cyan/12", className)} {...props} />
 ));
 SelectSeparator.displayName = "SelectSeparator";
 

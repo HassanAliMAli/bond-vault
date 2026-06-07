@@ -36,7 +36,7 @@ export function MatchCard({ bondNumber, denomination, prizeType, prizeAmount, dr
     >
       <Card variant="outlined" className={`border-l-4 ${prizeColors[prizeType] || "border-l-cyan"} p-4`}>
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-white border-2 border-black/10 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full bg-white border-2 border-cyan/15 flex items-center justify-center shrink-0">
             {prizeIcons[prizeType] || <Trophy className="h-5 w-5 text-amber" />}
           </div>
           <div className="flex-1 min-w-0">
@@ -46,9 +46,9 @@ export function MatchCard({ bondNumber, denomination, prizeType, prizeAmount, dr
             </div>
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium text-black">{prizeType}</span>
-              <span className="text-black/20">·</span>
+              <span className="text-cyan/40">·</span>
               <span className="font-semibold text-green">{prizeAmount}</span>
-              <span className="text-black/20">·</span>
+              <span className="text-cyan/40">·</span>
               <span className="text-muted text-xs">Draw #{drawNumber} — {drawDate}</span>
             </div>
           </div>

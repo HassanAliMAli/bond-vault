@@ -32,7 +32,7 @@ export function SettingsPageClient() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-black/[0.02]">
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-cyan/[0.04]">
               <div>
                 <p className="text-sm font-medium text-black">Email</p>
                 <p className="text-sm text-muted font-mono">ahmad@example.com</p>

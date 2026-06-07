@@ -9,7 +9,7 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const badgeVariants: Record<string, string> = {
-  default: "bg-black/5 text-black border-black/10",
+  default: "bg-cyan/8 text-black border-cyan/15",
   cyan: "bg-cyan/10 text-black border-cyan/30",
   green: "bg-green/10 text-black border-green/30",
   amber: "bg-amber/10 text-black border-amber/30",

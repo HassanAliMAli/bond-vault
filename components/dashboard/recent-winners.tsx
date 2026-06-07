@@ -39,8 +39,8 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
           </div>
         ) : (
           <div className="py-8 text-center">
-            <div className="w-14 h-14 rounded-full bg-black/[0.03] mx-auto mb-3 flex items-center justify-center">
-              <Trophy className="h-6 w-6 text-black/15" />
+            <div className="w-14 h-14 rounded-full bg-cyan/[0.04] mx-auto mb-3 flex items-center justify-center">
+              <Trophy className="h-6 w-6 text-cyan/30" />
             </div>
             <p className="text-sm text-muted mb-4">No winners yet</p>
             <Link href="/check"><Button variant="secondary" size="sm">Check My Bonds</Button></Link>

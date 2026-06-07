@@ -52,7 +52,7 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
                 onClick={() => { setDenomination(d.value); setError(""); }}
                 className={cn(
                   "relative p-4 rounded-[var(--radius-md)] border-2 text-center transition-all",
-                  selected ? "border-cyan bg-cyan/5 shadow-elevation-1" : "border-black/10 bg-white hover:border-black/20 hover:bg-black/[0.02]"
+                  selected ? "border-cyan bg-cyan/5 shadow-elevation-1" : "border-cyan/15 bg-white hover:border-cyan/25 hover:bg-cyan/[0.04]"
                 )}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}

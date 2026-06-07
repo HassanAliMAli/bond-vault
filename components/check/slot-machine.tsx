@@ -42,11 +42,11 @@ export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachinePr
   return (
     <div className="flex flex-col items-center gap-6 py-12">
       <motion.div
-        className="relative overflow-hidden rounded-[var(--radius-lg)] bg-black border-2 border-cyan/30 p-8 w-full max-w-md shadow-elevation-4"
+        className="relative overflow-hidden rounded-[var(--radius-lg)] bg-cyan/10 border-2 border-cyan p-8 w-full max-w-md shadow-elevation-4"
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 350, damping: 26 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-cyan/20 via-transparent to-transparent" />
         <div className="relative z-10 space-y-2 text-center">
           <p className="text-xs text-cyan font-medium uppercase tracking-widest">Checking</p>
           <motion.p key={currentBond} className="text-4xl font-bold text-white tracking-[0.3em]"
@@ -78,3 +78,4 @@ export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachinePr
     </div>
   );
 }
+

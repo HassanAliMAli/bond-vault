@@ -12,13 +12,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-black text-cyan border-2 border-black hover:bg-cyan hover:text-black active:bg-cyan/80 shadow-elevation-1 hover:shadow-elevation-2",
+          "bg-cyan text-black border-2 border-cyan hover:bg-cyan hover:text-cyan active:bg-black/90 shadow-elevation-1 hover:shadow-elevation-2",
         secondary:
           "bg-white text-black border-2 border-black hover:bg-cyan/10 active:bg-cyan/20",
         destructive:
           "bg-white text-orange border-2 border-orange hover:bg-orange/10 active:bg-orange/20",
         ghost:
-          "text-black hover:bg-black/5 active:bg-black/10",
+          "text-black hover:bg-cyan/8 active:bg-cyan/12",
         "ghost-cyan":
           "text-black hover:bg-cyan/10 active:bg-cyan/20",
         outline:

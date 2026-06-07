@@ -28,7 +28,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     const variantClasses = {
       elevated: "bg-white shadow-elevation-1 border border-[var(--border)]",
       outlined: "bg-white border-2 border-black",
-      filled: "bg-black text-white",
+      filled: "bg-cyan text-black border-2 border-cyan",
     };
 
     if (interactive) {

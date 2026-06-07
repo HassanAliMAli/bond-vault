@@ -64,7 +64,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="h-12 px-3 rounded-[var(--radius-sm)] border-2 border-black/15 bg-white text-sm text-black focus:outline-none focus:ring-2 focus:ring-cyan/30 cursor-pointer"
+            className="h-12 px-3 rounded-[var(--radius-sm)] border-2 border-cyan/20 bg-white text-sm text-black focus:outline-none focus:ring-2 focus:ring-cyan/30 cursor-pointer"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -80,7 +80,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
             "px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all",
             !denominationFilter
               ? "bg-cyan/10 border-cyan text-black"
-              : "bg-white border-black/10 text-black hover:border-black/20"
+              : "bg-white border-cyan/15 text-black hover:border-cyan/25"
           )}
         >
           All
@@ -93,7 +93,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
               "px-3 py-1.5 rounded-full text-xs font-medium border-2 transition-all",
               denominationFilter === d
                 ? "bg-cyan/10 border-cyan text-black"
-                : "bg-white border-black/10 text-black hover:border-black/20"
+                : "bg-white border-cyan/15 text-black hover:border-cyan/25"
             )}
           >
             Rs. {d}
@@ -102,7 +102,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
         {hasFilters && (
           <button
             onClick={() => { setDenominationFilter(null); setSearch(""); }}
-            className="px-3 py-1.5 rounded-full text-xs font-medium text-black/50 hover:text-black flex items-center gap-1"
+            className="px-3 py-1.5 rounded-full text-xs font-medium text-black/60 hover:text-black flex items-center gap-1"
           >
             <X className="h-2.5 w-2.5" />Clear
           </button>
