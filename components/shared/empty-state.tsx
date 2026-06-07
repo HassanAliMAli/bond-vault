@@ -21,9 +21,9 @@ const illustrations = {
       <rect x="30" y="35" width="60" height="45" rx="4" fill="black" fillOpacity={0.04} />
       <circle cx="60" cy="58" r="8" stroke="black" strokeWidth="1.5" />
       <path d="M60 61v5" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M75 22l-5 8M45 22l5 8" stroke="#00F0FF" strokeWidth="2" strokeLinecap="round" />
-      <rect x="52" y="10" width="16" height="16" rx="4" stroke="#00F0FF" strokeWidth="1.5" fill="none" />
-      <path d="M57 18h6M60 15v6" stroke="#00F0FF" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M75 22l-5 8M45 22l5 8" stroke="#0F1A2E" strokeWidth="2" strokeLinecap="round" />
+      <rect x="52" y="10" width="16" height="16" rx="4" stroke="#0F1A2E" strokeWidth="1.5" fill="none" />
+      <path d="M57 18h6M60 15v6" stroke="#0F1A2E" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   ),
   search: (
@@ -31,9 +31,9 @@ const illustrations = {
       <circle cx="55" cy="48" r="22" stroke="black" strokeWidth="1.5" />
       <path d="M70 63l14 14" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
       <circle cx="55" cy="48" r="4" fill="black" fillOpacity={0.08} />
-      <rect x="28" y="18" width="10" height="10" rx="2" stroke="#00F0FF" strokeWidth="1.2" opacity={0.5} />
-      <rect x="60" y="22" width="10" height="10" rx="2" stroke="#00F0FF" strokeWidth="1.2" opacity={0.3} />
-      <rect x="75" y="50" width="10" height="10" rx="2" stroke="#00F0FF" strokeWidth="1.2" opacity={0.2} />
+      <rect x="28" y="18" width="10" height="10" rx="2" stroke="#0F1A2E" strokeWidth="1.2" opacity={0.5} />
+      <rect x="60" y="22" width="10" height="10" rx="2" stroke="#0F1A2E" strokeWidth="1.2" opacity={0.3} />
+      <rect x="75" y="50" width="10" height="10" rx="2" stroke="#0F1A2E" strokeWidth="1.2" opacity={0.2} />
     </svg>
   ),
   general: (
@@ -42,7 +42,7 @@ const illustrations = {
       <rect x="30" y="30" width="25" height="8" rx="4" fill="black" fillOpacity={0.08} />
       <rect x="30" y="44" width="40" height="4" rx="2" fill="black" fillOpacity={0.06} />
       <rect x="30" y="52" width="35" height="4" rx="2" fill="black" fillOpacity={0.04} />
-      <path d="M90 25l10-5M90 65l10 5" stroke="#00F0FF" strokeWidth="1.5" strokeLinecap="round" opacity={0.6} />
+      <path d="M90 25l10-5M90 65l10 5" stroke="#0F1A2E" strokeWidth="1.5" strokeLinecap="round" opacity={0.6} />
     </svg>
   ),
 };

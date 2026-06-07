@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   BondVault Pakistan — Electric Fusion Design System
-   Palette: Cyan #00F0FF / Green #00FF81 / Amber #FFA900 / Orange #FF6800
+   BondVault Pakistan — Professional Design System
+   Navy #0F1A2E / Bronze #C8903E / Emerald #1A7D4C
    Font: JetBrains Mono everywhere
    ========================================================================== */
 
 @theme inline {
-  --color-cyan: #00F0FF;
-  --color-green: #00FF81;
-  --color-amber: #FFA900;
-  --color-orange: #FF6800;
+  --color-navy: #0F1A2E;
+  --color-navy-light: #1A2740;
+  --color-bronze: #C8903E;
+  --color-bronze-light: #E8C876;
+  --color-emerald: #1A7D4C;
+  --color-emerald-light: #2CA668;
+  --color-red: #C0392B;
   --color-black: #000000;
   --color-white: #FFFFFF;
 
@@ -18,8 +21,8 @@
   --font-display: "JetBrains Mono", monospace;
   --font-mono: "JetBrains Mono", monospace;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
 
@@ -31,32 +34,27 @@
 
 :root {
   --background: #FFFFFF;
-  --foreground: #000000;
-  --muted: rgba(0, 0, 0, 0.55);
-  --border: rgba(0, 0, 0, 0.12);
-  --ring: #00F0FF;
+  --foreground: #0F1A2E;
+  --muted: #6B7280;
+  --border: #E5E7EB;
+  --ring: #0F1A2E;
   --surface: #FFFFFF;
-  --surface-elevated: #FBFBFB;
-
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-4: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --surface-elevated: #F9FAFB;
+  --shadow-1: 0 1px 2px rgba(15, 26, 46, 0.04);
+  --shadow-2: 0 1px 3px rgba(15, 26, 46, 0.06), 0 1px 2px rgba(15, 26, 46, 0.04);
+  --shadow-3: 0 4px 6px rgba(15, 26, 46, 0.05), 0 2px 4px rgba(15, 26, 46, 0.04);
+  --shadow-4: 0 10px 15px rgba(15, 26, 46, 0.06), 0 4px 6px rgba(15, 26, 46, 0.04);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000;
-    --foreground: #FFFFFF;
-    --muted: rgba(255, 255, 255, 0.55);
-    --border: rgba(255, 255, 255, 0.12);
-    --ring: #00F0FF;
-    --surface: #0A0A0A;
-    --surface-elevated: #141414;
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.5);
-    --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.6);
-    --shadow-4: 0 10px 15px rgba(0, 0, 0, 0.7);
+    --background: #0F1A2E;
+    --foreground: #F9FAFB;
+    --muted: #9CA3AF;
+    --border: #1F2937;
+    --ring: #C8903E;
+    --surface: #1A2740;
+    --surface-elevated: #243050;
   }
 }
 
@@ -67,25 +65,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(100%); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+@keyframes fade-up  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
 
 .bg-surface          { background-color: var(--surface); }
 .bg-surface-elevated { background-color: var(--surface-elevated); }
@@ -99,4 +82,4 @@ body {
 
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(15, 26, 46, 0.12); border-radius: 3px; }

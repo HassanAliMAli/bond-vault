@@ -30,7 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             animate={{
               top: focused || hasValue ? 6 : 12,
               fontSize: focused || hasValue ? "0.7rem" : "0.875rem",
-              color: error ? "#FF6800" : focused ? "#000000" : "var(--muted)",
+              color: error ? "#C0392B" : focused ? "#000000" : "var(--muted)",
             }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           >

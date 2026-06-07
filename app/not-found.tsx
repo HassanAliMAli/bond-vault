@@ -21,7 +21,7 @@ export default function NotFoundPage() {
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="50" cy="50" r="18" stroke="#00F0FF" strokeWidth="1.5" fill="none" opacity="0.6" />
+            <circle cx="50" cy="50" r="18" stroke="#0F1A2E" strokeWidth="1.5" fill="none" opacity="0.6" />
           </svg>
           <h1 className=" text-4xl font-bold text-black mb-3">
             404

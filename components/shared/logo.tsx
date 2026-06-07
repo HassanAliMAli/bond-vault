@@ -20,11 +20,11 @@ function Logo({ size = "md", showText = true }: { size?: "sm" | "md" | "lg"; sho
           xmlns="http://www.w3.org/2000/svg"
         >
           <rect width="42" height="42" rx="10" fill="black" />
-          <path d="M12 18h18v-2a4 4 0 0 0-4-4H16a4 4 0 0 0-4 4v2Z" fill="#00F0FF" />
+          <path d="M12 18h18v-2a4 4 0 0 0-4-4H16a4 4 0 0 0-4 4v2Z" fill="#0F1A2E" />
           <rect x="10" y="18" width="22" height="14" rx="3" fill="white" />
-          <circle cx="21" cy="24" r="2.5" fill="#00F0FF" />
-          <path d="M21 26.5v3" stroke="#00F0FF" strokeWidth="1.5" strokeLinecap="round" />
-          <rect x="15" y="29" width="12" height="1.5" rx="0.75" fill="#00F0FF" fillOpacity={0.3} />
+          <circle cx="21" cy="24" r="2.5" fill="#0F1A2E" />
+          <path d="M21 26.5v3" stroke="#0F1A2E" strokeWidth="1.5" strokeLinecap="round" />
+          <rect x="15" y="29" width="12" height="1.5" rx="0.75" fill="#0F1A2E" fillOpacity={0.3} />
         </svg>
       </div>
       {showText && (
