@@ -7,7 +7,7 @@ export const fadeUpItem: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 300, damping: 24 },
+    transition: { type: "spring" as const, stiffness: 300, damping: 24 },
   },
 };
 
@@ -23,7 +23,7 @@ export const pageVariants: Variants = {
   animate: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 300, damping: 28, delay: 0.05 },
+    transition: { type: "spring" as const, stiffness: 300, damping: 28, delay: 0.05 },
   },
   exit: {
     opacity: 0,

@@ -14,12 +14,12 @@ const cardVariants = {
     scale: 1.01,
     y: -2,
     boxShadow: "var(--shadow-3)",
-    transition: { type: "spring", stiffness: 400, damping: 25 },
+    transition: { type: "spring" as const, stiffness: 400, damping: 25 },
   },
   press: {
     scale: 0.98,
     boxShadow: "var(--shadow-1)",
-    transition: { type: "spring", stiffness: 600, damping: 30 },
+    transition: { type: "spring" as const, stiffness: 600, damping: 30 },
   },
 };
 
