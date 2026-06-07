@@ -1,0 +1,72 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { DenominationBadge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Trash2, GripVertical } from "lucide-react";
+
+interface BondCardProps {
+  id: string;
+  bondNumber: string;
+  denomination: string;
+  addedAt: string;
+  onDelete?: (id: string) => void;
+  index?: number;
+  className?: string;
+}
+
+export function BondCard({
+  id,
+  bondNumber,
+  denomination,
+  addedAt,
+  onDelete,
+  index = 0,
+  className,
+}: BondCardProps) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, y: -8 }}
+      transition={{
+        type: "spring",
+        stiffness: 350,
+        damping: 28,
+        delay: index * 0.04,
+      }}
+      className={cn(
+        "group relative flex items-center gap-4 p-4 rounded-[var(--radius-md)] bg-surface border border-[var(--border)] hover:shadow-elevation-2 transition-shadow",
+        className
+      )}
+    >
+      <div className="hidden sm:flex items-center text-warm-300 group-hover:text-warm-500 transition-colors">
+        <GripVertical className="h-4 w-4" />
+      </div>
+
+      <div className="flex-1 min-w-0 flex items-center gap-3">
+        <span className="font-mono text-lg font-medium text-warm-900 tabular-nums tracking-tight">
+          {bondNumber}
+        </span>
+        <DenominationBadge denomination={denomination} />
+      </div>
+
+      <div className="hidden sm:block text-xs text-muted whitespace-nowrap">
+        Added {addedAt}
+      </div>
+
+      {onDelete && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="shrink-0 text-warm-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+          onClick={() => onDelete(id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
+    </motion.div>
+  );
+}
