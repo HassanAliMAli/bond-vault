@@ -1,26 +1,193 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==========================================================================
+   BondVault Pakistan — Design System
+   Palette: Pakistani Gold + Emerald on Warm Neutrals
+   ========================================================================== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Gold (Primary / CTA) ── */
+  --color-gold-50: #FFF9E6;
+  --color-gold-100: #FFEDB3;
+  --color-gold-200: #FFE180;
+  --color-gold-300: #FFD54D;
+  --color-gold-400: #FFC91A;
+  --color-gold-500: #E6A800;
+  --color-gold-600: #B38600;
+  --color-gold-700: #806100;
+  --color-gold-800: #4D3A00;
+  --color-gold-900: #1A1300;
+
+  /* ── Emerald (Accent / Surfaces) ── */
+  --color-emerald-50: #F0FDF6;
+  --color-emerald-100: #DCFCE8;
+  --color-emerald-200: #BBF7D1;
+  --color-emerald-300: #86EFAD;
+  --color-emerald-400: #4ADE84;
+  --color-emerald-500: #22C55E;
+  --color-emerald-600: #16A34A;
+  --color-emerald-700: #15803C;
+  --color-emerald-800: #14532D;
+  --color-emerald-900: #052E16;
+
+  /* ── Warm Neutral (Replaces Slate) ── */
+  --color-warm-50: #FAFAF8;
+  --color-warm-100: #F5F2EE;
+  --color-warm-200: #EBE6DD;
+  --color-warm-300: #D7CEBF;
+  --color-warm-400: #B8A88E;
+  --color-warm-500: #9A8B78;
+  --color-warm-600: #7A6D5E;
+  --color-warm-700: #5C5247;
+  --color-warm-800: #3D3730;
+  --color-warm-900: #1E1C19;
+
+  /* ── Fonts ── */
+  --font-sans: "Satoshi", "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* ── Border Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* ── Animations ── */
+  --animate-fade-up: fade-up 0.5s var(--ease-spring) both;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-scale-in: scale-in 0.3s var(--ease-spring) both;
+  --animate-slide-up: slide-up 0.4s var(--ease-spring) both;
+  --animate-confetti: confetti 0.8s ease-out both;
+
+  --ease-spring: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Base Variables ── */
+:root {
+  --background: #FAFAF8;
+  --foreground: #1E1C19;
+  --muted: #7A6D5E;
+  --border: #EBE6DD;
+  --ring: #E6A800;
+  --surface: #FFFFFF;
+  --surface-elevated: #FAFAF8;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(30, 28, 25, 0.04), 0 1px 3px rgba(30, 28, 25, 0.06);
+  --shadow-2: 0 2px 4px rgba(30, 28, 25, 0.04), 0 4px 8px rgba(30, 28, 25, 0.06);
+  --shadow-3: 0 4px 8px rgba(30, 28, 25, 0.04), 0 8px 16px rgba(30, 28, 25, 0.08);
+  --shadow-4: 0 8px 16px rgba(30, 28, 25, 0.06), 0 16px 32px rgba(30, 28, 25, 0.10);
+}
+
+/* ── Dark Mode ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0F0E0C;
+    --foreground: #FAFAF8;
+    --muted: #B8A88E;
+    --border: #3D3730;
+    --ring: #FFC91A;
+    --surface: #1A1815;
+    --surface-elevated: #242220;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-2: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-3: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --shadow-4: 0 8px 16px rgba(0, 0, 0, 0.6);
   }
 }
 
+/* ── Base ── */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Keyframes ── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-400px) rotate(720deg); opacity: 0; }
+}
+
+/* ── Utilities ── */
+.bg-surface {
+  background-color: var(--surface);
+}
+
+.bg-surface-elevated {
+  background-color: var(--surface-elevated);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.border-custom {
+  border-color: var(--border);
+}
+
+.shadow-elevation-1 { box-shadow: var(--shadow-1); }
+.shadow-elevation-2 { box-shadow: var(--shadow-2); }
+.shadow-elevation-3 { box-shadow: var(--shadow-3); }
+.shadow-elevation-4 { box-shadow: var(--shadow-4); }
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+  opacity: 0.3;
 }
