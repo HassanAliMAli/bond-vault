@@ -28,7 +28,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Recent Winners</CardTitle>
         <Link href="/check">
-          <Button variant="ghost-gold" size="sm" className="gap-1">
+          <Button variant="ghost-emerald" size="sm" className="gap-1">
             Check All
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
@@ -50,7 +50,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-mono text-sm font-medium text-warm-900">
+                    <span className="font-mono text-sm font-medium text-slate-900">
                       #{winner.bondNumber}
                     </span>
                     <DenominationBadge denomination={winner.denomination} />
@@ -64,8 +64,8 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
           </div>
         ) : (
           <div className="py-8 text-center">
-            <div className="w-14 h-14 rounded-full bg-warm-50 mx-auto mb-3 flex items-center justify-center">
-              <Trophy className="h-6 w-6 text-warm-300" />
+            <div className="w-14 h-14 rounded-full bg-slate-50 mx-auto mb-3 flex items-center justify-center">
+              <Trophy className="h-6 w-6 text-slate-300" />
             </div>
             <p className="text-sm text-muted mb-4">No winners yet</p>
             <Link href="/check">

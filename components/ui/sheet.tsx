@@ -63,7 +63,7 @@ function Sheet({ open, onClose, children, title, description, side = "bottom", c
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-50 bg-warm-900/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -89,7 +89,7 @@ function Sheet({ open, onClose, children, title, description, side = "bottom", c
             <div className="flex items-center justify-between mb-4">
               <div>
                 {title && (
-                  <h2 className="font-display text-lg font-semibold text-warm-900">
+                  <h2 className="font-display text-lg font-semibold text-slate-900">
                     {title}
                   </h2>
                 )}

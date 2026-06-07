@@ -57,7 +57,7 @@ function PasswordStrength({ password }: { password: string }) {
             key={level}
             className={cn(
               "h-1.5 flex-1 rounded-full",
-              level <= strength ? strengthColor[strength] : "bg-warm-200"
+              level <= strength ? strengthColor[strength] : "bg-slate-200"
             )}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
@@ -72,10 +72,10 @@ function PasswordStrength({ password }: { password: string }) {
             {check.passed ? (
               <Check className="h-3 w-3 text-emerald-500" />
             ) : (
-              <X className="h-3 w-3 text-warm-300" />
+              <X className="h-3 w-3 text-slate-300" />
             )}
             <span
-              className={check.passed ? "text-emerald-700" : "text-warm-400"}
+              className={check.passed ? "text-emerald-700" : "text-slate-400"}
             >
               {check.label}
             </span>
@@ -211,7 +211,7 @@ export function RegisterForm() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-gold-600 hover:text-gold-700 font-medium underline-offset-2 hover:underline transition-colors"
+            className="text-emerald-600 hover:text-emerald-700 font-medium underline-offset-2 hover:underline transition-colors"
           >
             Sign in
           </Link>

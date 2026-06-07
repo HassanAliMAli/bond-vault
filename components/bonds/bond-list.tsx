@@ -59,7 +59,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-warm-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-slate-600"
             >
               <X className="h-4 w-4" />
             </button>
@@ -70,7 +70,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="h-12 px-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-surface text-sm text-warm-800 focus:outline-none focus:ring-2 focus:ring-gold-200 cursor-pointer"
+            className="h-12 px-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-surface text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200 cursor-pointer"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -86,8 +86,8 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
           className={cn(
             "px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
             !denominationFilter
-              ? "bg-gold-50 border-gold-300 text-gold-700"
-              : "bg-surface border-[var(--border)] text-warm-600 hover:border-warm-300"
+              ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+              : "bg-surface border-[var(--border)] text-slate-600 hover:border-slate-300"
           )}
         >
           All
@@ -101,8 +101,8 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
             className={cn(
               "px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
               denominationFilter === d
-                ? "bg-gold-50 border-gold-300 text-gold-700"
-                : "bg-surface border-[var(--border)] text-warm-600 hover:border-warm-300"
+                ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+                : "bg-surface border-[var(--border)] text-slate-600 hover:border-slate-300"
             )}
           >
             Rs. {d}
@@ -114,7 +114,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
               setDenominationFilter(null);
               setSearch("");
             }}
-            className="px-3 py-1.5 rounded-full text-xs font-medium text-warm-500 hover:text-warm-700 flex items-center gap-1"
+            className="px-3 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-700 flex items-center gap-1"
           >
             <X className="h-2.5 w-2.5" />
             Clear

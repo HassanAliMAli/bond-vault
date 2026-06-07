@@ -73,7 +73,7 @@ function EmptyState({
       transition={{ type: "spring", stiffness: 300, damping: 24 }}
     >
       {icon || illustrations[illustration]}
-      <h3 className="font-display text-xl font-semibold text-warm-800 mb-2">
+      <h3 className="font-display text-xl font-semibold text-slate-800 mb-2">
         {title}
       </h3>
       {description && (

@@ -15,7 +15,7 @@ export function SettingsPageClient() {
   return (
     <PageTransition className="space-y-6 max-w-2xl mx-auto">
       <div>
-        <h1 className="font-display text-2xl lg:text-3xl font-bold text-warm-900">
+        <h1 className="font-display text-2xl lg:text-3xl font-bold text-slate-900">
           Settings
         </h1>
         <p className="text-sm text-muted mt-1">Manage your account and preferences</p>
@@ -25,16 +25,16 @@ export function SettingsPageClient() {
       <Card variant="elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-gold-500" />
+            <Mail className="h-4 w-4 text-emerald-500" />
             Account
           </CardTitle>
           <CardDescription>Your account details</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-warm-50">
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-slate-50">
               <div>
-                <p className="text-sm font-medium text-warm-800">Email</p>
+                <p className="text-sm font-medium text-slate-800">Email</p>
                 <p className="text-sm text-muted font-mono">ahmad@example.com</p>
               </div>
               <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full font-medium">
@@ -71,7 +71,7 @@ export function SettingsPageClient() {
       <Card variant="elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <LogOut className="h-4 w-4 text-gold-500" />
+            <LogOut className="h-4 w-4 text-emerald-500" />
             Session
           </CardTitle>
           <CardDescription>Sign out of your account</CardDescription>

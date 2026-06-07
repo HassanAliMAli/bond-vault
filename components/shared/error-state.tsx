@@ -36,7 +36,7 @@ function ErrorState({
       <div className="rounded-full bg-amber-50 p-4 mb-6">
         <AlertTriangle className="h-8 w-8 text-amber-600" />
       </div>
-      <h3 className="font-display text-xl font-semibold text-warm-800 mb-2">
+      <h3 className="font-display text-xl font-semibold text-slate-800 mb-2">
         {title}
       </h3>
       <p className="text-sm text-muted max-w-sm mb-6 leading-relaxed">

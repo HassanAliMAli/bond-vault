@@ -56,7 +56,7 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
     <div className="space-y-6">
       {/* Denomination selector */}
       <div>
-        <label className="block text-sm font-medium text-warm-800 mb-3">
+        <label className="block text-sm font-medium text-slate-800 mb-3">
           Select Denomination
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -73,8 +73,8 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
                 className={cn(
                   "relative p-4 rounded-[var(--radius-md)] border-2 text-center transition-all",
                   selected
-                    ? "border-gold-400 bg-gold-50 shadow-elevation-1"
-                    : "border-[var(--border)] bg-surface hover:border-warm-300 hover:bg-warm-50"
+                    ? "border-emerald-400 bg-emerald-50 shadow-elevation-1"
+                    : "border-[var(--border)] bg-surface hover:border-slate-300 hover:bg-slate-50"
                 )}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -89,14 +89,14 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
                 <span
                   className={cn(
                     "font-display text-lg font-semibold block",
-                    selected ? "text-gold-700" : "text-warm-700"
+                    selected ? "text-emerald-700" : "text-slate-700"
                   )}
                 >
                   {d.label}
                 </span>
                 {selected && (
                   <motion.div
-                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gold-500 flex items-center justify-center"
+                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 500, damping: 25 }}
@@ -119,7 +119,7 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
             exit={{ opacity: 0, height: 0 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
           >
-            <label className="block text-sm font-medium text-warm-800 mb-3">
+            <label className="block text-sm font-medium text-slate-800 mb-3">
               Bond Number
             </label>
             <div className="relative">
@@ -160,7 +160,7 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
             {denomination && bondNumber && !isDuplicate && (
               <div className="mt-3 inline-flex items-center gap-2">
                 <DenominationBadge denomination={denomination} />
-                <span className="font-mono text-sm text-warm-700">{bondNumber}</span>
+                <span className="font-mono text-sm text-slate-700">{bondNumber}</span>
               </div>
             )}
           </motion.div>

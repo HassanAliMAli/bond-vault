@@ -16,9 +16,9 @@ const statCards = [
     key: "total",
     label: "Total Bonds",
     icon: Vault,
-    color: "text-gold-500",
-    bg: "bg-gold-50",
-    border: "border-gold-100",
+    color: "text-emerald-500",
+    bg: "bg-emerald-50",
+    border: "border-emerald-100",
   },
   {
     key: "checked",
@@ -73,7 +73,7 @@ export function PortfolioSummary({ totalBonds, totalChecked, totalMatches }: Por
                     <p className="text-xs font-medium text-muted uppercase tracking-wider">
                       {stat.label}
                     </p>
-                    <p className="font-display text-3xl font-bold text-warm-900 tracking-tight">
+                    <p className="font-display text-3xl font-bold text-slate-900 tracking-tight">
                       {stat.key === "checked" ? (
                         "Jun 15"
                       ) : (

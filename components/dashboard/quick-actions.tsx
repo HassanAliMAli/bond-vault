@@ -11,7 +11,7 @@ const actions = [
     label: "Add Bond",
     description: "Store a new prize bond",
     icon: PlusCircle,
-    color: "bg-gold-50 text-gold-600 group-hover:bg-gold-100",
+    color: "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100",
     primary: true,
   },
   {
@@ -26,14 +26,14 @@ const actions = [
     label: "Manage Bonds",
     description: "View and organize",
     icon: ScrollText,
-    color: "bg-warm-100 text-warm-600 group-hover:bg-warm-200",
+    color: "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
   },
   {
     href: "/settings",
     label: "Settings",
     description: "Account preferences",
     icon: Settings,
-    color: "bg-warm-100 text-warm-600 group-hover:bg-warm-200",
+    color: "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
   },
 ];
 
@@ -60,7 +60,7 @@ export function QuickActions() {
               <Link
                 href={action.href}
                 className={`group flex flex-col items-center gap-2.5 p-4 rounded-[var(--radius-md)] border border-transparent hover:border-[var(--border)] bg-surface hover:shadow-elevation-2 transition-all text-center cursor-pointer ${
-                  action.primary ? "ring-1 ring-gold-200" : ""
+                  action.primary ? "ring-1 ring-emerald-200" : ""
                 }`}
               >
                 <div
@@ -69,7 +69,7 @@ export function QuickActions() {
                   <action.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-warm-800">
+                  <p className="text-sm font-medium text-slate-800">
                     {action.label}
                   </p>
                   <p className="text-[11px] text-muted mt-0.5">

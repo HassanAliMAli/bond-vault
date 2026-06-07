@@ -12,23 +12,23 @@ interface DenominationData {
 }
 
 const denominationColors: Record<string, string> = {
-  "100": "from-warm-200 to-warm-300",
+  "100": "from-slate-200 to-slate-300",
   "200": "from-amber-200 to-amber-300",
   "750": "from-rose-200 to-rose-300",
   "1500": "from-violet-200 to-violet-300",
   "7500": "from-emerald-200 to-emerald-300",
-  "25000": "from-gold-200 to-gold-400",
-  "40000": "from-gold-300 to-gold-500",
+  "25000": "from-emerald-200 to-emerald-400",
+  "40000": "from-emerald-300 to-emerald-500",
 };
 
 const bgColors: Record<string, string> = {
-  "100": "bg-warm-50",
+  "100": "bg-slate-50",
   "200": "bg-amber-50",
   "750": "bg-rose-50",
   "1500": "bg-violet-50",
   "7500": "bg-emerald-50",
-  "25000": "bg-gold-50",
-  "40000": "bg-gold-100",
+  "25000": "bg-emerald-50",
+  "40000": "bg-emerald-100",
 };
 
 interface DenominationBreakdownProps {
@@ -86,7 +86,7 @@ export function DenominationBreakdown({ data, total }: DenominationBreakdownProp
               <div className="flex items-center justify-between mb-1">
                 <DenominationBadge denomination={d.denomination} />
               </div>
-              <p className="font-display text-2xl font-bold text-warm-800">
+              <p className="font-display text-2xl font-bold text-slate-800">
                 <FormattedCounter to={d.count} duration={1} />
               </p>
               <p className="text-xs text-muted mt-0.5">bonds</p>

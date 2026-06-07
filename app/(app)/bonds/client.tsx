@@ -50,7 +50,7 @@ export function BondsPageClient() {
     <PageTransition className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl lg:text-3xl font-bold text-warm-900">
+          <h1 className="font-display text-2xl lg:text-3xl font-bold text-slate-900">
             My Bonds
           </h1>
           <p className="text-sm text-muted mt-1">

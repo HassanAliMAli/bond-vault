@@ -23,7 +23,7 @@ export default function NotFoundPage() {
             />
             <circle cx="50" cy="50" r="18" stroke="#E6A800" strokeWidth="1.5" fill="none" opacity="0.4" />
           </svg>
-          <h1 className="font-display text-4xl font-bold text-warm-900 mb-3">
+          <h1 className="font-display text-4xl font-bold text-slate-900 mb-3">
             404
           </h1>
           <p className="text-muted text-sm mb-4">

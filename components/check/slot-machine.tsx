@@ -80,7 +80,7 @@ export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachinePr
         transition={{ type: "spring", stiffness: 350, damping: 26 }}
       >
         {/* Glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gold-500/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/10 via-transparent to-transparent" />
 
         <div className="relative z-10 space-y-2 text-center">
           <p className="text-xs text-emerald-400 font-medium uppercase tracking-widest">
@@ -120,7 +120,7 @@ export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachinePr
           {[1, 2, 3].map((dot) => (
             <motion.div
               key={dot}
-              className="w-2 h-2 rounded-full bg-gold-400"
+              className="w-2 h-2 rounded-full bg-emerald-400"
               animate={phase !== "complete" ? { opacity: [0.3, 1, 0.3] } : { opacity: 1 }}
               transition={
                 phase !== "complete"

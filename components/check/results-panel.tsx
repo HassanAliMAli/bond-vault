@@ -52,9 +52,9 @@ export function ResultsPanel({ matches, totalChecked, onCheckAgain }: ResultsPan
                 delay: 0.4,
               }}
             >
-              <PartyPopper className="h-12 w-12 text-gold-500 mx-auto mb-3" />
+              <PartyPopper className="h-12 w-12 text-emerald-500 mx-auto mb-3" />
             </motion.div>
-            <h2 className="font-display text-2xl font-bold text-warm-900 mb-2">
+            <h2 className="font-display text-2xl font-bold text-slate-900 mb-2">
               Congratulations!
             </h2>
             <p className="text-sm text-muted max-w-md mx-auto">
@@ -67,7 +67,7 @@ export function ResultsPanel({ matches, totalChecked, onCheckAgain }: ResultsPan
           <Card variant="elevated">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-gold-500" />
+                <Trophy className="h-5 w-5 text-emerald-500" />
                 Winning Bonds
               </CardTitle>
               <span className="text-sm text-muted">{matches.length} found</span>

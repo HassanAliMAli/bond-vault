@@ -26,7 +26,7 @@ export function DashboardPageSkeleton() {
         <Skeleton variant="rectangular" className="h-3 w-full" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="rounded-[var(--radius-md)] bg-warm-50 p-4 space-y-2">
+            <div key={i} className="rounded-[var(--radius-md)] bg-slate-50 p-4 space-y-2">
               <Skeleton variant="text" className="w-16" />
               <Skeleton variant="text" className="h-8 w-12" />
               <Skeleton variant="text" className="w-10" />

@@ -13,7 +13,7 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[var(--background)]">
       <div className="relative w-full max-w-[440px]">
-        <div className="absolute inset-0 bg-gradient-to-br from-gold-100/40 via-transparent to-emerald-100/20 rounded-[var(--radius-xl)] blur-3xl -z-10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/40 via-transparent to-emerald-100/20 rounded-[var(--radius-xl)] blur-3xl -z-10" />
 
         <motion.div
           className="bg-surface rounded-[var(--radius-xl)] shadow-elevation-4 p-8 border border-[var(--border)]"
@@ -31,7 +31,7 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="font-display text-2xl font-bold text-warm-900 mb-2">
+            <h2 className="font-display text-2xl font-bold text-slate-900 mb-2">
               {title}
             </h2>
             <p className="text-sm text-muted leading-relaxed">{description}</p>
@@ -42,11 +42,11 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
 
         <p className="text-center text-xs text-muted mt-8">
           By continuing, you agree to BondVault&apos;s{" "}
-          <span className="text-gold-600 cursor-pointer hover:underline">
+          <span className="text-emerald-600 cursor-pointer hover:underline">
             Terms
           </span>{" "}
           and{" "}
-          <span className="text-gold-600 cursor-pointer hover:underline">
+          <span className="text-emerald-600 cursor-pointer hover:underline">
             Privacy Policy
           </span>
           .

@@ -102,7 +102,7 @@ export function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-warm-600 transition-colors pt-2"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-slate-600 transition-colors pt-2"
             tabIndex={-1}
           >
             {showPassword ? (
@@ -131,7 +131,7 @@ export function LoginForm() {
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="text-gold-600 hover:text-gold-700 font-medium underline-offset-2 hover:underline transition-colors"
+            className="text-emerald-600 hover:text-emerald-700 font-medium underline-offset-2 hover:underline transition-colors"
           >
             Create one
           </Link>

@@ -76,7 +76,7 @@ export function CheckPageClient() {
   return (
     <PageTransition className="space-y-6">
       <div className="text-center mb-2">
-        <h1 className="font-display text-2xl lg:text-3xl font-bold text-warm-900 mb-2">
+        <h1 className="font-display text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
           {checkState === "results"
             ? results?.matches?.length
               ? "Results Found"

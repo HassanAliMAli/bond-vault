@@ -24,13 +24,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "absolute left-3 z-10 pointer-events-none font-sans transition-all duration-200",
               focused || hasValue
-                ? "text-xs text-gold-600 top-1.5 bg-surface px-1"
+                ? "text-xs text-emerald-600 top-1.5 bg-surface px-1"
                 : "text-sm text-muted top-3"
             )}
             animate={{
               top: focused || hasValue ? 6 : 12,
               fontSize: focused || hasValue ? "0.7rem" : "0.875rem",
-              color: error ? "#ef4444" : focused ? "#B38600" : "var(--muted)",
+              color: error ? "#F43F5E" : focused ? "#059669" : "var(--muted)",
             }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           >
@@ -41,15 +41,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           type={type}
           className={cn(
-            "flex h-12 w-full rounded-[var(--radius-sm)] border bg-surface px-3 py-2 font-sans text-sm text-warm-900",
-            "placeholder:text-muted/50",
+            "flex h-12 w-full rounded-[var(--radius-sm)] border bg-surface px-3 py-2 font-sans text-sm text-slate-900",
+            "placeholder:text-slate-400",
             "transition-all duration-200",
             "focus:outline-none focus:ring-2 focus:ring-offset-0",
             error
-              ? "border-red-300 focus:ring-red-200"
+              ? "border-rose-300 focus:ring-rose-200"
               : focused
-                ? "border-gold-400 focus:ring-gold-200"
-                : "border-[var(--border)] hover:border-warm-300",
+                ? "border-emerald-400 focus:ring-emerald-200"
+                : "border-[var(--border)] hover:border-slate-300",
             "disabled:cursor-not-allowed disabled:opacity-50",
             label && "pt-5",
             className
@@ -67,7 +67,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         />
         {error && (
           <motion.p
-            className="mt-1.5 text-xs text-red-500 font-medium"
+            className="mt-1.5 text-xs text-rose-500 font-medium"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}

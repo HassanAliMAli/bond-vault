@@ -12,18 +12,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gold-500 text-warm-900 hover:bg-gold-400 active:bg-gold-600 shadow-elevation-1 hover:shadow-elevation-2",
+          "bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700 shadow-elevation-1 hover:shadow-elevation-2",
         secondary:
-          "bg-surface border border-[var(--border)] text-warm-800 hover:bg-warm-50 active:bg-warm-100 shadow-elevation-1",
+          "bg-surface border border-[var(--border)] text-slate-700 hover:bg-slate-50 active:bg-slate-100 shadow-elevation-1",
         destructive:
-          "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 active:bg-red-200",
+          "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 active:bg-rose-200",
         ghost:
-          "text-warm-700 hover:bg-warm-100 active:bg-warm-200",
-        "ghost-gold":
-          "text-gold-600 hover:bg-gold-50 active:bg-gold-100",
+          "text-slate-600 hover:bg-slate-100 active:bg-slate-200",
+        "ghost-emerald":
+          "text-emerald-600 hover:bg-emerald-50 active:bg-emerald-100",
         outline:
-          "border border-gold-300 text-gold-700 hover:bg-gold-50 active:bg-gold-100",
-        link: "text-warm-600 underline-offset-4 hover:underline",
+          "border border-emerald-300 text-emerald-700 hover:bg-emerald-50 active:bg-emerald-100",
+        link:
+          "text-slate-500 underline-offset-4 hover:underline",
       },
       size: {
         sm: "h-9 px-3 text-xs rounded-[var(--radius-sm)]",
@@ -74,24 +75,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading ? (
           <span className="flex items-center gap-2">
-            <svg
-              className="animate-spin h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
+            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
             {children}
           </span>

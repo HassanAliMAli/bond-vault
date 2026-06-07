@@ -4,35 +4,29 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "gold" | "emerald" | "rose" | "violet" | "amber";
+  variant?: "default" | "emerald" | "amber" | "rose" | "violet";
   size?: "sm" | "md";
 }
 
 const badgeVariants: Record<string, string> = {
-  default: "bg-warm-100 text-warm-700 border-warm-200",
-  gold: "bg-gold-50 text-gold-700 border-gold-200",
+  default: "bg-slate-100 text-slate-700 border-slate-200",
   emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  amber: "bg-amber-50 text-amber-700 border-amber-200",
   rose: "bg-rose-50 text-rose-700 border-rose-200",
   violet: "bg-violet-50 text-violet-700 border-violet-200",
-  amber: "bg-amber-50 text-amber-700 border-amber-200",
 };
 
-const denominationColors: Record<string, string> = {
-  "100": "badge-warm",
-  "200": "badge-amber",
-  "750": "badge-rose",
-  "1500": "badge-violet",
-  "7500": "badge-emerald",
-  "25000": "badge-gold",
-  "40000": "badge-gold",
+const denomVariant: Record<string, BadgeProps["variant"]> = {
+  "100": "default",
+  "200": "amber",
+  "750": "rose",
+  "1500": "violet",
+  "7500": "emerald",
+  "25000": "amber",
+  "40000": "emerald",
 };
 
-function Badge({
-  className,
-  variant = "default",
-  size = "md",
-  ...props
-}: BadgeProps) {
+function Badge({ className, variant = "default", size = "md", ...props }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -46,18 +40,10 @@ function Badge({
   );
 }
 
-function DenominationBadge({
-  denomination,
-  className,
-}: {
-  denomination: string;
-  className?: string;
-}) {
-  const variantKey = denominationColors[denomination] || "default";
-  const variant = variantKey.replace("badge-", "") as BadgeProps["variant"];
-
+function DenominationBadge({ denomination, className }: { denomination: string; className?: string }) {
+  const v = denomVariant[denomination] || "default";
   return (
-    <Badge variant={variant} className={cn("font-mono tabular-nums", className)}>
+    <Badge variant={v} className={cn("font-mono tabular-nums", className)}>
       Rs. {denomination}
     </Badge>
   );
