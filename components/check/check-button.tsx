@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SearchCheck, Sparkles } from "lucide-react";
 
 interface CheckButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   loading?: boolean;
   progress?: number;
   totalBonds?: number;
@@ -67,7 +67,7 @@ export function CheckButton({ onClick, loading, progress = 0, totalBonds = 0 }: 
       <Button
         variant="primary"
         size="xl"
-        onClick={onClick}
+        onClick={onClick || (() => {})}
         className="text-lg px-12 py-4 h-auto gap-3 shadow-elevation-2 hover:shadow-elevation-3"
       >
         <SearchCheck className="h-6 w-6" />
