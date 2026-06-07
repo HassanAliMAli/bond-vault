@@ -23,7 +23,7 @@ export function BondDeleteDialog({ open, onClose, onConfirm, bondNumber, denomin
           </div>
           <DialogTitle className="text-center">Remove Bond?</DialogTitle>
           <DialogDescription className="text-center">
-            This will permanently remove bond <span className="font-semibold text-black">#{bondNumber}</span>{" "}
+            This will permanently remove bond <span className="font-semibold text-white">#{bondNumber}</span>{" "}
             ({denomination}) from your vault. This action cannot be undone.
           </DialogDescription>
         </DialogHeader>

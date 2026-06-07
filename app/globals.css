@@ -1,21 +1,27 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   BondVault Pakistan — Professional Design System
-   Navy #0F1A2E / Bronze #C8903E / Emerald #1A7D4C
+   BondVault Pakistan — Dark Professional Design System
+   Background: #0A0E17 / Gold #E2B04A / Green #3FB950 / Blue #58A6FF
    Font: JetBrains Mono everywhere
    ========================================================================== */
 
 @theme inline {
-  --color-navy: #0F1A2E;
-  --color-navy-light: #1A2740;
-  --color-bronze: #C8903E;
-  --color-bronze-light: #E8C876;
-  --color-emerald: #1A7D4C;
-  --color-emerald-light: #2CA668;
-  --color-red: #C0392B;
+  --color-gold: #E2B04A;
+  --color-gold-light: #F0CD7A;
+  --color-green: #3FB950;
+  --color-green-light: #56D364;
+  --color-blue: #58A6FF;
+  --color-blue-light: #79B8FF;
+  --color-red: #F85149;
+  --color-red-light: #FF6B63;
   --color-black: #000000;
-  --color-white: #FFFFFF;
+  --color-white: #EAECF0;
+  --color-dark-900: #0A0E17;
+  --color-dark-800: #141B2D;
+  --color-dark-700: #1C2336;
+  --color-dark-600: #21262D;
+  --color-gray: #8B949E;
 
   --font-sans: "JetBrains Mono", monospace;
   --font-display: "JetBrains Mono", monospace;
@@ -33,29 +39,17 @@
 }
 
 :root {
-  --background: #FFFFFF;
-  --foreground: #0F1A2E;
-  --muted: #6B7280;
-  --border: #E5E7EB;
-  --ring: #0F1A2E;
-  --surface: #FFFFFF;
-  --surface-elevated: #F9FAFB;
-  --shadow-1: 0 1px 2px rgba(15, 26, 46, 0.04);
-  --shadow-2: 0 1px 3px rgba(15, 26, 46, 0.06), 0 1px 2px rgba(15, 26, 46, 0.04);
-  --shadow-3: 0 4px 6px rgba(15, 26, 46, 0.05), 0 2px 4px rgba(15, 26, 46, 0.04);
-  --shadow-4: 0 10px 15px rgba(15, 26, 46, 0.06), 0 4px 6px rgba(15, 26, 46, 0.04);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0F1A2E;
-    --foreground: #F9FAFB;
-    --muted: #9CA3AF;
-    --border: #1F2937;
-    --ring: #C8903E;
-    --surface: #1A2740;
-    --surface-elevated: #243050;
-  }
+  --background: #0A0E17;
+  --foreground: #EAECF0;
+  --muted: #8B949E;
+  --border: #21262D;
+  --ring: #E2B04A;
+  --surface: #141B2D;
+  --surface-elevated: #1C2336;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.5);
+  --shadow-4: 0 10px 15px rgba(0, 0, 0, 0.6);
 }
 
 body {
@@ -82,4 +76,4 @@ body {
 
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(15, 26, 46, 0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

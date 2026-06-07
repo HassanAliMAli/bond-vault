@@ -4,49 +4,35 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "cyan" | "green" | "amber" | "orange";
+  variant?: "default" | "gold" | "green" | "blue" | "red";
   size?: "sm" | "md";
 }
 
 const badgeVariants: Record<string, string> = {
-  default: "bg-cyan/8 text-black border-cyan/15",
-  cyan: "bg-cyan/10 text-black border-cyan/30",
-  green: "bg-green/10 text-black border-green/30",
-  amber: "bg-amber/10 text-black border-amber/30",
-  orange: "bg-orange/10 text-black border-orange/30",
+  default: "bg-dark-700 text-gray border-dark-600",
+  gold: "bg-gold/10 text-gold border-gold/20",
+  green: "bg-green/10 text-green border-green/20",
+  blue: "bg-blue/10 text-blue border-blue/20",
+  red: "bg-red/10 text-red border-red/20",
 };
 
 const denomVariant: Record<string, BadgeProps["variant"]> = {
-  "100": "default",
-  "200": "amber",
-  "750": "orange",
-  "1500": "cyan",
-  "7500": "green",
-  "25000": "amber",
-  "40000": "green",
+  "100": "default", "200": "gold", "750": "red",
+  "1500": "blue", "7500": "green", "25000": "gold", "40000": "green",
 };
 
 function Badge({ className, variant = "default", size = "md", ...props }: BadgeProps) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 font-medium transition-colors",
-        size === "sm" ? "text-xs" : "text-sm",
-        badgeVariants[variant],
-        className
-      )}
-      {...props}
-    />
+    <span className={cn(
+      "inline-flex items-center rounded-full border px-2.5 py-0.5 font-medium transition-colors",
+      size === "sm" ? "text-xs" : "text-sm",
+      badgeVariants[variant], className
+    )} {...props} />
   );
 }
 
 function DenominationBadge({ denomination, className }: { denomination: string; className?: string }) {
-  const v = denomVariant[denomination] || "default";
-  return (
-    <Badge variant={v} className={cn("tabular-nums", className)}>
-      Rs. {denomination}
-    </Badge>
-  );
+  return <Badge variant={denomVariant[denomination] || "default"} className={cn("tabular-nums", className)}>Rs. {denomination}</Badge>;
 }
 
 export { Badge, DenominationBadge };

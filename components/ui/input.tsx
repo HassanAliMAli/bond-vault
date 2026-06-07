@@ -24,13 +24,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "absolute left-3 z-10 pointer-events-none transition-all duration-200",
               focused || hasValue
-                ? "text-xs text-black top-1.5 bg-white px-1"
-                : "text-sm text-muted top-3"
+                ? "text-xs text-gold top-1.5 bg-dark-800 px-1"
+                : "text-sm text-gray top-3"
             )}
             animate={{
               top: focused || hasValue ? 6 : 12,
               fontSize: focused || hasValue ? "0.7rem" : "0.875rem",
-              color: error ? "#C0392B" : focused ? "#000000" : "var(--muted)",
+              color: error ? "#F85149" : focused ? "#E2B04A" : "var(--muted)",
             }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           >
@@ -41,15 +41,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           type={type}
           className={cn(
-            "flex h-12 w-full rounded-[var(--radius-sm)] border-2 bg-white px-3 py-2 text-sm text-black",
-            "placeholder:text-muted/50",
+            "flex h-12 w-full rounded-[var(--radius-sm)] border bg-dark-800 px-3 py-2 text-sm text-white",
+            "placeholder:text-gray/50",
             "transition-all duration-200",
-            "focus:outline-none focus:ring-2 focus:ring-offset-0",
+            "focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-offset-dark-800",
             error
-              ? "border-orange focus:ring-orange/30"
+              ? "border-red/40 focus:ring-red/20"
               : focused
-                ? "border-cyan focus:ring-cyan/30"
-                : "border-cyan/20 hover:border-cyan/30",
+                ? "border-gold/40 focus:ring-gold/20"
+                : "border-dark-600 hover:border-dark-500",
             "disabled:cursor-not-allowed disabled:opacity-50",
             label && "pt-5",
             className
@@ -60,18 +60,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <motion.p
-            className="mt-1.5 text-xs text-orange font-medium"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          >
+          <motion.p className="mt-1.5 text-xs text-red font-medium"
+            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}>
             {error}
           </motion.p>
         )}
-        {helpText && !error && (
-          <p className="mt-1.5 text-xs text-muted">{helpText}</p>
-        )}
+        {helpText && !error && <p className="mt-1.5 text-xs text-gray">{helpText}</p>}
       </div>
     );
   }

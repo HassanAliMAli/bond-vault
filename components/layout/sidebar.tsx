@@ -4,13 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
-import {
-  Vault,
-  ScrollText,
-  PlusCircle,
-  SearchCheck,
-  Settings,
-} from "lucide-react";
+import { Vault, ScrollText, PlusCircle, SearchCheck, Settings } from "lucide-react";
 
 const navItems = [
   { href: "/vault", label: "Vault", icon: Vault },
@@ -24,11 +18,10 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 h-full bg-white border-r-2 border-cyan/20">
+    <aside className="hidden lg:flex flex-col w-64 h-full bg-dark-900 border-r border-dark-600">
       <div className="p-5 pt-6">
         <Logo size="sm" />
       </div>
-
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -38,33 +31,23 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-sm font-medium transition-all duration-200 group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-cyan/15 text-black border-l-2 border-cyan pl-2.5"
-                  : "text-black/60 hover:bg-cyan/5 hover:text-black"
+                  ? "bg-gold/10 text-gold border-l-2 border-gold pl-2.5"
+                  : "text-gray hover:bg-dark-700 hover:text-white"
               )}
             >
-              <Icon
-                className={cn(
-                  "h-5 w-5 transition-colors",
-                  isActive ? "text-cyan" : "text-black/60 group-hover:text-black/60"
-                )}
-              />
+              <Icon className={cn("h-5 w-5", isActive ? "text-gold" : "text-gray group-hover:text-white")} />
               {item.label}
             </Link>
           );
         })}
       </nav>
-
-      <div className="p-4 border-t-2 border-cyan/10">
+      <div className="p-4 border-t border-dark-600">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-cyan/15 flex items-center justify-center text-cyan text-xs font-semibold">
-            A
-          </div>
+          <div className="w-8 h-8 rounded-full bg-gold/15 flex items-center justify-center text-gold text-xs font-semibold">A</div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-black/80 truncate">
-              ahmad@example.com
-            </p>
+            <p className="text-sm font-medium text-white/80 truncate">ahmad@example.com</p>
           </div>
         </div>
       </div>

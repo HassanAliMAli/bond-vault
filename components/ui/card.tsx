@@ -23,12 +23,12 @@ interface CardProps extends HTMLMotionProps<"div"> {
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, interactive = false, variant = "elevated", children, ...props }, ref) => {
-    const baseClasses = "rounded-[var(--radius-md)] p-5 transition-colors";
+    const baseClasses = "rounded-[var(--radius-md)] p-5";
 
     const variantClasses = {
-      elevated: "bg-white shadow-elevation-1 border border-[var(--border)]",
-      outlined: "bg-white border-2 border-black",
-      filled: "bg-cyan text-black border-2 border-cyan",
+      elevated: "bg-dark-800 border border-dark-600 shadow-elevation-1",
+      outlined: "bg-dark-800 border border-dark-600",
+      filled: "bg-gold/10 border border-gold/20",
     };
 
     if (interactive) {
@@ -59,19 +59,15 @@ Card.displayName = "Card";
 const CardHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("flex flex-col space-y-1 pb-4", className)} {...props} />
 );
-
 const CardTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={cn("font-semibold text-lg leading-tight tracking-tight text-black", className)} {...props} />
+  <h3 className={cn("font-semibold text-lg leading-tight text-white", className)} {...props} />
 );
-
 const CardDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn("text-sm text-muted leading-relaxed", className)} {...props} />
+  <p className={cn("text-sm text-gray leading-relaxed", className)} {...props} />
 );
-
 const CardContent = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("", className)} {...props} />
 );
-
 const CardFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("flex items-center pt-4", className)} {...props} />
 );

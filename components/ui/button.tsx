@@ -7,37 +7,34 @@ import { cn } from "@/lib/utils";
 import { motion, type HTMLMotionProps } from "framer-motion";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--ring)] disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer select-none",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gold disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer select-none",
   {
     variants: {
       variant: {
         primary:
-          "bg-cyan text-black border-2 border-cyan hover:bg-cyan hover:text-cyan active:bg-black/90 shadow-elevation-1 hover:shadow-elevation-2",
+          "bg-gold text-dark-900 hover:bg-gold-light active:bg-gold shadow-elevation-1 hover:shadow-elevation-2",
         secondary:
-          "bg-white text-black border-2 border-black hover:bg-cyan/10 active:bg-cyan/20",
+          "bg-dark-700 text-white border border-dark-600 hover:bg-dark-600 active:bg-dark-700",
         destructive:
-          "bg-white text-orange border-2 border-orange hover:bg-orange/10 active:bg-orange/20",
+          "bg-red/15 text-red border border-red/30 hover:bg-red/20 active:bg-red/25",
         ghost:
-          "text-black hover:bg-cyan/8 active:bg-cyan/12",
-        "ghost-cyan":
-          "text-black hover:bg-cyan/10 active:bg-cyan/20",
+          "text-gray hover:text-white hover:bg-dark-700 active:bg-dark-600",
+        ghostGold:
+          "text-gold hover:bg-gold/10 active:bg-gold/15",
         outline:
-          "border-2 border-cyan text-black hover:bg-cyan/10 active:bg-cyan/20",
+          "border border-gold/30 text-gold hover:bg-gold/10 active:bg-gold/15",
         link:
-          "text-black underline-offset-4 hover:underline",
+          "text-gray underline-offset-4 hover:text-white hover:underline",
       },
       size: {
-        sm: "h-9 px-3 text-xs rounded-[var(--radius-sm)]",
+        sm: "h-9 px-3 text-xs",
         md: "h-11 px-4 text-sm",
         lg: "h-13 px-6 text-base",
         xl: "h-14 px-8 text-base font-semibold",
         icon: "h-11 w-11",
       },
     },
-    defaultVariants: {
-      variant: "primary",
-      size: "md",
-    },
+    defaultVariants: { variant: "primary", size: "md" },
   }
 );
 

@@ -3,13 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  Vault,
-  ScrollText,
-  PlusCircle,
-  SearchCheck,
-  Settings,
-} from "lucide-react";
+import { Vault, ScrollText, PlusCircle, SearchCheck, Settings } from "lucide-react";
 
 const mobileNavItems = [
   { href: "/vault", label: "Vault", icon: Vault },
@@ -21,9 +15,8 @@ const mobileNavItems = [
 
 export function MobileNav() {
   const pathname = usePathname();
-
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white border-t border-cyan/15 shadow-elevation-3 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-dark-800 border-t border-dark-600 shadow-elevation-3 safe-area-bottom">
       <div className="flex items-center justify-around h-16 px-2">
         {mobileNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -34,21 +27,12 @@ export function MobileNav() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 rounded-[var(--radius-sm)] transition-colors duration-200",
-                isActive
-                  ? "text-cyan"
-                  : "text-black/60 hover:text-black/60"
+                isActive ? "text-gold" : "text-gray hover:text-white"
               )}
             >
-              <Icon
-                className={cn("h-5 w-5 transition-all", isActive && "scale-110")}
-                strokeWidth={isActive ? 2.5 : 2}
-              />
-              <span className="text-[10px] font-medium leading-tight truncate">
-                {item.label}
-              </span>
-              {isActive && (
-                <span className="absolute top-0 w-8 h-0.5 rounded-full bg-cyan" />
-              )}
+              <Icon className={cn("h-5 w-5 transition-all", isActive && "scale-110")} strokeWidth={isActive ? 2.5 : 2} />
+              <span className="text-[10px] font-medium leading-tight truncate">{item.label}</span>
+              {isActive && <span className="absolute top-0 w-8 h-0.5 rounded-full bg-gold" />}
             </Link>
           );
         })}
