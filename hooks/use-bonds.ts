@@ -1,16 +1,17 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type Bond } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 
 export function useBonds(params?: {
   denomination?: string;
   search?: string;
-  sort?: string;
+  status?: string;
+  page?: number;
 }) {
   return useQuery({
     queryKey: ["bonds", params],
-    queryFn: () => api.bonds.list(params),
+    queryFn: () => api.bonds.list(params as Record<string, string | undefined>),
     staleTime: 30_000,
   });
 }
@@ -19,11 +20,10 @@ export function useCreateBond() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { denomination: string; bond_number: string }) =>
+    mutationFn: (data: { bondNumber: string; denomination: number }) =>
       api.bonds.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bonds"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -35,7 +35,18 @@ export function useDeleteBond() {
     mutationFn: (id: string) => api.bonds.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bonds"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
+
+export function useArchiveBond() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => api.bonds.archive(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bonds"] });
+    },
+  });
+}
+
