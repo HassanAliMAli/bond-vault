@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { loggerMiddleware } from "./middleware";
 import { createAuth } from "./auth";
-import { authMiddleware } from "./middleware";
 import { bondRoutes } from "./routes/bonds";
 import { matchRoutes } from "./routes/matches";
 import { drawRoutes } from "./routes/draws";
@@ -17,6 +16,18 @@ import { searchRoutes } from "./routes/search";
 import { adminRoutes } from "./routes/admin";
 import { checkRoute } from "./routes/check";
 import { healthRoute } from "./routes/health";
+import {
+  seedPlans,
+  createCronHandler,
+  handleSubscriptionExpiration,
+  handleRetentionCleanup,
+  handleImportCleanup,
+  handleFailedNotificationRetry,
+  matchQueueConsumer,
+  notificationQueueConsumer,
+  cleanupQueueConsumer,
+  drawQueueConsumer,
+} from "./services";
 
 interface CloudflareBindings {
   DB: D1Database;
@@ -34,8 +45,20 @@ type Variables = {
 
 const app = new Hono<{ Bindings: CloudflareBindings; Variables: Variables }>();
 
-app.use("*", cors());
+app.use("*", cors({
+  origin: (origin) => origin,
+  allowHeaders: ["Content-Type", "Authorization"],
+  allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  credentials: true,
+}));
 app.use("*", loggerMiddleware);
+app.use("*", async (c, next) => {
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("X-Frame-Options", "DENY");
+  c.header("Referrer-Policy", "strict-origin-when-cross-origin");
+  c.header("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  await next();
+});
 
 app.use("*", async (c, next) => {
   const authInstance = createAuth(
@@ -66,12 +89,33 @@ app.use("/api/v1/*", async (c, next) => {
   await next();
 });
 
-import { seedPlans } from "./services";
-
 app.use("*", async (c, next) => {
   await seedPlans(c.env.DB);
   await next();
 });
+
+// Cron endpoints
+const cronAuth = async (c: any, next: any) => {
+  const authHeader = c.req.header("Authorization");
+  const expected = `Bearer ${c.env.BETTER_AUTH_SECRET}`;
+  if (authHeader !== expected) {
+    return c.json({ success: false, error: "Unauthorized" }, 401);
+  }
+  await next();
+};
+
+app.get("/cron/subscriptions", cronAuth, createCronHandler(handleSubscriptionExpiration));
+app.get("/cron/retention", cronAuth, createCronHandler(handleRetentionCleanup));
+app.get("/cron/imports", cronAuth, createCronHandler(handleImportCleanup));
+app.get("/cron/notifications", cronAuth, createCronHandler(handleFailedNotificationRetry));
+
+// Queue consumers
+export const queue = {
+  async match(batch: MessageBatch, env: CloudflareBindings) { await matchQueueConsumer(env as Env, batch); },
+  async notification(batch: MessageBatch, env: CloudflareBindings) { await notificationQueueConsumer(env as Env, batch); },
+  async cleanup(batch: MessageBatch, env: CloudflareBindings) { await cleanupQueueConsumer(env as Env, batch); },
+  async draw(batch: MessageBatch, env: CloudflareBindings) { await drawQueueConsumer(env as Env, batch); },
+};
 
 app.route("/api/v1", healthRoute);
 app.route("/api/v1/bonds", bondRoutes);
