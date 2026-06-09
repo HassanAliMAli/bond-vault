@@ -66,6 +66,13 @@ app.use("/api/v1/*", async (c, next) => {
   await next();
 });
 
+import { seedPlans } from "./services";
+
+app.use("*", async (c, next) => {
+  await seedPlans(c.env.DB);
+  await next();
+});
+
 app.route("/api/v1", healthRoute);
 app.route("/api/v1/bonds", bondRoutes);
 app.route("/api/v1/matches", matchRoutes);
