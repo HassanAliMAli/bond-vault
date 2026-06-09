@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { signUp } from "@/lib/auth-client";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +46,6 @@ function PasswordStrength({ password }: { password: string }) {
 }
 
 export function RegisterForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,9 +60,19 @@ export function RegisterForm() {
       if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
       if (password !== confirmPassword) { setError("Passwords do not match."); return; }
       setLoading(true);
-      try { await new Promise((r) => setTimeout(r, 1000)); router.push("/vault"); }
-      catch { setError("Unable to create account."); }
-      finally { setLoading(false); }
+      try {
+        const result = await signUp.email({
+          email,
+          password,
+          name: email.split("@")[0],
+          callbackURL: "/vault",
+        });
+        if (result.error) {
+          setError(result.error.message || "Unable to create account.");
+        }
+      } catch {
+        setError("Unable to create account.");
+      } finally { setLoading(false); }
     }} className="space-y-5" variants={formStagger} initial="hidden" animate="visible">
       {error && (
         <motion.div className="bg-red/10 border border-red/30 text-red px-4 py-3 rounded-[var(--radius-sm)] text-sm font-medium"

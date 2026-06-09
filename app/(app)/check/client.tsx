@@ -1,36 +1,84 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { PageTransition } from "@/components/shared/page-transition";
 import { CheckButton } from "@/components/check/check-button";
 import { SlotMachine } from "@/components/check/slot-machine";
 import { ResultsPanel } from "@/components/check/results-panel";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
 import { DenominationBadge } from "@/components/ui/badge";
+import { useCheckBonds } from "@/hooks/use-matches";
+import { useBonds } from "@/hooks/use-bonds";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-const MOCK_BONDS = 127;
-const MOCK_RESULTS = {
-  matches: [
-    { id: "1", bondNumber: "447892", denomination: "200", prizeType: "2nd Prize", prizeAmount: "Rs. 40,000", drawDate: "Jun 1, 2026", drawNumber: "87" },
-    { id: "2", bondNumber: "128367", denomination: "200", prizeType: "3rd Prize", prizeAmount: "Rs. 15,000", drawDate: "May 15, 2026", drawNumber: "86" },
-    { id: "3", bondNumber: "882341", denomination: "750", prizeType: "3rd Prize", prizeAmount: "Rs. 7,500", drawDate: "May 15, 2026", drawNumber: "86" },
-  ], totalChecked: 127,
-};
 type CheckState = "idle" | "slot-machine" | "checking" | "results";
 
 export function CheckPageClient() {
+  const router = useRouter();
+  const { data: bondsData } = useBonds();
+  const totalBonds = bondsData?.total ?? 0;
+
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const [showSlot, setShowSlot] = useState(false);
-  const [results, setResults] = useState<typeof MOCK_RESULTS | null>(null);
+  const checkBonds = useCheckBonds();
+  const checkStarted = useRef(false);
 
-  const handleStartCheck = useCallback(() => { setCheckState("slot-machine"); setShowSlot(true); setResults(null); }, []);
-  const handleSlotComplete = useCallback(() => { setShowSlot(false); setCheckState("checking"); setTimeout(() => { setResults(MOCK_RESULTS); setCheckState("results"); }, 1000); }, []);
-  const handleCheckAgain = useCallback(() => { setCheckState("idle"); setResults(null); }, []);
+  const handleStartCheck = useCallback(() => {
+    if (totalBonds === 0) return;
+    setCheckState("slot-machine");
+    setShowSlot(true);
+    checkStarted.current = false;
+  }, [totalBonds]);
+
+  const handleSlotComplete = useCallback(() => {
+    setShowSlot(false);
+    setCheckState("checking");
+    checkStarted.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (checkStarted.current && checkState === "checking") {
+      checkBonds.mutate();
+      checkStarted.current = false;
+    }
+  }, [checkState, checkBonds]);
+
+  useEffect(() => {
+    if (checkBonds.isSuccess && checkState === "checking") {
+      setCheckState("results");
+    }
+  }, [checkBonds.isSuccess, checkState]);
+
+  const handleCheckAgain = useCallback(() => {
+    checkBonds.reset();
+    setCheckState("idle");
+  }, [checkBonds]);
+
+  const results = checkBonds.data ?? null;
+
+  if (totalBonds === 0 && checkState === "idle") {
+    return (
+      <PageTransition>
+        <EmptyState
+          illustration="vault"
+          title="No bonds to check"
+          description="Add bonds to your vault before checking against historical draws."
+          action={{ label: "Add Your First Bond", onClick: () => router.push("/bonds/add") }}
+        />
+      </PageTransition>
+    );
+  }
 
   return (
     <PageTransition className="space-y-6">
       <div className="text-center mb-2">
-        <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">{checkState === "results" ? (results?.matches?.length ? "Results Found" : "Check Complete") : "Check Your Bonds"}</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+          {checkState === "results"
+            ? (results?.matches?.length ? "Results Found" : "Check Complete")
+            : "Check Your Bonds"}
+        </h1>
         <p className="text-sm text-gray max-w-md mx-auto">
           {checkState === "idle" && "Match your entire portfolio against historical draw results in seconds."}
           {checkState === "slot-machine" && "Scanning every bond against draw databases..."}
@@ -50,12 +98,22 @@ export function CheckPageClient() {
         )}
         {(checkState === "slot-machine" || checkState === "checking") && (
           <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {showSlot && <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={MOCK_BONDS} />}
-            {!showSlot && <div className="flex items-center justify-center py-20"><CheckButton loading progress={0.85} totalBonds={MOCK_BONDS} /></div>}
+            {showSlot && <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={totalBonds} />}
+            {!showSlot && (
+              <div className="flex items-center justify-center py-20">
+                {checkBonds.isError ? (
+                  <ErrorState title="Check failed" description="Could not complete the bond check." onRetry={() => { checkBonds.reset(); setCheckState("idle"); }} />
+                ) : (
+                  <CheckButton loading progress={0.85} totalBonds={totalBonds} />
+                )}
+              </div>
+            )}
           </motion.div>
         )}
         {checkState === "results" && results && (
-          <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><ResultsPanel matches={results.matches} totalChecked={results.totalChecked} onCheckAgain={handleCheckAgain} /></motion.div>
+          <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <ResultsPanel matches={results.matches} totalChecked={results.totalChecked} onCheckAgain={handleCheckAgain} />
+          </motion.div>
         )}
       </AnimatePresence>
     </PageTransition>

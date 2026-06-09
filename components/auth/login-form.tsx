@@ -2,17 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { signIn } from "@/lib/auth-client";
 import { Eye, EyeOff } from "lucide-react";
 
 const formStagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } };
 const formItem = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } } };
 
 export function LoginForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,9 +22,14 @@ export function LoginForm() {
     e.preventDefault(); setError("");
     if (!email || !password) { setError("Please fill in all fields."); return; }
     setLoading(true);
-    try { await new Promise((r) => setTimeout(r, 1000)); router.push("/vault"); }
-    catch { setError("Unable to sign in."); }
-    finally { setLoading(false); }
+    try {
+      const result = await signIn.email({ email, password, callbackURL: "/vault" });
+      if (result.error) {
+        setError(result.error.message || "Unable to sign in.");
+      }
+    } catch {
+      setError("Unable to sign in.");
+    } finally { setLoading(false); }
   };
 
   return (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
+import { useAuth } from "@/hooks/use-auth";
 import { Vault, ScrollText, PlusCircle, SearchCheck, Settings } from "lucide-react";
 
 const navItems = [
@@ -16,6 +17,8 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const initial = user?.email?.[0]?.toUpperCase() ?? "?";
 
   return (
     <aside className="hidden lg:flex flex-col w-64 h-full bg-dark-900 border-r border-dark-600">
@@ -45,9 +48,9 @@ export function Sidebar() {
       </nav>
       <div className="p-4 border-t border-dark-600">
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-gold/15 flex items-center justify-center text-gold text-xs font-semibold">A</div>
+          <div className="w-8 h-8 rounded-full bg-gold/15 flex items-center justify-center text-gold text-xs font-semibold">{initial}</div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white/80 truncate">ahmad@example.com</p>
+            <p className="text-sm font-medium text-white/80 truncate">{user?.email ?? "..."}</p>
           </div>
         </div>
       </div>

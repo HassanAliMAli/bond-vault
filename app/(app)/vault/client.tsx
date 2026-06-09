@@ -6,26 +6,36 @@ import { DenominationBreakdown } from "@/components/dashboard/denomination-break
 import { RecentWinners } from "@/components/dashboard/recent-winners";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { EmptyState } from "@/components/shared/empty-state";
+import { DashboardPageSkeleton } from "@/components/dashboard/dashboard-skeleton";
+import { ErrorState } from "@/components/shared/error-state";
+import { useDashboard } from "@/hooks/use-matches";
 import { useRouter } from "next/navigation";
-
-const MOCK_DATA = {
-  totalBonds: 127, totalChecked: 15, totalMatches: 3,
-  denominations: [
-    { denomination: "100", count: 42 }, { denomination: "200", count: 38 },
-    { denomination: "750", count: 22 }, { denomination: "1500", count: 15 },
-    { denomination: "7500", count: 7 }, { denomination: "25000", count: 3 },
-  ],
-  winners: [
-    { id: "1", bondNumber: "447892", denomination: "200", prizeType: "2nd Prize", prizeAmount: "Rs. 40,000", drawDate: "Jun 1, 2026" },
-    { id: "2", bondNumber: "128367", denomination: "200", prizeType: "3rd Prize", prizeAmount: "Rs. 15,000", drawDate: "May 15, 2026" },
-    { id: "3", bondNumber: "882341", denomination: "750", prizeType: "3rd Prize", prizeAmount: "Rs. 7,500", drawDate: "May 15, 2026" },
-  ],
-};
 
 export function VaultPageClient() {
   const router = useRouter();
-  const data = MOCK_DATA;
-  if (data.totalBonds === 0) {
+  const { data, isLoading, isError, refetch } = useDashboard();
+
+  if (isLoading) {
+    return (
+      <main className="p-4 lg:p-6 lg:max-w-6xl mx-auto w-full">
+        <DashboardPageSkeleton />
+      </main>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <ErrorState
+          title="Could not load dashboard"
+          description="Something went wrong while loading your portfolio."
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
+
+  if (!data || data.totalBonds === 0) {
     return (
       <PageTransition>
         <EmptyState illustration="vault" title="Your vault is empty"
@@ -34,6 +44,7 @@ export function VaultPageClient() {
       </PageTransition>
     );
   }
+
   return (
     <PageTransition className="space-y-8">
       <div><h1 className="text-2xl lg:text-3xl font-bold text-white">Welcome back</h1><p className="text-sm text-gray mt-1">Your bond vault at a glance</p></div>
