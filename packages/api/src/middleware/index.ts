@@ -1,4 +1,4 @@
-import { Context, Next } from "hono";
+import type { Context, Next } from "hono";
 
 export async function loggerMiddleware(c: Context, next: Next) {
   const start = Date.now();
@@ -9,8 +9,8 @@ export async function loggerMiddleware(c: Context, next: Next) {
 }
 
 export async function authMiddleware(c: Context, next: Next) {
-  const session = c.get("session");
-  if (!session?.userId) {
+  const userId = c.get("userId") as string | undefined;
+  if (!userId) {
     return c.json(
       { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required" } },
       401
@@ -20,7 +20,7 @@ export async function authMiddleware(c: Context, next: Next) {
 }
 
 export async function adminMiddleware(c: Context, next: Next) {
-  const isAdmin = c.get("isAdmin");
+  const isAdmin = c.get("isAdmin") as boolean | undefined;
   if (!isAdmin) {
     return c.json(
       { success: false, error: { code: "FORBIDDEN", message: "Administrator access required" } },
@@ -29,5 +29,3 @@ export async function adminMiddleware(c: Context, next: Next) {
   }
   await next();
 }
-
-export { sessionMiddleware } from "./session";

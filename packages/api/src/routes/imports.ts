@@ -2,13 +2,13 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import { importJobs, bonds } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-import { authMiddleware, sessionMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware";
 import { success, error } from "../lib/response";
 import { generateId } from "../lib/id";
 import { getUserId, getEnv } from "../lib/context";
 
 export const importRoutes = new Hono()
-  .use(sessionMiddleware, authMiddleware)
+  .use(authMiddleware)
   .post("/imports", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);

@@ -2,14 +2,14 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import { bonds } from "../db/schema";
 import { eq, and, like, isNull } from "drizzle-orm";
-import { authMiddleware, sessionMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware";
 import { success, error } from "../lib/response";
 import { createBondSchema } from "../validations";
 import { generateId } from "../lib/id";
 import { getUserId, getEnv } from "../lib/context";
 
 export const bondRoutes = new Hono()
-  .use(sessionMiddleware, authMiddleware)
+  .use(authMiddleware)
   .get("/", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);

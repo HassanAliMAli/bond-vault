@@ -2,14 +2,14 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import { payments, paymentReceipts, plans } from "../db/schema";
 import { eq } from "drizzle-orm";
-import { authMiddleware, sessionMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware";
 import { success, error } from "../lib/response";
 import { paymentSchema } from "../validations";
 import { generateId } from "../lib/id";
 import { getUserId, getEnv } from "../lib/context";
 
 export const paymentRoutes = new Hono()
-  .use(sessionMiddleware, authMiddleware)
+  .use(authMiddleware)
   .post("/payments", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);

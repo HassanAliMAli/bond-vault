@@ -2,11 +2,11 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import { bonds } from "../db/schema";
 import { eq, and, isNull } from "drizzle-orm";
-import { authMiddleware, sessionMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware";
 import { getUserId, getEnv } from "../lib/context";
 
 export const exportRoutes = new Hono()
-  .use(sessionMiddleware, authMiddleware)
+  .use(authMiddleware)
   .get("/exports/csv", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);

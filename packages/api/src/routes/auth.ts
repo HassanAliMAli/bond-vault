@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import { users, notificationPreferences, userPreferences } from "../db/schema";
 import { eq } from "drizzle-orm";
-import { authMiddleware, sessionMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware";
 import { success, error } from "../lib/response";
 import { generateId } from "../lib/id";
 import { getUserId, getEnv } from "../lib/context";
@@ -49,7 +49,8 @@ export const authRoutes = new Hono()
     }
 
     const user = await db.select().from(users).where(eq(users.email, email)).get();
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const pHash = user?.passwordHash ?? null;
+    if (!user || !pHash || !(await verifyPassword(password, pHash))) {
       return error(c, "UNAUTHORIZED", "Invalid email or password", 401);
     }
 
@@ -67,7 +68,7 @@ export const authRoutes = new Hono()
 
     return success(c, { userId: user.id, email: user.email, token: sessionToken });
   })
-  .post("/logout", sessionMiddleware, async (c) => {
+  .post("/logout", async (c) => {
     const env = getEnv(c);
     const cookie = c.req.header("Cookie");
     if (cookie) {
@@ -79,7 +80,7 @@ export const authRoutes = new Hono()
     c.header("Set-Cookie", "better-auth.session_token=; HttpOnly; Path=/; Max-Age=0");
     return success(c, { message: "Logged out" });
   })
-  .get("/me", sessionMiddleware, authMiddleware, async (c) => {
+  .get("/me", authMiddleware, async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
     const userId = getUserId(c);

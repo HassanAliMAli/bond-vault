@@ -6,28 +6,32 @@ import {
   notificationBatches, notifications
 } from "../db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { adminMiddleware, sessionMiddleware } from "../middleware";
+import { adminMiddleware } from "../middleware";
 import { success, error } from "../lib/response";
 import { generateId } from "../lib/id";
+import { getEnv } from "../lib/context";
 
 export const adminRoutes = new Hono()
-  .use(sessionMiddleware, adminMiddleware)
+  .use(adminMiddleware)
   .get("/users", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const page = parseInt(c.req.query("page") || "1");
     const limit = parseInt(c.req.query("limit") || "50");
     const data = await db.select().from(users).limit(limit).offset((page - 1) * limit).all();
     return success(c, { users: data, total: data.length });
   })
   .get("/users/:id", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     const user = await db.select().from(users).where(eq(users.id, id)).get();
     if (!user) return error(c, "NOT_FOUND", "User not found", 404);
     return success(c, user);
   })
   .patch("/users/:id", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     const body = await c.req.json();
     await db.update(users).set(body as any).where(eq(users.id, id));
@@ -35,25 +39,29 @@ export const adminRoutes = new Hono()
     return success(c, updated);
   })
   .post("/users/:id/suspend", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     await db.update(users).set({ status: "suspended" as any, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
     return success(c, { message: "User suspended" });
   })
   .post("/users/:id/restore", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     await db.update(users).set({ status: "active" as any, deletedAt: null, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
     return success(c, { message: "User restored" });
   })
   .get("/payments", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const status = c.req.query("status") || "pending";
     const data = await db.select().from(payments).where(eq(payments.status, status as any)).all();
     return success(c, { payments: data });
   })
   .post("/payments/:id/approve", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
 
     const payment = await db.select().from(payments).where(eq(payments.id, id)).get();
@@ -106,7 +114,8 @@ export const adminRoutes = new Hono()
     return success(c, { message: "Payment approved, subscription activated" });
   })
   .post("/payments/:id/reject", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     await db.update(payments).set({
       status: "rejected" as any,
@@ -116,7 +125,8 @@ export const adminRoutes = new Hono()
     return success(c, { message: "Payment rejected" });
   })
   .post("/draws", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const body = await c.req.json();
     const { denomination, drawNumber, drawDate } = body as { denomination: number; drawNumber: string; drawDate: string };
 
@@ -129,7 +139,8 @@ export const adminRoutes = new Hono()
     return success(c, { drawId: id }, 201);
   })
   .post("/draws/:id/pdf", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     const formData = await c.req.formData();
     const file = formData.get("pdf") as unknown as File | null;
@@ -138,13 +149,14 @@ export const adminRoutes = new Hono()
 
     const buffer = await file.arrayBuffer();
     const key = `draws/${id}_${Date.now()}.pdf`;
-    await (c.env as Env).R2.put(key, buffer);
+    await env.R2.put(key, buffer);
 
     await db.update(drawsTable).set({ pdfR2Key: key, updatedAt: new Date().toISOString() } as any).where(eq(drawsTable.id, id));
     return success(c, { message: "PDF uploaded", key });
   })
   .post("/draws/:id/winners", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     const body = await c.req.json();
     const { winners } = body as { winners: { bondNumber: string; prizeType?: string; prizeAmount?: number }[] };
@@ -167,14 +179,16 @@ export const adminRoutes = new Hono()
     return success(c, { inserted });
   })
   .patch("/draws/:id", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const id = c.req.param("id");
     const body = await c.req.json();
     await db.update(drawsTable).set(body as any).where(eq(drawsTable.id, id));
     return success(c, { message: "Draw updated" });
   })
   .post("/draws/:id/generate-matches", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const drawId = c.req.param("id");
 
     const draw = await db.select().from(drawsTable).where(eq(drawsTable.id, drawId)).get();
@@ -230,17 +244,20 @@ export const adminRoutes = new Hono()
     return success(c, { matchCount, usersNotified: userMatches.size });
   })
   .get("/notifications", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const data = await db.select().from(notificationBatches).all();
     return success(c, { batches: data });
   })
   .post("/notifications/retry", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     await db.update(notificationBatches).set({ status: "pending" as any } as any).where(eq(notificationBatches.status, "failed" as any));
     return success(c, { message: "Retry triggered for failed batches" });
   })
   .get("/audit-logs", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const userFilter = c.req.query("user");
     const entityFilter = c.req.query("entity");
     const page = parseInt(c.req.query("page") || "1");
@@ -254,12 +271,14 @@ export const adminRoutes = new Hono()
     return success(c, { logs: data, total: data.length });
   })
   .get("/settings", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const settings = await db.select().from(systemSettings).all();
     return success(c, { settings });
   })
   .patch("/settings", async (c) => {
-    const db = getDb((c.env as Env).DB);
+    const env = getEnv(c);
+    const db = getDb(env.DB);
     const body = await c.req.json();
     for (const [key, value] of Object.entries(body)) {
       await db.insert(systemSettings).values({ key, value: String(value) } as any).onConflictDoUpdate({

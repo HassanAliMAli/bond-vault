@@ -2,12 +2,12 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import { winningNumbers, draws } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-import { authMiddleware, sessionMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware";
 import { success, error } from "../lib/response";
 import { createBondSchema } from "../validations";
 
 export const checkRoute = new Hono()
-  .use(sessionMiddleware, authMiddleware)
+  .use(authMiddleware)
   .post("/check", async (c) => {
     const db = getDb((c.env as Env).DB);
     const body = await c.req.json();

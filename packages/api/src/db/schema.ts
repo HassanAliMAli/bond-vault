@@ -3,12 +3,14 @@ import { sqliteTable, text, integer, real, uniqueIndex, index } from "drizzle-or
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
+  passwordHash: text("password_hash"),
   emailVerified: integer("email_verified", { mode: "boolean" }).notNull().default(false),
   phone: text("phone"),
   phoneVerified: integer("phone_verified", { mode: "boolean" }).notNull().default(false),
   whatsappNumber: text("whatsapp_number"),
   whatsappVerified: integer("whatsapp_verified", { mode: "boolean" }).notNull().default(false),
+  name: text("name").notNull().default(""),
+  image: text("image"),
   fullName: text("full_name"),
   status: text("status").notNull().default("active"),
   lastLoginAt: text("last_login_at"),
@@ -19,6 +21,44 @@ export const users = sqliteTable("users", {
   index("idx_users_email").on(table.email),
   index("idx_users_status").on(table.status),
 ]);
+
+export const sessions = sqliteTable("session", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: text("expires_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: text("created_at").notNull().default("(datetime('now'))"),
+  updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
+}, (table) => [
+  index("idx_sessions_user_id").on(table.userId),
+  index("idx_sessions_token").on(table.token),
+]);
+
+export const accounts = sqliteTable("account", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  passwordHash: text("password_hash"),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  expiresAt: text("expires_at"),
+  createdAt: text("created_at").notNull().default("(datetime('now'))"),
+  updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
+}, (table) => [
+  index("idx_accounts_user_id").on(table.userId),
+]);
+
+export const verifications = sqliteTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: text("expires_at").notNull(),
+  createdAt: text("created_at").notNull().default("(datetime('now'))"),
+  updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
+});
 
 export const userPreferences = sqliteTable("user_preferences", {
   id: text("id").primaryKey(),
