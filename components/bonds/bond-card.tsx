@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, GripVertical } from "lucide-react";
 
 interface BondCardProps {
-  id: string; bondNumber: string; denomination: string; addedAt: string;
+  id: string; bondNumber: string; denomination: number | string; addedAt: string;
   onDelete?: (id: string) => void; index?: number; className?: string;
 }
 

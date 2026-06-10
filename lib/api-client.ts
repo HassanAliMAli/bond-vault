@@ -29,15 +29,16 @@ async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promis
   });
 
   if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({ error: { message: "Request failed" } }));
-    throw new Error((errorBody as ApiResponse<never>)?.error?.message || `Request failed with status ${res.status}`);
+    const errorBody = await res.json().catch(() => ({}));
+    const msg = (errorBody as any)?.error?.message || `Request failed with status ${res.status}`;
+    throw new Error(msg);
   }
 
-  const json = await res.json() as ApiResponse<T>;
+  const json = await res.json();
   if (!json.success) {
-    throw new Error(json.error?.message || "API error");
+    throw new Error((json as any)?.error?.message || "API error");
   }
-  return json.data;
+  return json.data as T;
 }
 
 export interface Bond {

@@ -31,8 +31,9 @@ function Badge({ className, variant = "default", size = "md", ...props }: BadgeP
   );
 }
 
-function DenominationBadge({ denomination, className }: { denomination: string; className?: string }) {
-  return <Badge variant={denomVariant[denomination] || "default"} className={cn("tabular-nums", className)}>Rs. {denomination}</Badge>;
+function DenominationBadge({ denomination, className }: { denomination: number | string; className?: string }) {
+  const d = String(denomination);
+  return <Badge variant={denomVariant[d] || "default"} className={cn("tabular-nums", className)}>Rs. {d}</Badge>;
 }
 
 export { Badge, DenominationBadge };

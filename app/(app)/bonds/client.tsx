@@ -15,9 +15,9 @@ export function BondsPageClient() {
   const [denomination, setDenomination] = useState<string | undefined>();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<string>("newest");
-  const [deletingBond, setDeletingBond] = useState<{ id: string; bondNumber: string; denomination: string } | null>(null);
+  const [deletingBond, setDeletingBond] = useState<{ id: string; bondNumber: string; denomination: number } | null>(null);
 
-  const { data, isLoading, isError, refetch } = useBonds({ denomination, search, sort });
+  const { data, isLoading, isError, refetch } = useBonds({ denomination, search });
   const deleteBond = useDeleteBond();
 
   const bonds = data?.bonds ?? [];
@@ -42,13 +42,13 @@ export function BondsPageClient() {
         <BondList
           bonds={bonds.map((b) => ({
             id: b.id,
-            bondNumber: b.bond_number,
+            bondNumber: b.bondNumber,
             denomination: b.denomination,
-            addedAt: new Date(b.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+            addedAt: new Date(b.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
           }))}
           onDelete={(id) => {
             const bond = bonds.find((b) => b.id === id);
-            if (bond) setDeletingBond({ id: bond.id, bondNumber: bond.bond_number, denomination: bond.denomination });
+            if (bond) setDeletingBond({ id: bond.id, bondNumber: bond.bondNumber, denomination: bond.denomination });
           }}
           onAddNew={() => router.push("/bonds/add")}
         />

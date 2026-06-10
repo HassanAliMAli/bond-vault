@@ -7,7 +7,7 @@ import { DenominationBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight } from "lucide-react";
 
-interface Winner { id: string; bondNumber: string; denomination: string; prizeType: string; prizeAmount: string; drawDate: string; }
+interface Winner { id: string; bondNumber: string; denomination: number | string; prizeType: string; prizeAmount: string; drawDate: string; }
 interface RecentWinnersProps { winners: Winner[]; }
 
 export function RecentWinners({ winners }: RecentWinnersProps) {

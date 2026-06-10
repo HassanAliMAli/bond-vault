@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DenominationBadge } from "@/components/ui/badge";
 import { FormattedCounter } from "@/components/shared/animated-counter";
 
-interface DenominationData { denomination: string; count: number; }
+interface DenominationData { denomination: number | string; count: number; }
 interface DenominationBreakdownProps { data: DenominationData[]; total: number; }
 
 const barColors: Record<string, string> = {

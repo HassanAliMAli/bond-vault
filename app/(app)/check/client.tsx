@@ -40,7 +40,7 @@ export function CheckPageClient() {
 
   useEffect(() => {
     if (checkStarted.current && checkState === "checking") {
-      checkBonds.mutate();
+      (checkBonds.mutate as () => void)();
       checkStarted.current = false;
     }
   }, [checkState, checkBonds]);

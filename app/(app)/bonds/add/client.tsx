@@ -13,7 +13,7 @@ export function AddBondPageClient() {
 
   const handleSubmit = (data: { denomination: string; bondNumber: string }) => {
     createBond.mutate(
-      { denomination: data.denomination, bond_number: data.bondNumber },
+      { bondNumber: data.bondNumber, denomination: parseInt(data.denomination) },
       {
         onSuccess: () => {
           toast.success("Bond added to your vault");

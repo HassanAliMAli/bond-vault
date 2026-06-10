@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Bond { id: string; bondNumber: string; denomination: string; addedAt: string; }
+interface Bond { id: string; bondNumber: string; denomination: number | string; addedAt: string; }
 interface BondListProps { bonds: Bond[]; onDelete: (id: string) => void; onAddNew: () => void; }
 
 const DENOMINATIONS = ["100", "200", "750", "1500", "7500", "25000", "40000"];
@@ -25,7 +25,7 @@ export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
   }).sort((a, b) => {
     if (sortBy === "newest") return a.addedAt > b.addedAt ? -1 : 1;
     if (sortBy === "oldest") return a.addedAt < b.addedAt ? -1 : 1;
-    return parseInt(a.denomination) - parseInt(b.denomination);
+    return Number(a.denomination) - Number(b.denomination);
   });
 
   const hasFilters = denominationFilter || search;
