@@ -1,3 +1,5 @@
+type ApiResponse<T> = { success: true; data: T; message: null } | { success: false; error: { code: string; message: string } };
+
 type RequestConfig = {
   method?: "GET" | "POST" | "DELETE" | "PATCH";
   body?: unknown;
@@ -7,7 +9,7 @@ type RequestConfig = {
 async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
   const { method = "GET", body, params } = config;
 
-  let url = endpoint;
+  let url = `/api/v1${endpoint}`;
   if (params) {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -17,26 +19,37 @@ async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promis
     if (qs) url += `?${qs}`;
   }
 
+  const isFormData = body instanceof FormData;
+
   const res = await fetch(url, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
+    headers: !isFormData && body ? { "Content-Type": "application/json" } : undefined,
+    body: isFormData ? body : body ? JSON.stringify(body) : undefined,
+    credentials: "include",
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ error: "Request failed" }));
-    throw new Error(error.error || `Request failed with status ${res.status}`);
+    const errorBody = await res.json().catch(() => ({ error: { message: "Request failed" } }));
+    throw new Error((errorBody as ApiResponse<never>)?.error?.message || `Request failed with status ${res.status}`);
   }
 
-  return res.json();
+  const json = await res.json() as ApiResponse<T>;
+  if (!json.success) {
+    throw new Error(json.error?.message || "API error");
+  }
+  return json.data;
 }
 
 export interface Bond {
   id: string;
-  user_id: string;
-  denomination: string;
-  bond_number: string;
-  created_at: string;
+  userId: string;
+  bondNumber: string;
+  denomination: number;
+  status: string;
+  entryMethod: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface BondListResponse {
@@ -44,54 +57,207 @@ export interface BondListResponse {
   total: number;
 }
 
-export interface DashboardData {
-  totalBonds: number;
-  totalChecked: number;
-  totalMatches: number;
-  denominations: { denomination: string; count: number }[];
-  winners: {
-    id: string;
-    bondNumber: string;
-    denomination: string;
-    prizeType: string;
-    prizeAmount: string;
-    drawDate: string;
-  }[];
+export interface MatchResult {
+  id: string;
+  userId: string;
+  bondId: string;
+  winningNumberId: string;
+  drawId: string;
+  bondNumberSnapshot: string;
+  denominationSnapshot: number;
+  prizeTypeSnapshot: string;
+  prizeAmountSnapshot: number;
+  drawDateSnapshot: string;
+  status: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  fullName: string | null;
+  status: string;
+}
+
+export interface CheckMatch {
+  bondNumber: string;
+  prizeType: string;
+  prizeAmount: number;
+  drawDate: string;
+  drawNumber: string;
 }
 
 export interface CheckResponse {
-  matches: {
-    id: string;
-    bondNumber: string;
-    denomination: string;
-    prizeType: string;
-    prizeAmount: string;
-    drawDate: string;
-    drawNumber: string;
-  }[];
-  totalChecked: number;
+  isWinner: boolean;
+  matches: CheckMatch[];
+}
+
+export interface Draw {
+  id: string;
+  denomination: number;
+  drawNumber: string;
+  drawDate: string;
+}
+
+export interface ImportPreview {
+  importId: string;
+  preview: { valid: string[]; invalid: string[]; duplicates: string[] };
+  totals: { total: number; valid: number; invalid: number; duplicates: number };
 }
 
 export const api = {
-  bonds: {
-    list: (params?: {
-      denomination?: string;
-      search?: string;
-      sort?: string;
-    }) => apiFetch<BondListResponse>("/api/bonds", { params }),
+  auth: {
+    register: (data: { email: string; password: string; fullName?: string }) =>
+      apiFetch<{ userId: string; email: string }>("/auth/register", { method: "POST", body: data }),
 
-    create: (data: { denomination: string; bond_number: string }) =>
-      apiFetch<Bond>("/api/bonds", { method: "POST", body: data }),
+    login: (data: { email: string; password: string }) =>
+      apiFetch<{ userId: string; email: string; token: string }>("/auth/login", { method: "POST", body: data }),
 
-    delete: (id: string) =>
-      apiFetch<{ success: true }>(`/api/bonds/${id}`, { method: "DELETE" }),
+    logout: () =>
+      apiFetch<{ message: string }>("/auth/logout", { method: "POST" }),
+
+    me: () =>
+      apiFetch<UserProfile>("/auth/me"),
   },
 
-  dashboard: {
-    get: () => apiFetch<DashboardData>("/api/dashboard"),
+  bonds: {
+    list: (params?: { denomination?: string; search?: string; status?: string; page?: number; limit?: number }) =>
+      apiFetch<BondListResponse>("/bonds", { params: params as Record<string, string | undefined> }),
+
+    create: (data: { bondNumber: string; denomination: number }) =>
+      apiFetch<Bond>("/bonds", { method: "POST", body: data }),
+
+    get: (id: string) =>
+      apiFetch<Bond>(`/bonds/${id}`),
+
+    update: (id: string, data: { bondNumber?: string }) =>
+      apiFetch<Bond>(`/bonds/${id}`, { method: "PATCH", body: data }),
+
+    delete: (id: string) =>
+      apiFetch<{ message: string }>(`/bonds/${id}`, { method: "DELETE" }),
+
+    archive: (id: string) =>
+      apiFetch<{ message: string }>(`/bonds/${id}/archive`, { method: "POST" }),
+
+    restore: (id: string) =>
+      apiFetch<{ message: string }>(`/bonds/${id}/restore`, { method: "POST" }),
+  },
+
+  matches: {
+    list: (params?: { status?: string; denomination?: number; page?: number; limit?: number }) =>
+      apiFetch<{ matches: MatchResult[]; total: number }>("/matches", { params: params as Record<string, string | undefined> }),
+
+    get: (id: string) =>
+      apiFetch<MatchResult>(`/matches/${id}`),
+
+    markViewed: (id: string) =>
+      apiFetch<{ message: string }>(`/matches/${id}/view`, { method: "POST" }),
+  },
+
+  draws: {
+    list: (params?: { denomination?: number; page?: number; limit?: number }) =>
+      apiFetch<{ draws: Draw[]; total: number }>("/draws", { params: params as Record<string, string | undefined> }),
+
+    get: (id: string) =>
+      apiFetch<Draw>(`/draws/${id}`),
+
+    winners: (id: string) =>
+      apiFetch<{ winners: unknown[]; total: number }>(`/draws/${id}/winners`),
   },
 
   check: {
-    run: () => apiFetch<CheckResponse>("/api/check", { method: "POST" }),
+    run: (data: { bondNumber: string; denomination: number }) =>
+      apiFetch<CheckResponse>("/check", { method: "POST", body: data }),
+  },
+
+  notifications: {
+    list: () =>
+      apiFetch<{ notifications: unknown[] }>("/notifications"),
+
+    preferences: {
+      get: () =>
+        apiFetch<{ emailEnabled: boolean; whatsappEnabled: boolean; smsEnabled: boolean }>("/notifications/preferences"),
+
+      update: (data: { emailEnabled?: boolean; whatsappEnabled?: boolean; smsEnabled?: boolean }) =>
+        apiFetch<unknown>("/notifications/preferences", { method: "PATCH", body: data }),
+    },
+  },
+
+  subscription: {
+    current: () =>
+      apiFetch<unknown>("/subscription/current"),
+
+    history: () =>
+      apiFetch<{ history: unknown[] }>("/subscription/history"),
+  },
+
+  plans: {
+    list: () =>
+      apiFetch<{ plans: unknown[] }>("/plans"),
+  },
+
+  payments: {
+    create: (data: { planId: string }) =>
+      apiFetch<{ paymentId: string; amount: number; status: string }>("/payments", { method: "POST", body: data }),
+
+    list: () =>
+      apiFetch<{ payments: unknown[] }>("/payments"),
+
+    get: (id: string) =>
+      apiFetch<unknown>(`/payments/${id}`),
+
+    uploadReceipt: (paymentId: string, receipt: File) => {
+      const formData = new FormData();
+      formData.append("receipt", receipt);
+      return apiFetch<{ message: string; paymentId: string }>(`/payments/${paymentId}/receipt`, {
+        method: "POST",
+        body: formData,
+      });
+    },
+  },
+
+  exports: {
+    csv: () => fetch("/api/v1/exports/csv", { credentials: "include" }).then(r => r.blob()),
+    xlsx: () => fetch("/api/v1/exports/xlsx", { credentials: "include" }).then(r => r.blob()),
+  },
+
+  imports: {
+    upload: (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return apiFetch<ImportPreview>("/imports", { method: "POST", body: formData });
+    },
+
+    list: () =>
+      apiFetch<{ imports: unknown[] }>("/imports"),
+
+    get: (id: string) =>
+      apiFetch<unknown>(`/imports/${id}`),
+
+    delete: (id: string) =>
+      apiFetch<{ message: string }>(`/imports/${id}`, { method: "DELETE" }),
+  },
+
+  ocr: {
+    usage: () =>
+      apiFetch<{ used: number; remaining: number }>("/ocr/usage"),
+
+    record: (data: { bondNumber: string; denomination: number }) =>
+      apiFetch<{ message: string }>("/ocr/usage", { method: "POST", body: data }),
+  },
+
+  search: {
+    search: (q: string) =>
+      apiFetch<{ results: { bonds: Bond[] } }>("/search", { params: { q } }),
+  },
+
+  user: {
+    profile: () =>
+      apiFetch<UserProfile>("/user/profile"),
+
+    updateProfile: (data: { fullName?: string; phone?: string; whatsappNumber?: string }) =>
+      apiFetch<UserProfile>("/user/profile", { method: "PATCH", body: data }),
+
+    deleteAccount: () =>
+      apiFetch<{ message: string }>("/user/account", { method: "DELETE" }),
   },
 };

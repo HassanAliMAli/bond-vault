@@ -5,9 +5,7 @@ export const bondSchema = z.object({
   denomination: z.enum(DENOMINATIONS),
   bond_number: z
     .string()
-    .min(4, "Bond number must be at least 4 digits")
-    .max(7, "Bond number must be at most 7 digits")
-    .regex(/^\d+$/, "Bond number must contain only digits"),
+    .regex(/^\d{6}$/, "Bond number must be exactly 6 digits"),
 });
 
 export type BondInput = z.infer<typeof bondSchema>;
