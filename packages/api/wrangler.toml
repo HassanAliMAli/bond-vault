@@ -2,5 +2,51 @@ name = "bondvault-api"
 main = "src/index.ts"
 compatibility_date = "2025-06-09"
 compatibility_flags = ["nodejs_compat"]
+
 [observability]
 enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bondvault-production"
+database_id = "990a8dc7-af95-417b-b970-aee4cfb3e72b"
+migrations_dir = "drizzle"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "17c513e09f3440db80c966a6dc3d7ffe"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "bondvault-assets"
+
+[[queues.producers]]
+queue = "match-generation"
+binding = "MATCH_QUEUE"
+
+[[queues.producers]]
+queue = "notification-delivery"
+binding = "NOTIFICATION_QUEUE"
+
+[[queues.producers]]
+queue = "cleanup-jobs"
+binding = "CLEANUP_QUEUE"
+
+[[queues.producers]]
+queue = "draw-processing"
+binding = "DRAW_QUEUE"
+
+[[queues.consumers]]
+queue = "match-generation"
+
+[[queues.consumers]]
+queue = "notification-delivery"
+
+[[queues.consumers]]
+queue = "cleanup-jobs"
+
+[[queues.consumers]]
+queue = "draw-processing"
+
+[vars]
+ENVIRONMENT = "production"
