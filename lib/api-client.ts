@@ -34,9 +34,9 @@ async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promis
     throw new Error(msg);
   }
 
-  const json = await res.json();
+  const json = await res.json() as any;
   if (!json.success) {
-    throw new Error((json as any)?.error?.message || "API error");
+    throw new Error(json?.error?.message || "API error");
   }
   return json.data as T;
 }

@@ -1,9 +1,8 @@
-import type { D1Database, IncomingRequestCfProperties } from "@cloudflare/workers-types";
 import { betterAuth } from "better-auth";
 import { withCloudflare } from "better-auth-cloudflare";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
-import * as schema from "../db/schema";
+import * as schema from "./schema";
 
 interface CloudflareBindings {
   DB: D1Database;
@@ -13,8 +12,31 @@ interface CloudflareBindings {
   ENVIRONMENT: string;
 }
 
-function createAuth(env?: CloudflareBindings, cf?: IncomingRequestCfProperties, baseURL?: string) {
-  const db = env ? drizzle(env.DB, { schema, logger: env.ENVIRONMENT !== "production" }) : ({} as any);
+export function createAuth(
+  env?: CloudflareBindings,
+  cf?: IncomingRequestCfProperties,
+  baseURL?: string
+) {
+  if (!env) {
+    return betterAuth({
+      ...withCloudflare(
+        {
+          autoDetectIpAddress: true,
+          geolocationTracking: true,
+          cf: cf || {},
+        },
+        {
+          emailAndPassword: { enabled: true },
+        }
+      ),
+      database: drizzleAdapter({} as D1Database, {
+        provider: "sqlite",
+        usePlural: true,
+      }),
+    });
+  }
+
+  const db = drizzle(env.DB, { schema, logger: env.ENVIRONMENT !== "production" });
 
   return betterAuth({
     baseURL,
@@ -23,16 +45,14 @@ function createAuth(env?: CloudflareBindings, cf?: IncomingRequestCfProperties, 
         autoDetectIpAddress: true,
         geolocationTracking: true,
         cf: cf || {},
-        d1: env
-          ? {
-              db,
-              options: {
-                usePlural: true,
-                debugLogs: env.ENVIRONMENT !== "production",
-              },
-            }
-          : undefined,
-        kv: env?.KV,
+        d1: {
+          db,
+          options: {
+            usePlural: true,
+            debugLogs: env.ENVIRONMENT !== "production",
+          },
+        },
+        kv: env.KV as any,
       },
       {
         emailAndPassword: {
@@ -50,16 +70,5 @@ function createAuth(env?: CloudflareBindings, cf?: IncomingRequestCfProperties, 
         },
       }
     ),
-    ...(env
-      ? {}
-      : {
-          database: drizzleAdapter({} as D1Database, {
-            provider: "sqlite",
-            usePlural: true,
-          }),
-        }),
   });
 }
-
-export const auth = createAuth();
-export { createAuth };

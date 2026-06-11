@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
-  "name": "bondvault-frontend",
+  "name": "bondvault",
   "compatibility_date": "2025-06-09",
   "compatibility_flags": [
     "nodejs_compat"
@@ -12,5 +12,42 @@
   },
   "observability": {
     "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bondvault-production",
+      "database_id": "990a8dc7-af95-417b-b970-aee4cfb3e72b",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "17c513e09f3440db80c966a6dc3d7ffe"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "bondvault-assets"
+    }
+  ],
+  "queues": {
+    "producers": [
+      { "queue": "match-generation", "binding": "MATCH_QUEUE" },
+      { "queue": "notification-delivery", "binding": "NOTIFICATION_QUEUE" },
+      { "queue": "cleanup-jobs", "binding": "CLEANUP_QUEUE" },
+      { "queue": "draw-processing", "binding": "DRAW_QUEUE" }
+    ],
+    "consumers": [
+      { "queue": "match-generation" },
+      { "queue": "notification-delivery" },
+      { "queue": "cleanup-jobs" },
+      { "queue": "draw-processing" }
+    ]
+  },
+  "vars": {
+    "ENVIRONMENT": "production"
   }
 }

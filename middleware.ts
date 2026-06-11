@@ -14,18 +14,13 @@ export default function middleware(req: NextRequest) {
     pathname.startsWith("/check/") ||
     pathname.startsWith("/settings/");
 
-  const isApiProtected = pathname.startsWith("/api/");
-
   const isAuthPage = pathname === "/login" || pathname === "/register" || pathname === "/";
 
   if (isAuthPage && sessionToken) {
     return NextResponse.redirect(new URL("/vault", req.url));
   }
 
-  if ((isProtected || isApiProtected) && !sessionToken) {
-    if (isApiProtected) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (isProtected && !sessionToken) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 

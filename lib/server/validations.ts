@@ -1,6 +1,4 @@
 import { z } from "zod";
-import { Hono } from "hono";
-import type { Context } from "hono";
 
 const DENOMINATIONS = [100, 200, 750, 1500, 7500, 25000, 40000] as const;
 
