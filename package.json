@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx opennextjs-cloudflare build && cp .open-next/worker.js .open-next/assets/_worker.js",
     "start": "next start",
     "lint": "eslint",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
@@ -51,6 +51,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "tailwindcss": "^4",
+    "toml": "^4.1.1",
     "typescript": "^5",
     "wrangler": "^4.99.0"
   }
