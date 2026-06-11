@@ -11,10 +11,6 @@ enabled = true
 directory = ".open-next/assets"
 binding = "ASSETS"
 
-[services]
-binding = "WORKER_SELF_REFERENCE"
-service = "bondvault"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "bondvault-production"
