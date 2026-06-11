@@ -2,14 +2,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
+    const apiUrl =
+      process.env.API_URL ||
+      "https://bondvault-api.hassanali205031.workers.dev";
+
     return [
       {
         source: "/api/v1/:path*",
-        destination: "https://bondvault-api.hassanali205031.workers.dev/api/v1/:path*",
+        destination: `${apiUrl}/api/v1/:path*`,
       },
       {
         source: "/api/auth/:path*",
-        destination: "https://bondvault-api.hassanali205031.workers.dev/api/auth/:path*",
+        destination: `${apiUrl}/api/auth/:path*`,
       },
     ];
   },
@@ -29,3 +33,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+initOpenNextCloudflareForDev();

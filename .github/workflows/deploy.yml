@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy-api:
-    name: Deploy Workers API
+    name: Deploy API Worker
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
           workingDirectory: packages/api
           command: deploy
 
-  deploy-db:
+  deploy-migrations:
     name: Apply D1 Migrations
     runs-on: ubuntu-latest
     needs: deploy-api
@@ -43,3 +43,21 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: packages/api
           command: d1 migrations apply bondvault-production --remote
+
+  deploy-frontend:
+    name: Deploy Frontend Worker
+    runs-on: ubuntu-latest
+    needs: deploy-migrations
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx opennextjs-cloudflare build
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
