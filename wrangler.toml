@@ -13,12 +13,12 @@ binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "bondvault-production"
-database_id = "990a8dc7-af95-417b-b970-aee4cfb3e72b"
+database_name = "bondvault-production-v2"
+database_id = "2fc28994-8da8-4bfd-aa55-aeaf5b54701e"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "9c8d4227f86649ab8bc2b6ab968bcc24"
+id = "e52470a5785a4ee390df6a979ba30210"
 
 [[r2_buckets]]
 binding = "R2"
