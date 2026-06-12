@@ -1,9 +1,10 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { winningNumbers, draws } from "../schema";
+import { winningNumbers, draws, matches } from "../schema";
 import { eq, and } from "drizzle-orm";
-import { success, error, getEnv } from "../lib";
+import { success, error, getEnv, getUserId } from "../lib";
 import { createBondSchema } from "../validations";
+import { generateMatchesForAllActiveBonds } from "../services/matches";
 
 export const checkRoute = new Hono()
   .post("/check", async (c) => {
@@ -29,4 +30,10 @@ export const checkRoute = new Hono()
     }));
 
     return success(c, { isWinner: matchResults.length > 0, matches: matchResults });
+  })
+  .post("/check/all", async (c) => {
+    const env = getEnv(c);
+    const userId = getUserId(c);
+    const count = await generateMatchesForAllActiveBonds(env, userId);
+    return success(c, { matchesCreated: count });
   });

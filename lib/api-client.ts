@@ -41,6 +41,25 @@ async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promis
   return json.data as T;
 }
 
+async function apiFetchRaw(endpoint: string, config: RequestConfig = {}): Promise<Response> {
+  const { method = "GET", body, params } = config;
+  let url = `/api/v1${endpoint}`;
+  if (params) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) searchParams.set(key, value);
+    });
+    const qs = searchParams.toString();
+    if (qs) url += `?${qs}`;
+  }
+  return fetch(url, {
+    method,
+    headers: body && !(body instanceof FormData) ? { "Content-Type": "application/json" } : undefined,
+    body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+    credentials: "include",
+  });
+}
+
 export interface Bond {
   id: string;
   userId: string;
@@ -105,21 +124,13 @@ export interface ImportPreview {
   totals: { total: number; valid: number; invalid: number; duplicates: number };
 }
 
+export interface OcrUsageResponse {
+  used: number;
+  remaining: number;
+  limit: number;
+}
+
 export const api = {
-  auth: {
-    register: (data: { email: string; password: string; fullName?: string }) =>
-      apiFetch<{ userId: string; email: string }>("/auth/register", { method: "POST", body: data }),
-
-    login: (data: { email: string; password: string }) =>
-      apiFetch<{ userId: string; email: string; token: string }>("/auth/login", { method: "POST", body: data }),
-
-    logout: () =>
-      apiFetch<{ message: string }>("/auth/logout", { method: "POST" }),
-
-    me: () =>
-      apiFetch<UserProfile>("/auth/me"),
-  },
-
   bonds: {
     list: (params?: { denomination?: string; search?: string; status?: string; page?: number; limit?: number }) =>
       apiFetch<BondListResponse>("/bonds", { params: params as Record<string, string | undefined> }),
@@ -130,7 +141,7 @@ export const api = {
     get: (id: string) =>
       apiFetch<Bond>(`/bonds/${id}`),
 
-    update: (id: string, data: { bondNumber?: string }) =>
+    update: (id: string, data: { bondNumber?: string; denomination?: number }) =>
       apiFetch<Bond>(`/bonds/${id}`, { method: "PATCH", body: data }),
 
     delete: (id: string) =>
@@ -168,11 +179,14 @@ export const api = {
   check: {
     run: (data: { bondNumber: string; denomination: number }) =>
       apiFetch<CheckResponse>("/check", { method: "POST", body: data }),
+
+    runAll: () =>
+      apiFetch<{ matchesCreated: number }>("/check/all", { method: "POST" }),
   },
 
   notifications: {
-    list: () =>
-      apiFetch<{ notifications: unknown[] }>("/notifications"),
+    list: (params?: { page?: number; limit?: number }) =>
+      apiFetch<{ notifications: unknown[]; total: number }>("/notifications", { params: params as Record<string, string | undefined> }),
 
     preferences: {
       get: () =>
@@ -217,8 +231,8 @@ export const api = {
   },
 
   exports: {
-    csv: () => fetch("/api/v1/exports/csv", { credentials: "include" }).then(r => r.blob()),
-    xlsx: () => fetch("/api/v1/exports/xlsx", { credentials: "include" }).then(r => r.blob()),
+    csv: () => apiFetchRaw("/exports/csv").then(r => r.blob()),
+    xlsx: () => apiFetchRaw("/exports/xlsx").then(r => r.blob()),
   },
 
   imports: {
@@ -227,6 +241,9 @@ export const api = {
       formData.append("file", file);
       return apiFetch<ImportPreview>("/imports", { method: "POST", body: formData });
     },
+
+    confirm: (importId: string) =>
+      apiFetch<{ message: string }>(`/imports/${importId}/confirm`, { method: "POST" }),
 
     list: () =>
       apiFetch<{ imports: unknown[] }>("/imports"),
@@ -240,7 +257,7 @@ export const api = {
 
   ocr: {
     usage: () =>
-      apiFetch<{ used: number; remaining: number }>("/ocr/usage"),
+      apiFetch<OcrUsageResponse>("/ocr/usage"),
 
     record: (data: { bondNumber: string; denomination: number }) =>
       apiFetch<{ message: string }>("/ocr/usage", { method: "POST", body: data }),
@@ -260,5 +277,8 @@ export const api = {
 
     deleteAccount: () =>
       apiFetch<{ message: string }>("/user/account", { method: "DELETE" }),
+
+    permissions: () =>
+      apiFetch<{ canImport: boolean; canExport: boolean }>("/user/permissions"),
   },
 };

@@ -14,9 +14,13 @@ export default function middleware(req: NextRequest) {
     pathname.startsWith("/check/") ||
     pathname.startsWith("/settings/");
 
-  const isAuthPage = pathname === "/login" || pathname === "/register" || pathname === "/";
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
   if (isAuthPage && sessionToken) {
+    return NextResponse.redirect(new URL("/vault", req.url));
+  }
+
+  if (pathname === "/" && sessionToken) {
     return NextResponse.redirect(new URL("/vault", req.url));
   }
 

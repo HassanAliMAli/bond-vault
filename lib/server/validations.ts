@@ -17,6 +17,11 @@ export const createBondSchema = z.object({
   denomination: denominationSchema,
 });
 
+export const updateBondSchema = z.object({
+  bondNumber: bondNumberSchema.optional(),
+  denomination: denominationSchema.optional(),
+});
+
 export const paymentSchema = z.object({
   planId: z.string().min(1),
 });
@@ -40,4 +45,35 @@ export const updateProfileSchema = z.object({
   fullName: z.string().optional(),
   phone: z.string().optional(),
   whatsappNumber: z.string().optional(),
+});
+
+export const createDrawSchema = z.object({
+  denomination: denominationSchema,
+  drawNumber: z.string().min(1),
+  drawDate: z.string().min(1),
+  source: z.string().optional(),
+});
+
+export const createWinningNumberSchema = z.object({
+  bondNumber: bondNumberSchema,
+  prizeType: z.enum(["1st Prize", "2nd Prize", "3rd Prize"]),
+  prizeAmount: z.number().positive(),
+});
+
+export const updateUserSchema = z.object({
+  fullName: z.string().optional(),
+  phone: z.string().optional(),
+  whatsappNumber: z.string().optional(),
+  status: z.enum(["active", "suspended"]).optional(),
+});
+
+export const updateSettingsSchema = z.object({
+  key: z.string().min(1),
+  value: z.string().min(1),
+});
+
+export const contactSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  message: z.string().min(10),
 });

@@ -52,5 +52,8 @@ queue = "cleanup-jobs"
 [[queues.consumers]]
 queue = "draw-processing"
 
+[triggers]
+crons = ["0 0 * * *"]
+
 [vars]
 ENVIRONMENT = "production"

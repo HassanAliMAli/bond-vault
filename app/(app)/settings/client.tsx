@@ -8,8 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
-import { signOut, changePassword, deleteUser } from "@/lib/auth-client";
-import { LogOut, Mail, Key, Trash2, Shield } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api-client";
+import { authClient } from "@/lib/auth-client";
+import { LogOut, Mail, Key, Trash2, Shield, Download, Upload, Check, X } from "lucide-react";
 
 export function SettingsPageClient() {
   const router = useRouter();
@@ -22,13 +24,19 @@ export function SettingsPageClient() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
+  const { data: permissions } = useQuery({
+    queryKey: ["user", "permissions"],
+    queryFn: () => api.user.permissions(),
+    staleTime: 60_000,
+  });
+
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmNewPassword) return;
     if (newPassword.length < 8) { toast.error("Password must be at least 8 characters"); return; }
     if (newPassword !== confirmNewPassword) { toast.error("Passwords do not match"); return; }
     setLoading(true);
     try {
-      const result = await changePassword({ currentPassword, newPassword });
+      const result = await authClient.changePassword({ currentPassword, newPassword });
       if (result.error) {
         toast.error(result.error.message || "Failed to change password");
       } else {
@@ -41,14 +49,15 @@ export function SettingsPageClient() {
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    await authClient.signOut();
     router.push("/login");
   };
 
   const handleDeleteAccount = async () => {
     setLoading(true);
     try {
-      await deleteUser();
+      await api.user.deleteAccount();
+      await authClient.signOut();
       router.push("/login");
     } catch { toast.error("Failed to delete account"); }
     finally { setLoading(false); }
@@ -77,6 +86,21 @@ export function SettingsPageClient() {
                 </div>
               </div>
             )}
+          </div>
+        </CardContent>
+      </Card>
+      <Card variant="elevated">
+        <CardHeader><CardTitle className="flex items-center gap-2"><Shield className="h-4 w-4 text-gold" />Plan & Permissions</CardTitle><CardDescription>Your current plan and feature access</CardDescription></CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+              <div className="flex items-center gap-2"><Upload className="h-4 w-4 text-gray" /><span className="text-sm text-white">Import Bonds</span></div>
+              {permissions?.canImport ? <Check className="h-4 w-4 text-green" /> : <X className="h-4 w-4 text-red" />}
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+              <div className="flex items-center gap-2"><Download className="h-4 w-4 text-gray" /><span className="text-sm text-white">Export Portfolio</span></div>
+              {permissions?.canExport ? <Check className="h-4 w-4 text-green" /> : <X className="h-4 w-4 text-red" />}
+            </div>
           </div>
         </CardContent>
       </Card>

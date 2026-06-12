@@ -9,5 +9,6 @@ interface Env {
   CLEANUP_QUEUE: Queue;
   DRAW_QUEUE: Queue;
   BETTER_AUTH_SECRET: string;
+  RESEND_API_KEY?: string;
   ENVIRONMENT: string;
 }

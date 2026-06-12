@@ -92,7 +92,7 @@ export function CheckPageClient() {
             <CheckButton onClick={handleStartCheck} />
             <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-gray">
               <span>Will check against:</span>
-              {["100","200","750","1500","7500","25000","40000"].map(d => <DenominationBadge key={d} denomination={d} />)}
+              {[100, 200, 750, 1500, 7500, 25000, 40000].map(d => <DenominationBadge key={d} denomination={d} />)}
             </div>
           </motion.div>
         )}
@@ -112,7 +112,7 @@ export function CheckPageClient() {
         )}
         {checkState === "results" && results && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <ResultsPanel matches={results.matches} totalChecked={results.totalChecked} onCheckAgain={handleCheckAgain} />
+            <ResultsPanel matches={results.matches || []} totalChecked={results.totalChecked || 0} onCheckAgain={handleCheckAgain} />
           </motion.div>
         )}
       </AnimatePresence>

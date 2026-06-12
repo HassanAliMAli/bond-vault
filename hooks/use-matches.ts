@@ -23,7 +23,7 @@ export function useDashboard() {
         totalBonds: allBonds.length,
         totalChecked: allBonds.length,
         totalMatches: allMatches.length,
-        denominations: Object.entries(denomMap).map(([k, v]) => ({ denomination: k, count: v })),
+        denominations: Object.entries(denomMap).map(([k, v]) => ({ denomination: Number(k), count: v })),
         winners: allMatches.map((m) => ({
           id: m.id,
           bondNumber: m.bondNumberSnapshot,
@@ -52,12 +52,8 @@ export function useCheckBonds() {
     mutationFn: async (data?: { bondNumber: string; denomination: number }) => {
       if (!data) {
         const allBonds = (await api.bonds.list()).bonds ?? [];
-        const results: any[] = [];
-        for (const b of allBonds) {
-          const r = await api.check.run({ bondNumber: b.bondNumber, denomination: b.denomination });
-          for (const m of r.matches) results.push({ id: m.bondNumber+m.drawDate, bondNumber: m.bondNumber, denomination: String(b.denomination), prizeType: m.prizeType, prizeAmount: `Rs. ${m.prizeAmount.toLocaleString()}`, drawDate: m.drawDate, drawNumber: m.drawNumber });
-        }
-        return { matches: results, totalChecked: allBonds.length };
+        const result = await api.check.runAll();
+        return { matchesCreated: result.matchesCreated, totalChecked: allBonds.length };
       }
       const r = await api.check.run(data);
       return { matches: r.matches.map((m,i) => ({ id: m.bondNumber+m.drawDate+i, bondNumber: m.bondNumber, denomination: String(data.denomination), prizeType: m.prizeType, prizeAmount: `Rs. ${m.prizeAmount.toLocaleString()}`, drawDate: m.drawDate, drawNumber: m.drawNumber })), totalChecked: 1 };

@@ -1,40 +1,22 @@
-"use client";
-
-import * as React from "react";
 import { cn } from "@/lib/utils";
 
-interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "gold" | "green" | "blue" | "red";
-  size?: "sm" | "md";
-}
-
-const badgeVariants: Record<string, string> = {
-  default: "bg-dark-700 text-gray border-dark-600",
-  gold: "bg-gold/10 text-gold border-gold/20",
-  green: "bg-green/10 text-green border-green/20",
-  blue: "bg-blue/10 text-blue border-blue/20",
-  red: "bg-red/10 text-red border-red/20",
+const denomVariants: Record<number, string> = {
+  100: "bg-denom-100/10 text-denom-100 border-denom-100/20",
+  200: "bg-denom-200/10 text-denom-200 border-denom-200/20",
+  750: "bg-denom-750/10 text-denom-750 border-denom-750/20",
+  1500: "bg-denom-1500/10 text-denom-1500 border-denom-1500/20",
+  7500: "bg-denom-7500/10 text-denom-7500 border-denom-7500/20",
+  25000: "bg-denom-25000/10 text-denom-25000 border-denom-25000/20",
+  40000: "bg-denom-40000/10 text-denom-40000 border-denom-40000/20",
 };
 
-const denomVariant: Record<string, BadgeProps["variant"]> = {
-  "100": "default", "200": "gold", "750": "red",
-  "1500": "blue", "7500": "green", "25000": "gold", "40000": "green",
-};
-
-function Badge({ className, variant = "default", size = "md", ...props }: BadgeProps) {
+function DenominationBadge({ denomination, className }: { denomination: number | string; className?: string }) {
+  const d = Number(denomination);
   return (
-    <span className={cn(
-      "inline-flex items-center rounded-full border px-2.5 py-0.5 font-medium transition-colors",
-      size === "sm" ? "text-xs" : "text-sm",
-      badgeVariants[variant], className
-    )} {...props} />
+    <span className={cn("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border tabular-nums", denomVariants[d] || "bg-gray/10 text-gray border-gray/20", className)}>
+      Rs. {d.toLocaleString()}
+    </span>
   );
 }
 
-function DenominationBadge({ denomination, className }: { denomination: number | string; className?: string }) {
-  const d = String(denomination);
-  return <Badge variant={denomVariant[d] || "default"} className={cn("tabular-nums", className)}>Rs. {d}</Badge>;
-}
-
-export { Badge, DenominationBadge };
-export type { BadgeProps };
+export { DenominationBadge };

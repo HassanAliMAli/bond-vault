@@ -2,11 +2,12 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
+import { authClient } from "@/lib/auth-client";
 
 export function useAuth() {
   const { data, isLoading } = useQuery({
     queryKey: ["auth", "me"],
-    queryFn: () => api.auth.me(),
+    queryFn: () => api.user.profile(),
     retry: false,
     staleTime: 5 * 60_000,
   });
@@ -16,7 +17,7 @@ export function useAuth() {
     isLoading,
     isAuthenticated: !!data,
     signOut: async () => {
-      await api.auth.logout();
+      await authClient.signOut();
       window.location.href = "/login";
     },
   };
@@ -25,13 +26,13 @@ export function useAuth() {
 export function useLogin() {
   return useMutation({
     mutationFn: (data: { email: string; password: string }) =>
-      api.auth.login(data),
+      authClient.signIn.email(data),
   });
 }
 
 export function useRegister() {
   return useMutation({
     mutationFn: (data: { email: string; password: string; fullName?: string }) =>
-      api.auth.register(data),
+      authClient.signUp.email({ email: data.email, password: data.password, name: data.fullName || "" }),
   });
 }

@@ -43,17 +43,18 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
       <AnimatePresence>
         {denomination && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ type: "spring", stiffness: 350, damping: 28 }}>
-            <label className="block text-sm font-medium text-white mb-3">Bond Number</label>
+            <label className="block text-sm font-medium text-white mb-3">Bond Number (6 digits)</label>
             <div className="relative">
               <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray" />
-              <Input type="text" inputMode="numeric" value={bondNumber} onChange={(e) => { setBondNumber(e.target.value.replace(/\D/g, "")); setError(""); }}
-                placeholder="Enter 6-digit bond number" className="pl-10 text-lg tracking-widest" maxLength={6} autoFocus error={error} />
+              <Input type="text" inputMode="numeric" value={bondNumber} onChange={(e) => { setBondNumber(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
+                placeholder="e.g. 068802" className="pl-10 text-lg tracking-widest" maxLength={6} autoFocus error={error} />
             </div>
             <div className="mt-3 space-y-1.5">
-              {bondNumber.length > 0 && /^\d+$/.test(bondNumber) && <div className="flex items-center gap-2 text-xs text-green"><Check className="h-3 w-3" />Valid number format</div>}
+              {bondNumber.length > 0 && /^\d{6}$/.test(bondNumber) && <div className="flex items-center gap-2 text-xs text-green"><Check className="h-3 w-3" />Valid 6-digit bond number</div>}
+              {bondNumber.length > 0 && !/^\d{6}$/.test(bondNumber) && <div className="flex items-center gap-2 text-xs text-red"><AlertCircle className="h-3 w-3" />Bond number must be exactly 6 digits</div>}
               {isDuplicate && <div className="flex items-center gap-2 text-xs text-red"><AlertCircle className="h-3 w-3" />This bond already exists in your vault</div>}
             </div>
-            {denomination && bondNumber && !isDuplicate && <div className="mt-3 inline-flex items-center gap-2"><DenominationBadge denomination={denomination} /><span className="text-sm text-white">{bondNumber}</span></div>}
+            {denomination && /^\d{6}$/.test(bondNumber) && !isDuplicate && <div className="mt-3 inline-flex items-center gap-2"><DenominationBadge denomination={Number(denomination)} /><span className="text-sm text-white">{bondNumber}</span></div>}
           </motion.div>
         )}
       </AnimatePresence>

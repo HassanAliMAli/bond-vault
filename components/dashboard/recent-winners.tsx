@@ -1,44 +1,62 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DenominationBadge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface Winner { id: string; bondNumber: string; denomination: number | string; prizeType: string; prizeAmount: string; drawDate: string; }
+interface Winner {
+  id: string;
+  bondNumber: string;
+  denomination: number;
+  prizeType: string;
+  prizeAmount: string;
+  drawDate: string;
+}
+
 interface RecentWinnersProps { winners: Winner[]; }
 
 export function RecentWinners({ winners }: RecentWinnersProps) {
   return (
-    <Card variant="elevated">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Recent Winners</CardTitle>
-        <Link href="/check"><Button variant="ghostGold" size="sm" className="gap-1 text-gold">Check All <ArrowRight className="h-3.5 w-3.5" /></Button></Link>
-      </CardHeader>
-      <CardContent>
-        {winners.length > 0 ? (
-          <div className="space-y-3">
-            {winners.map((w, i) => (
-              <motion.div key={w.id} className="flex items-center gap-3 p-3 rounded-[var(--radius-sm)] bg-green/5 border border-green/20"
-                initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08, type: "spring", stiffness: 300, damping: 24 }}>
-                <div className="w-9 h-9 rounded-full bg-green/10 flex items-center justify-center shrink-0"><Trophy className="h-4 w-4 text-green" /></div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5"><span className="text-sm font-semibold text-white">#{w.bondNumber}</span><DenominationBadge denomination={w.denomination} /></div>
-                  <p className="text-xs text-gray">{w.prizeType} — {w.prizeAmount} · {w.drawDate}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <div className="py-8 text-center">
-            <div className="w-14 h-14 rounded-full bg-dark-700 mx-auto mb-3 flex items-center justify-center"><Trophy className="h-6 w-6 text-dark-500" /></div>
-            <p className="text-sm text-gray mb-4">No winners yet</p>
-            <Link href="/check"><Button variant="secondary" size="sm">Check My Bonds</Button></Link>
-          </div>
+    <div className="rounded-[var(--radius-lg)] bg-dark-800/50 border border-dark-600 p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-gold" />
+          <h2 className="text-lg font-semibold text-white">Recent Winners</h2>
+        </div>
+        {winners.length > 0 && (
+          <button className="text-sm text-gold hover:text-gold/80 transition-colors flex items-center gap-1">
+            View All <ArrowRight className="h-3 w-3" />
+          </button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+      {winners.length === 0 ? (
+        <div className="text-center py-8">
+          <Trophy className="h-10 w-10 mx-auto text-dark-600 mb-3" />
+          <p className="text-sm text-gray">No winning bonds yet. Check your bonds against historical draws.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {winners.slice(0, 5).map((winner, i) => (
+            <motion.div
+              key={winner.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+              className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-800/80 border border-dark-600"
+            >
+              <div className="flex items-center gap-3">
+                <div className={cn("w-2 h-2 rounded-full", winner.prizeType === "1st Prize" ? "bg-gold" : winner.prizeType === "2nd Prize" ? "bg-blue" : "bg-green")} />
+                <div>
+                  <p className="text-sm font-medium text-white">{winner.bondNumber}</p>
+                  <p className="text-xs text-gray">{winner.drawDate}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <DenominationBadge denomination={winner.denomination} />
+                <p className="text-xs font-medium text-gold mt-0.5">{winner.prizeType}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

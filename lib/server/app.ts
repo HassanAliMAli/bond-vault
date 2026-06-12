@@ -7,8 +7,13 @@ import { drawRoutes } from "./routes/draws";
 import { checkRoute } from "./routes/check";
 import { userRoutes, notificationRoutes, subscriptionRoutes } from "./routes/user";
 import { healthRoute } from "./routes/health";
-import { seedPlans } from "./services";
-import { handleSubscriptionExpiration } from "./services/cron";
+import { paymentRoutes } from "./routes/payments";
+import { ocrRoutes } from "./routes/ocr";
+import { importRoutes } from "./routes/imports";
+import { exportRoutes } from "./routes/exports";
+import { searchRoutes } from "./routes/search";
+import { adminRoutes } from "./routes/admin";
+import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup } from "./services";
 
 type Variables = {
   userId: string;
@@ -71,6 +76,16 @@ export function createApp() {
     return c.json({ success: true, count });
   });
 
+  app.get("/cron/retention", cronAuth, async (c) => {
+    const result = await handleRetentionCleanup(c.env);
+    return c.json({ success: true, ...result });
+  });
+
+  app.get("/cron/imports-cleanup", cronAuth, async (c) => {
+    const count = await handleImportCleanup(c.env);
+    return c.json({ success: true, cleanedImports: count });
+  });
+
   app.route("/api/v1", healthRoute);
   app.route("/api/v1/bonds", bondRoutes);
   app.route("/api/v1/matches", matchRoutes);
@@ -79,6 +94,12 @@ export function createApp() {
   app.route("/api/v1/user", userRoutes);
   app.route("/api/v1", notificationRoutes);
   app.route("/api/v1", subscriptionRoutes);
+  app.route("/api/v1", paymentRoutes);
+  app.route("/api/v1", ocrRoutes);
+  app.route("/api/v1", importRoutes);
+  app.route("/api/v1", exportRoutes);
+  app.route("/api/v1", searchRoutes);
+  app.route("/api/v1", adminRoutes);
 
   app.onError((err, c) => {
     console.error("Unhandled error:", err);

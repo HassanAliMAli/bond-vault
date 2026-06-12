@@ -3,8 +3,9 @@ import { getDb } from "../db";
 import { bonds } from "../schema";
 import { eq, and, like, isNull } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
-import { createBondSchema } from "../validations";
+import { createBondSchema, updateBondSchema } from "../validations";
 import { generateId } from "../id";
+import { logAudit, getClientIp } from "../services";
 
 export const bondRoutes = new Hono()
   .get("/", async (c) => {
@@ -14,18 +15,21 @@ export const bondRoutes = new Hono()
     const denomination = c.req.query("denomination");
     const search = c.req.query("search");
     const status = c.req.query("status") || "active";
-    const page = parseInt(c.req.query("page") || "1");
-    const limit = parseInt(c.req.query("limit") || "50");
+    const page = Math.max(1, parseInt(c.req.query("page") || "1"));
+    const limit = Math.min(100, Math.max(1, parseInt(c.req.query("limit") || "50")));
 
-    let query = db.select().from(bonds).where(
-      and(eq(bonds.userId, userId), eq(bonds.status, status as any), isNull(bonds.deletedAt))
-    ).$dynamic();
+    const conditions = [
+      eq(bonds.userId, userId),
+      eq(bonds.status, status as any),
+      isNull(bonds.deletedAt),
+    ];
+    if (denomination) conditions.push(eq(bonds.denomination, parseInt(denomination)));
+    if (search) conditions.push(like(bonds.bondNumber, `%${search}%`));
 
-    if (denomination) query = query.where(eq(bonds.denomination, parseInt(denomination)));
-    if (search) query = query.where(like(bonds.bondNumber, `%${search}%`));
-
+    let query = db.select().from(bonds).where(and(...conditions)).$dynamic();
+    const total = (await db.select({ count: bonds.id }).from(bonds).where(and(...conditions)).all()).length;
     const data = await query.limit(limit).offset((page - 1) * limit).all();
-    return success(c, { bonds: data, total: data.length });
+    return success(c, { bonds: data, total });
   })
   .post("/", async (c) => {
     const env = getEnv(c);
@@ -43,6 +47,7 @@ export const bondRoutes = new Hono()
 
     const id = generateId();
     await db.insert(bonds).values({ id, userId, bondNumber, denomination, status: "active" as any, entryMethod: "manual" as any } as any);
+    await logAudit(env, { userId, action: "bond.create", entityType: "bond", entityId: id, ipAddress: getClientIp(c) });
     return success(c, await db.select().from(bonds).where(eq(bonds.id, id)).get(), 201);
   })
   .get("/:id", async (c) => {
@@ -54,6 +59,39 @@ export const bondRoutes = new Hono()
     if (!bond) return error(c, "NOT_FOUND", "Bond not found", 404);
     return success(c, bond);
   })
+  .patch("/:id", async (c) => {
+    const env = getEnv(c);
+    const db = getDb(env.DB);
+    const userId = getUserId(c);
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    const parsed = updateBondSchema.safeParse(body);
+    if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
+
+    const bond = await db.select().from(bonds).where(and(eq(bonds.id, id), eq(bonds.userId, userId))).get();
+    if (!bond) return error(c, "NOT_FOUND", "Bond not found", 404);
+
+    const updateData: any = { updatedAt: new Date().toISOString() };
+    if (parsed.data.bondNumber) updateData.bondNumber = parsed.data.bondNumber;
+    if (parsed.data.denomination) updateData.denomination = parsed.data.denomination;
+
+    if (updateData.bondNumber || updateData.denomination) {
+      const dupCheck = await db.select({ id: bonds.id }).from(bonds).where(
+        and(
+          eq(bonds.userId, userId),
+          eq(bonds.bondNumber, updateData.bondNumber || bond.bondNumber),
+          eq(bonds.denomination, updateData.denomination || bond.denomination),
+          isNull(bonds.deletedAt),
+          eq(bonds.status, bond.status as any)
+        )
+      ).get();
+      if (dupCheck && dupCheck.id !== id) return error(c, "CONFLICT", "A bond with these details already exists", 409);
+    }
+
+    await db.update(bonds).set(updateData as any).where(eq(bonds.id, id));
+    await logAudit(env, { userId, action: "bond.update", entityType: "bond", entityId: id, ipAddress: getClientIp(c) });
+    return success(c, await db.select().from(bonds).where(eq(bonds.id, id)).get());
+  })
   .delete("/:id", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
@@ -62,5 +100,28 @@ export const bondRoutes = new Hono()
     const bond = await db.select().from(bonds).where(and(eq(bonds.id, id), eq(bonds.userId, userId))).get();
     if (!bond) return error(c, "NOT_FOUND", "Bond not found", 404);
     await db.update(bonds).set({ deletedAt: new Date().toISOString(), status: "archived" as any } as any).where(eq(bonds.id, id));
+    await logAudit(env, { userId, action: "bond.delete", entityType: "bond", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Bond deleted" });
+  })
+  .post("/:id/archive", async (c) => {
+    const env = getEnv(c);
+    const db = getDb(env.DB);
+    const userId = getUserId(c);
+    const id = c.req.param("id");
+    const bond = await db.select().from(bonds).where(and(eq(bonds.id, id), eq(bonds.userId, userId))).get();
+    if (!bond) return error(c, "NOT_FOUND", "Bond not found", 404);
+    await db.update(bonds).set({ status: "archived" as any, updatedAt: new Date().toISOString() } as any).where(eq(bonds.id, id));
+    await logAudit(env, { userId, action: "bond.archive", entityType: "bond", entityId: id, ipAddress: getClientIp(c) });
+    return success(c, { message: "Bond archived" });
+  })
+  .post("/:id/restore", async (c) => {
+    const env = getEnv(c);
+    const db = getDb(env.DB);
+    const userId = getUserId(c);
+    const id = c.req.param("id");
+    const bond = await db.select().from(bonds).where(and(eq(bonds.id, id), eq(bonds.userId, userId))).get();
+    if (!bond) return error(c, "NOT_FOUND", "Bond not found", 404);
+    await db.update(bonds).set({ status: "active" as any, deletedAt: null, updatedAt: new Date().toISOString() } as any).where(eq(bonds.id, id));
+    await logAudit(env, { userId, action: "bond.restore", entityType: "bond", entityId: id, ipAddress: getClientIp(c) });
+    return success(c, { message: "Bond restored" });
   });
