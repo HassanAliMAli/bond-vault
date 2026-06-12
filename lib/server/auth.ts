@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
-import { withCloudflare } from "better-auth-cloudflare";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
+import { withCloudflare } from "better-auth-cloudflare";
 import * as schema from "./schema";
 
 interface CloudflareBindings {
@@ -17,41 +17,31 @@ export function createAuth(
   cf?: IncomingRequestCfProperties,
   baseURL?: string
 ) {
-  if (!env) {
+  if (!env || !env.DB) {
     return betterAuth({
       ...withCloudflare(
         {
           autoDetectIpAddress: true,
-          geolocationTracking: true,
+          geolocationTracking: false,
           cf: cf || {},
         },
         {
           emailAndPassword: { enabled: true },
         }
       ),
-      database: drizzleAdapter({} as D1Database, {
-        provider: "sqlite",
-        usePlural: true,
-      }),
     });
   }
 
-  const db = drizzle(env.DB, { schema, logger: env.ENVIRONMENT !== "production" });
+  const db = drizzle(env.DB, { schema });
 
   return betterAuth({
     baseURL,
+    database: drizzleAdapter(db, { provider: "sqlite", usePlural: true }),
     ...withCloudflare(
       {
         autoDetectIpAddress: true,
-        geolocationTracking: true,
+        geolocationTracking: false,
         cf: cf || {},
-        d1: {
-          db,
-          options: {
-            usePlural: true,
-            debugLogs: env.ENVIRONMENT !== "production",
-          },
-        },
         kv: env.KV as any,
       },
       {

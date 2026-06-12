@@ -37,17 +37,26 @@ export function createApp() {
   });
 
   app.use("*", async (c, next) => {
-    const auth = createAuth(
-      c.env,
-      (c.req.raw as any).cf || {},
-      new URL(c.req.url).origin
-    );
-    (c as any).__auth = auth;
+    try {
+      const auth = createAuth(
+        c.env,
+        (c.req.raw as any).cf || {},
+        new URL(c.req.url).origin
+      );
+      (c as any).__auth = auth;
+    } catch (e) {
+      console.error("createAuth error:", e);
+    }
     await next();
   });
 
-  app.on(["POST", "GET"], "/api/auth/*", (c) => {
-    return (c as any).__auth.handler(c.req.raw);
+  app.on(["POST", "GET"], "/api/auth/*", async (c) => {
+    try {
+      return await (c as any).__auth.handler(c.req.raw);
+    } catch (e) {
+      console.error("Better Auth error:", e);
+      return c.json({ success: false, error: String(e) }, 500);
+    }
   });
 
   app.use("/api/v1/*", async (c, next) => {
