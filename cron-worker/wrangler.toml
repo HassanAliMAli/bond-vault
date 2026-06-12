@@ -9,5 +9,3 @@ binding = "DB"
 database_name = "bondvault-production-v2"
 database_id = "2fc28994-8da8-4bfd-aa55-aeaf5b54701e"
 
-[triggers]
-crons = ["0 0 * * *"]
