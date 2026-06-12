@@ -24,36 +24,5 @@ id = "9c8d4227f86649ab8bc2b6ab968bcc24"
 binding = "R2"
 bucket_name = "bondvault-assets"
 
-[[queues.producers]]
-queue = "match-generation"
-binding = "MATCH_QUEUE"
-
-[[queues.producers]]
-queue = "notification-delivery"
-binding = "NOTIFICATION_QUEUE"
-
-[[queues.producers]]
-queue = "cleanup-jobs"
-binding = "CLEANUP_QUEUE"
-
-[[queues.producers]]
-queue = "draw-processing"
-binding = "DRAW_QUEUE"
-
-[[queues.consumers]]
-queue = "match-generation"
-
-[[queues.consumers]]
-queue = "notification-delivery"
-
-[[queues.consumers]]
-queue = "cleanup-jobs"
-
-[[queues.consumers]]
-queue = "draw-processing"
-
-[triggers]
-crons = ["0 0 * * *"]
-
 [vars]
 ENVIRONMENT = "production"

@@ -1,0 +1,13 @@
+name = "bondvault-cron"
+compatibility_date = "2025-10-01"
+main = "index.ts"
+
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bondvault-production"
+database_id = "990a8dc7-af95-417b-b970-aee4cfb3e72b"
+
+[triggers]
+crons = ["0 0 * * *"]
