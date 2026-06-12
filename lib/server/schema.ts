@@ -297,3 +297,9 @@ export const systemSettings = sqliteTable("system_settings", {
   value: text("value").notNull(),
   updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
 });
+
+// Aliases for Better Auth (expects singular model names)
+export const user = users;
+export const session = sessions;
+export const account = accounts;
+export const verification = verifications;

@@ -36,7 +36,7 @@ export function createAuth(
 
   return betterAuth({
     baseURL,
-    database: drizzleAdapter(db, { provider: "sqlite", usePlural: true }),
+    database: drizzleAdapter(db, { provider: "sqlite", usePlural: false }),
     ...withCloudflare(
       {
         autoDetectIpAddress: true,
