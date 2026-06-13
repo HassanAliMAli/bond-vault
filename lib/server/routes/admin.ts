@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { getDb } from "../db";
 import {
   users, payments, draws, winningNumbers, auditLogs, systemSettings,
-  notifications, notificationBatches, plans, subscriptions, subscriptionHistory,
+  notifications, plans, subscriptions, subscriptionHistory,
   bonds, matches,
 } from "../schema";
 import { eq, and, like, isNull, desc, gte, lte } from "drizzle-orm";
@@ -11,23 +11,28 @@ import { generateId } from "../id";
 import { createDrawSchema, createWinningNumberSchema, updateUserSchema, updateSettingsSchema } from "../validations";
 import { logAudit, getClientIp, createStorageProvider, generateMatchesForDraw } from "../services";
 
+type AdminVariables = {
+  adminId: string;
+};
+
 const isAdmin = async (c: any, next: any) => {
   try {
-    const auth = (c as any).__auth;
+    const auth = c.__auth;
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session) return c.json({ success: false, error: { code: "UNAUTHORIZED", message: "Not authenticated" } }, 401);
     const env = getEnv(c);
     const db = getDb(env.DB);
     const user = await db.select().from(users).where(eq(users.id, session.user.id)).get();
     if (!user || user.status !== "admin") return c.json({ success: false, error: { code: "FORBIDDEN", message: "Admin access required" } }, 403);
-    (c as any).set("adminId", session.user.id);
+    c.set("adminId", session.user.id);
     await next();
-  } catch {
+  } catch (e) {
+    console.error("Admin auth error:", e);
     return c.json({ success: false, error: { code: "UNAUTHORIZED", message: "Not authenticated" } }, 401);
   }
 };
 
-export const adminRoutes = new Hono()
+export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }>()
   .use("*", isAdmin)
 
   .get("/admin/users", async (c) => {
@@ -62,7 +67,7 @@ export const adminRoutes = new Hono()
   .patch("/admin/users/:id", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
     const body = await c.req.json();
     const parsed = updateUserSchema.safeParse(body);
@@ -75,7 +80,7 @@ export const adminRoutes = new Hono()
   .post("/admin/users/:id/suspend", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
     await db.update(users).set({ status: "suspended" as any, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
     await logAudit(env, { userId: adminId, action: "admin.user.suspend", entityType: "user", entityId: id, ipAddress: getClientIp(c) });
@@ -84,7 +89,7 @@ export const adminRoutes = new Hono()
   .post("/admin/users/:id/restore", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
     await db.update(users).set({ status: "active" as any, deletedAt: null, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
     await logAudit(env, { userId: adminId, action: "admin.user.restore", entityType: "user", entityId: id, ipAddress: getClientIp(c) });
@@ -101,7 +106,7 @@ export const adminRoutes = new Hono()
   .post("/admin/payments/:id/approve", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
 
     const payment = await db.select().from(payments).where(eq(payments.id, id)).get();
@@ -143,17 +148,23 @@ export const adminRoutes = new Hono()
   .post("/admin/payments/:id/reject", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
     await db.update(payments).set({ status: "rejected" as any, reviewedBy: adminId, reviewedAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as any).where(eq(payments.id, id));
     await logAudit(env, { userId: adminId, action: "admin.payment.reject", entityType: "payment", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Payment rejected" });
   })
 
+  .get("/admin/draws", async (c) => {
+    const env = getEnv(c);
+    const db = getDb(env.DB);
+    const data = await db.select().from(draws).all();
+    return success(c, { draws: data });
+  })
   .post("/admin/draws", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const body = await c.req.json();
     const parsed = createDrawSchema.safeParse(body);
     if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
@@ -175,7 +186,7 @@ export const adminRoutes = new Hono()
   .post("/admin/draws/:id/pdf", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
 
     const draw = await db.select().from(draws).where(eq(draws.id, id)).get();
@@ -197,7 +208,7 @@ export const adminRoutes = new Hono()
   .post("/admin/draws/:id/winners", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const drawId = c.req.param("id");
 
     const draw = await db.select().from(draws).where(eq(draws.id, drawId)).get();
@@ -225,8 +236,7 @@ export const adminRoutes = new Hono()
   })
   .post("/admin/draws/:id/generate-matches", async (c) => {
     const env = getEnv(c);
-    const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const drawId = c.req.param("id");
 
     const count = await generateMatchesForDraw(env, drawId);
@@ -236,7 +246,7 @@ export const adminRoutes = new Hono()
   .patch("/admin/draws/:id", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const id = c.req.param("id");
     const body = await c.req.json();
 
@@ -262,7 +272,7 @@ export const adminRoutes = new Hono()
   .post("/admin/notifications/retry", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     await db.update(notifications).set({ status: "pending" as any, sentAt: null } as any).where(eq(notifications.status, "failed" as any));
     await logAudit(env, { userId: adminId, action: "admin.notifications.retry", entityType: "notification", ipAddress: getClientIp(c) });
     return success(c, { message: "Failed notifications queued for retry" });
@@ -298,7 +308,7 @@ export const adminRoutes = new Hono()
   .patch("/admin/settings", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const adminId = (c as any).get("adminId");
+    const adminId = c.get("adminId");
     const body = await c.req.json();
     const parsed = updateSettingsSchema.safeParse(body);
     if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);

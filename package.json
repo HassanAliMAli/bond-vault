@@ -7,9 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "postinstall": "node patches/drizzle-adapter.mjs",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix"]
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.16",
@@ -44,15 +51,21 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260611.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "husky": "^9.1.7",
+    "jsdom": "^29.1.1",
+    "lint-staged": "^17.0.7",
     "tailwindcss": "^4",
     "toml": "^4.1.1",
     "typescript": "^5",
+    "vitest": "^4.1.8",
     "wrangler": "^4.99.0"
   }
 }

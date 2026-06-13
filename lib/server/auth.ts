@@ -1,4 +1,7 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { getDb } from "./db";
+import * as schema from "./schema";
 
 interface CloudflareBindings {
   DB: D1Database;
@@ -7,8 +10,6 @@ interface CloudflareBindings {
   BETTER_AUTH_SECRET: string;
   ENVIRONMENT: string;
 }
-
-let globalAdapter: any = null;
 
 export function createAuth(
   env?: CloudflareBindings,
@@ -21,13 +22,14 @@ export function createAuth(
     });
   }
 
-  if (!globalAdapter) {
-    globalAdapter = createCustomD1Adapter(env.DB);
-  }
+  const db = getDb(env.DB);
 
   return betterAuth({
     baseURL,
-    database: globalAdapter,
+    database: drizzleAdapter(db, {
+      provider: "sqlite",
+      schema,
+    }),
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 8,
@@ -45,101 +47,4 @@ export function createAuth(
       delete: async (key) => env.KV.delete(key),
     },
   });
-}
-
-function toSnake(str: string): string {
-  return str.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
-}
-
-function modelToTable(model: string): string {
-  switch (model) {
-    case "user": return "users";
-    case "session": return "session";
-    case "account": return "account";
-    case "verification": return "verification";
-    default: return model + "s";
-  }
-}
-
-function convertData(data: Record<string, any>): { keys: string[]; values: any[] } {
-  const keys: string[] = [];
-  const values: any[] = [];
-  for (const [k, v] of Object.entries(data)) {
-    keys.push(toSnake(k));
-    values.push(v instanceof Date ? v.toISOString() : v);
-  }
-  return { keys, values };
-}
-
-function createCustomD1Adapter(db: D1Database) {
-  return (options: any) => {
-    return {
-      create: async ({ model, data }: any) => {
-        throw new Error(`ADAPTER_CREATE_CALLED model=${model} keys=${Object.keys(data).join(",")}`);
-      },
-      findOne: async ({ model, where }: any) => {
-        const table = modelToTable(model);
-        if (!where?.length) return null;
-        const clauses = where.map((w: any) => `${toSnake(w.field)} = ?`);
-        const vals = where.map((w: any) => w.value);
-
-        const r = await db.prepare(
-          `SELECT * FROM ${table} WHERE ${clauses.join(" AND ")} LIMIT 1`
-        ).bind(...vals).all<any>();
-
-        return r.results?.[0] || null;
-      },
-      findMany: async ({ model, where, limit, sortBy, offset }: any) => {
-        const table = modelToTable(model);
-        let sql = `SELECT * FROM ${table}`;
-        const vals: any[] = [];
-
-        if (where?.length) {
-          const clauses = where.map((w: any) => {
-            vals.push(w.value);
-            return `${toSnake(w.field)} = ?`;
-          });
-          sql += ` WHERE ${clauses.join(" AND ")}`;
-        }
-
-        if (sortBy?.field) {
-          sql += ` ORDER BY ${toSnake(sortBy.field)} ${sortBy.direction === "desc" ? "DESC" : "ASC"}`;
-        }
-        if (limit) sql += ` LIMIT ${limit}`;
-        if (offset) sql += ` OFFSET ${offset}`;
-
-        const r = await db.prepare(sql).bind(...vals).all<any>();
-        return r.results || [];
-      },
-      update: async ({ model, where, data }: any) => {
-        const table = modelToTable(model);
-        const { keys, values } = convertData(data);
-        const setClauses = keys.map((k) => `${k} = ?`);
-
-        const wClauses = where.map((w: any) => `${toSnake(w.field)} = ?`);
-        const wVals = where.map((w: any) => w.value);
-
-        await db.prepare(
-          `UPDATE ${table} SET ${setClauses.join(", ")} WHERE ${wClauses.join(" AND ")}`
-        ).bind(...values, ...wVals).run();
-
-        const r = await db.prepare(
-          `SELECT * FROM ${table} WHERE ${wClauses.join(" AND ")}`
-        ).bind(...wVals).all<any>();
-
-        return r.results?.[0] || null;
-      },
-      delete: async ({ model, where }: any) => {
-        const table = modelToTable(model);
-        const clauses = where.map((w: any) => `${toSnake(w.field)} = ?`);
-        const vals = where.map((w: any) => w.value);
-
-        const r = await db.prepare(
-          `DELETE FROM ${table} WHERE ${clauses.join(" AND ")} RETURNING *`
-        ).bind(...vals).all<any>();
-
-        return r.results?.[0] || null;
-      },
-    };
-  };
 }

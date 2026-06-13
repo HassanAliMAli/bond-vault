@@ -1,5 +1,3 @@
-type ApiResponse<T> = { success: true; data: T; message: null } | { success: false; error: { code: string; message: string } };
-
 type RequestConfig = {
   method?: "GET" | "POST" | "DELETE" | "PATCH";
   body?: unknown;
@@ -41,7 +39,7 @@ async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promis
   return json.data as T;
 }
 
-async function apiFetchRaw(endpoint: string, config: RequestConfig = {}): Promise<Response> {
+export async function apiFetchRaw(endpoint: string, config: RequestConfig = {}): Promise<Response> {
   const { method = "GET", body, params } = config;
   let url = `/api/v1${endpoint}`;
   if (params) {

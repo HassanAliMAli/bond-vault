@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { useAuth } from "@/hooks/use-auth";
-import { Vault, ScrollText, PlusCircle, SearchCheck, Settings } from "lucide-react";
+import { Vault, ScrollText, PlusCircle, SearchCheck, Settings, Shield } from "lucide-react";
 
 const navItems = [
   { href: "/vault", label: "Vault", icon: Vault },
@@ -18,6 +18,7 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
+  const isAdmin = user?.status === "admin";
   const initial = user?.email?.[0]?.toUpperCase() ?? "?";
 
   return (
@@ -45,6 +46,38 @@ export function Sidebar() {
             </Link>
           );
         })}
+        {isAdmin && (
+          <>
+            <div className="pt-4 pb-2 px-3">
+              <p className="text-[10px] uppercase tracking-widest text-gray font-semibold">Admin</p>
+            </div>
+            {[
+              { href: "/admin", label: "Dashboard", icon: Shield },
+              { href: "/admin/users", label: "Users", icon: Shield },
+              { href: "/admin/payments", label: "Payments", icon: Shield },
+              { href: "/admin/draws", label: "Draws", icon: Shield },
+              { href: "/admin/audit", label: "Audit Logs", icon: Shield },
+              { href: "/admin/settings", label: "Settings", icon: Shield },
+            ].map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-[var(--radius-sm)] text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-gold/10 text-gold border-l-2 border-gold pl-2.5"
+                      : "text-gray hover:bg-dark-700 hover:text-white"
+                  )}
+                >
+                  <Shield className={cn("h-4 w-4", isActive ? "text-gold" : "text-gray")} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </>
+        )}
       </nav>
       <div className="p-4 border-t border-dark-600">
         <div className="flex items-center gap-3 px-3 py-2">

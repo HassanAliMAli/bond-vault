@@ -3,10 +3,6 @@ import { success, getEnv } from "../lib";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../schema";
 
-function toSnake(str: string): string {
-  return str.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
-}
-
 export const healthRoute = new Hono()
   .get("/health", async (c) => {
     const env = getEnv(c);
@@ -14,7 +10,9 @@ export const healthRoute = new Hono()
     try {
       await env.DB.prepare("SELECT 1").first();
       dbOk = true;
-    } catch {}
+    } catch (e) {
+      console.warn("Health check DB error:", e);
+    }
     return success(c, { status: "ok", timestamp: new Date().toISOString(), database: dbOk ? "connected" : "disconnected" });
   })
   .get("/debug/insert-raw", async (c) => {
@@ -35,7 +33,6 @@ export const healthRoute = new Hono()
     try {
       const db = drizzle(env.DB, { schema });
       const testId = "drizzle-" + Date.now();
-      // Use snake_case column names directly
       const stmt = db.insert(schema.users).values({
         id: testId,
         email: testId + "@drizzle.com",

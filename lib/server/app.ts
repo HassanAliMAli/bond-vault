@@ -17,13 +17,24 @@ import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handle
 
 type Variables = {
   userId: string;
+  adminId: string;
 };
+
+const ALLOWED_ORIGINS = [
+  "https://bondvault.hassanali205031.workers.dev",
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
 
 export function createApp() {
   const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
   app.use("*", cors({
-    origin: (origin) => origin,
+    origin: (origin) => {
+      if (!origin) return "*";
+      if (ALLOWED_ORIGINS.includes(origin)) return origin;
+      return origin;
+    },
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
@@ -33,6 +44,7 @@ export function createApp() {
     c.header("X-Content-Type-Options", "nosniff");
     c.header("X-Frame-Options", "DENY");
     c.header("Referrer-Policy", "strict-origin-when-cross-origin");
+    c.header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://bondvault.hassanali205031.workers.dev; form-action 'self'; frame-ancestors 'none'; base-uri 'self'");
     await next();
   });
 
@@ -64,7 +76,9 @@ export function createApp() {
     try {
       const session = await (c as any).__auth.api.getSession({ headers: c.req.raw.headers });
       if (session) c.set("userId", session.user.id);
-    } catch {}
+    } catch (e) {
+      console.error("Session fetch error:", e);
+    }
     await next();
   });
 
