@@ -16,7 +16,9 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix"]
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ]
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.16",
@@ -61,7 +63,7 @@
     "eslint-config-next": "16.2.7",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
-    "lint-staged": "^17.0.7",
+    "lint-staged": "^15.5.2",
     "tailwindcss": "^4",
     "toml": "^4.1.1",
     "typescript": "^5",
