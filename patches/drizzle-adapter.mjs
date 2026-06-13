@@ -23,10 +23,11 @@ for (const relative of paths) {
       'supportsArrays: config.provider === "pg" ? true : false,\n\t\t\tsupportsDates: false,\n\t\t\tcamelCase: true,'
     );
 
-    // No-op the field validation loop
     content = content.replace(
-      /function checkMissingFields\(schema,\s*model,\s*values\)\s*\{[^}]+\}/,
-      'function checkMissingFields(schema, model, values) {\n\t\t\tif (!schema) throw new BetterAuthError("Drizzle adapter failed to initialize. Drizzle Schema not found. Please provide a schema object in the adapter options object.");\n\t\t}'
+      /function checkMissingFields\(schema,\s*model,\s*values\)\s*\{[\s\S]*?^		\}/m,
+      `function checkMissingFields(schema, model, values) {
+			if (!schema) throw new BetterAuthError("Drizzle adapter failed to initialize. Drizzle Schema not found. Please provide a schema object in the adapter options object.");
+		}`
     );
 
     if (content !== original) {
