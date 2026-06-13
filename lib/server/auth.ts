@@ -1,7 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
-import { withCloudflare } from "better-auth-cloudflare";
 import * as schema from "./schema";
 
 interface CloudflareBindings {
@@ -19,16 +18,7 @@ export function createAuth(
 ) {
   if (!env || !env.DB) {
     return betterAuth({
-      ...withCloudflare(
-        {
-          autoDetectIpAddress: true,
-          geolocationTracking: false,
-          cf: cf || {},
-        },
-        {
-          emailAndPassword: { enabled: true },
-        }
-      ),
+      emailAndPassword: { enabled: true },
     });
   }
 
@@ -36,29 +26,22 @@ export function createAuth(
 
   return betterAuth({
     baseURL,
-    ...withCloudflare(
-      {
-        autoDetectIpAddress: true,
-        geolocationTracking: false,
-        cf: cf || {},
-        kv: env.KV as any,
-      },
-      {
-        emailAndPassword: {
-          enabled: true,
-          minPasswordLength: 8,
-        },
-        rateLimit: {
-          enabled: true,
-          window: 60,
-          max: 100,
-          customRules: {
-            "/sign-in/email": { window: 60, max: 100 },
-            "/sign-up/email": { window: 60, max: 20 },
-          },
-        },
-      }
-    ),
     database: drizzleAdapter(db, { provider: "sqlite" }),
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 8,
+    },
+    rateLimit: {
+      enabled: true,
+      window: 60,
+      max: 100,
+    },
+    secondaryStorage: {
+      get: async (key) => env.KV.get(key),
+      set: async (key, value, ttl) => {
+        await env.KV.put(key, value, ttl ? { expirationTtl: Math.max(60, ttl) } : undefined);
+      },
+      delete: async (key) => env.KV.delete(key),
+    },
   });
 }
