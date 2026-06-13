@@ -75,16 +75,7 @@ function createCustomD1Adapter(db: D1Database) {
   return (options: any) => {
     return {
       create: async ({ model, data }: any) => {
-        const table = modelToTable(model);
-        const { keys, values } = convertData(data);
-        const cols = keys.join(", ");
-        const ph = keys.map(() => "?").join(", ");
-
-        const r = await db.prepare(
-          `INSERT INTO ${table} (${cols}) VALUES (${ph}) RETURNING *`
-        ).bind(...values).all<any>();
-
-        return r.results?.[0] || null;
+        throw new Error(`ADAPTER_CREATE_CALLED model=${model} keys=${Object.keys(data).join(",")}`);
       },
       findOne: async ({ model, where }: any) => {
         const table = modelToTable(model);

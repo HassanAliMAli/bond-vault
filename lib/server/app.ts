@@ -52,10 +52,11 @@ export function createApp() {
 
   app.on(["POST", "GET"], "/api/auth/*", async (c) => {
     try {
-      return await (c as any).__auth.handler(c.req.raw);
+      const res = await (c as any).__auth.handler(c.req.raw);
+      return res;
     } catch (e) {
       console.error("Better Auth error:", e);
-      return c.json({ success: false, error: String(e) }, 500);
+      return c.json({ success: false, error: String(e), message: (e as any)?.message }, 500);
     }
   });
 
