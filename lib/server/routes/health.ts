@@ -2,6 +2,34 @@ import { Hono } from "hono";
 import { success, getEnv } from "../lib";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../schema";
+import { handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup } from "../services";
+
+const LAST_CLEANUP_KEY = "last_daily_cleanup";
+
+async function maybeRunCleanup(env: Env) {
+  const now = Date.now();
+  const lastRaw = await env.KV.get(LAST_CLEANUP_KEY);
+  const last = lastRaw ? parseInt(lastRaw, 10) : 0;
+  const oneDay = 86_400_000;
+  if (now - last >= oneDay) {
+    await env.KV.put(LAST_CLEANUP_KEY, String(now));
+    try {
+      await handleSubscriptionExpiration(env);
+    } catch (e) {
+      console.error("[cleanup] handleSubscriptionExpiration error:", e);
+    }
+    try {
+      await handleRetentionCleanup(env);
+    } catch (e) {
+      console.error("[cleanup] handleRetentionCleanup error:", e);
+    }
+    try {
+      await handleImportCleanup(env);
+    } catch (e) {
+      console.error("[cleanup] handleImportCleanup error:", e);
+    }
+  }
+}
 
 export const healthRoute = new Hono()
   .get("/health", async (c) => {
@@ -13,6 +41,7 @@ export const healthRoute = new Hono()
     } catch (e) {
       console.warn("Health check DB error:", e);
     }
+    c.executionCtx.waitUntil(maybeRunCleanup(env));
     return success(c, { status: "ok", timestamp: new Date().toISOString(), database: dbOk ? "connected" : "disconnected" });
   })
   .get("/debug/insert-raw", async (c) => {
