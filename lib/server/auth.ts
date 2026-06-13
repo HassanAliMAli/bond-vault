@@ -41,7 +41,6 @@ export function createAuth(
         autoDetectIpAddress: true,
         geolocationTracking: false,
         cf: cf || {},
-        d1: { db, options: { usePlural: false } },
         kv: env.KV as any,
       },
       {
@@ -60,5 +59,6 @@ export function createAuth(
         },
       }
     ),
+    database: drizzleAdapter(db, { provider: "sqlite" }),
   });
 }
