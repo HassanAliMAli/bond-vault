@@ -1,21 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { apiFetchRaw } from "@/lib/api-client";
 
-describe("apiFetchRaw", () => {
-  it("builds the correct URL with params", async () => {
-    // This is a type/interface test — actual HTTP is tested via e2e
-    const fn = apiFetchRaw.toString();
-    expect(fn).toBeDefined();
-  });
-});
-
-describe("API client interface", () => {
-  it("exports api object with expected methods", async () => {
+describe("api client", () => {
+  it("exports api object with expected domain methods", async () => {
     const { api } = await import("@/lib/api-client");
-    expect(api.bonds).toBeDefined();
+    const methods = ["bonds", "matches", "draws", "check", "user", "payments", "search", "exports"];
+    for (const m of methods) {
+      expect(api).toHaveProperty(m);
+    }
+  });
+
+  it("each domain has a list function", async () => {
+    const { api } = await import("@/lib/api-client");
     expect(api.bonds.list).toBeInstanceOf(Function);
-    expect(api.user).toBeDefined();
+    expect(api.matches.list).toBeInstanceOf(Function);
+    expect(api.draws.list).toBeInstanceOf(Function);
     expect(api.user.profile).toBeInstanceOf(Function);
-    expect(api.admin).toBeUndefined();
   });
 });

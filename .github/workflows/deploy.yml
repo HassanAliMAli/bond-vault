@@ -18,19 +18,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Deploy main app
+      - name: Deploy
         run: npm run deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      - name: Deploy cron worker
-        run: npx wrangler deploy --config cron-worker/wrangler.toml
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-      - name: Set cron schedule
-        continue-on-error: true
-        run: |
-          npx wrangler deploy --config cron-worker/wrangler.toml --triggers "0 0 * * *" || true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

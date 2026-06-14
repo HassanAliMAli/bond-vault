@@ -14,6 +14,7 @@ import { exportRoutes } from "./routes/exports";
 import { searchRoutes } from "./routes/search";
 import { adminRoutes } from "./routes/admin";
 import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup } from "./services";
+import { logger } from "./logger";
 
 type Variables = {
   userId: string;
@@ -44,8 +45,15 @@ export function createApp() {
     c.header("X-Content-Type-Options", "nosniff");
     c.header("X-Frame-Options", "DENY");
     c.header("Referrer-Policy", "strict-origin-when-cross-origin");
-    c.header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://bondvault.hassanali205031.workers.dev; form-action 'self'; frame-ancestors 'none'; base-uri 'self'");
+    c.header("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'");
     await next();
+  });
+
+  app.use("*", async (c, next) => {
+    const start = Date.now();
+    await next();
+    const duration = Date.now() - start;
+    logger.request(c.req.method, c.req.path, c.res.status, duration, { requestId: crypto.randomUUID().slice(0, 8) });
   });
 
   app.use("*", async (c, next) => {
@@ -57,7 +65,7 @@ export function createApp() {
       );
       (c as any).__auth = auth;
     } catch (e) {
-      console.error("createAuth error:", e);
+      logger.error("createAuth error", { message: (e as any)?.message });
     }
     await next();
   });
@@ -126,7 +134,7 @@ export function createApp() {
   app.route("/api/v1", adminRoutes);
 
   app.onError((err, c) => {
-    console.error("Unhandled error:", err);
+    logger.error("Unhandled error", { message: err.message, stack: err.stack, method: c.req.method, path: c.req.path });
     return c.json({ success: false, error: { code: "INTERNAL_ERROR", message: "An unexpected error occurred" } }, 500);
   });
 
