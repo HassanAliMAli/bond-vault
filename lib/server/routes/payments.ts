@@ -28,7 +28,7 @@ export const paymentRoutes = new Hono()
       status: "pending",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    } as any);
+    });
 
     await logAudit(env, { userId, action: "payment.create", entityType: "payment", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { paymentId: id, amount: plan.priceUsd, status: "pending" }, 201);
@@ -80,7 +80,7 @@ export const paymentRoutes = new Hono()
       r2FileKey: key,
       hash,
       createdAt: new Date().toISOString(),
-    } as any);
+    });
 
     await logAudit(env, { userId, action: "payment.receipt.upload", entityType: "payment", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Receipt uploaded", paymentId: id });

@@ -15,6 +15,6 @@ export async function seedPlans(d1: D1Database) {
   const existing = await db.select().from(plans).all();
   if (existing.length > 0) return;
   for (const plan of DEFAULT_PLANS) {
-    await db.insert(plans).values({ id: generateId(), ...plan } as any);
+    await db.insert(plans).values({ id: generateId(), ...plan });
   }
 }

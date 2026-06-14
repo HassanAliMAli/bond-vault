@@ -1,5 +1,5 @@
 import { getDb } from "../db";
-import { notificationBatches, notifications, notificationPreferences, matches, draws, winningNumbers } from "../schema";
+import { notificationBatches, notifications, notificationPreferences, matches, draws, winningNumbers, type NotificationChannel } from "../schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { generateId } from "../id";
 
@@ -23,7 +23,7 @@ export async function createNotificationBatch(
     .where(eq(notificationPreferences.userId, params.userId))
     .get();
 
-  const channels: string[] = [];
+  const channels: NotificationChannel[] = [];
   if (prefs?.emailEnabled) channels.push("email");
   if (prefs?.whatsappEnabled) channels.push("whatsapp");
   if (prefs?.smsEnabled) channels.push("sms");
@@ -54,7 +54,7 @@ export async function createNotificationBatch(
       matchCount: params.matchIds.length,
       status: "pending",
       createdAt: new Date().toISOString(),
-    } as any);
+    });
 
     const notificationId = generateId();
     await db.insert(notifications).values({
@@ -66,7 +66,7 @@ export async function createNotificationBatch(
       message,
       status: "pending",
       createdAt: new Date().toISOString(),
-    } as any);
+    });
   }
 }
 
@@ -75,7 +75,7 @@ export async function sendPendingNotifications(env: Env): Promise<number> {
   const pending = await db
     .select()
     .from(notifications)
-    .where(eq(notifications.status, "pending" as any))
+    .where(eq(notifications.status, "pending"))
     .all();
 
   let sent = 0;
@@ -84,13 +84,13 @@ export async function sendPendingNotifications(env: Env): Promise<number> {
       await sendNotification(env, notification);
       await db
         .update(notifications)
-        .set({ status: "sent" as any, sentAt: new Date().toISOString() } as any)
+        .set({ status: "sent", sentAt: new Date().toISOString() })
         .where(eq(notifications.id, notification.id));
       sent++;
     } catch {
       await db
         .update(notifications)
-        .set({ status: "failed" as any } as any)
+        .set({ status: "failed" })
         .where(eq(notifications.id, notification.id));
     }
   }
@@ -126,7 +126,7 @@ export async function markNotificationRead(env: Env, userId: string, notificatio
   const db = getDb(env.DB);
   await db
     .update(notifications)
-    .set({ status: "read" as any, readAt: new Date().toISOString() } as any)
+    .set({ status: "read", readAt: new Date().toISOString() })
     .where(
       and(
         eq(notifications.id, notificationId),

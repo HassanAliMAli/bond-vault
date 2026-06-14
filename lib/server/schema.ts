@@ -1,5 +1,19 @@
 import { sqliteTable, text, integer, real, uniqueIndex, index } from "drizzle-orm/sqlite-core";
 
+// String union types for status/type columns
+export type UserStatus = "active" | "admin" | "suspended" | "deleted";
+export type SubscriptionStatus = "active" | "grace_period" | "expired" | "cancelled";
+export type BondStatus = "active" | "archived";
+export type BondEntryMethod = "manual" | "csv" | "xlsx" | "ocr";
+export type PaymentStatus = "pending" | "approved" | "rejected";
+export type ImportJobStatus = "pending" | "processing" | "completed" | "failed";
+export type ImportJobFileType = "csv" | "xlsx";
+export type MatchStatus = "unseen" | "viewed";
+export type NotificationBatchStatus = "pending" | "sent" | "failed";
+export type NotificationStatus = "pending" | "sent" | "failed" | "read";
+export type NotificationChannel = "email" | "whatsapp" | "sms";
+export type DrawImportJobStatus = "pending" | "processing" | "completed" | "failed";
+
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
@@ -12,7 +26,7 @@ export const users = sqliteTable("users", {
   name: text("name").notNull().default(""),
   image: text("image"),
   fullName: text("full_name"),
-  status: text("status").notNull().default("active"),
+  status: text("status").$type<UserStatus>().notNull().default("active"),
   lastLoginAt: text("last_login_at"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),
   updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
@@ -101,7 +115,7 @@ export const subscriptions = sqliteTable("subscriptions", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   planId: text("plan_id").notNull().references(() => plans.id),
-  status: text("status").notNull().default("active"),
+  status: text("status").$type<SubscriptionStatus>().notNull().default("active"),
   startedAt: text("started_at").notNull(),
   expiresAt: text("expires_at").notNull(),
   graceEndsAt: text("grace_ends_at"),
@@ -128,8 +142,8 @@ export const bonds = sqliteTable("bonds", {
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   bondNumber: text("bond_number").notNull(),
   denomination: integer("denomination").notNull(),
-  status: text("status").notNull().default("active"),
-  entryMethod: text("entry_method").notNull().default("manual"),
+  status: text("status").$type<BondStatus>().notNull().default("active"),
+  entryMethod: text("entry_method").$type<BondEntryMethod>().notNull().default("manual"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),
   updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
   deletedAt: text("deleted_at"),
@@ -158,8 +172,8 @@ export const ocrUsage = sqliteTable("ocr_usage", {
 export const importJobs = sqliteTable("import_jobs", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  fileType: text("file_type").notNull(),
-  status: text("status").notNull().default("pending"),
+  fileType: text("file_type").$type<ImportJobFileType>().notNull(),
+  status: text("status").$type<ImportJobStatus>().notNull().default("pending"),
   totalRecords: integer("total_records").notNull().default(0),
   successfulRecords: integer("successful_records").notNull().default(0),
   duplicateRecords: integer("duplicate_records").notNull().default(0),
@@ -175,7 +189,7 @@ export const payments = sqliteTable("payments", {
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   amount: real("amount").notNull(),
   paymentMethod: text("payment_method"),
-  status: text("status").notNull().default("pending"),
+  status: text("status").$type<PaymentStatus>().notNull().default("pending"),
   reviewedBy: text("reviewed_by"),
   reviewedAt: text("reviewed_at"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),
@@ -211,7 +225,7 @@ export const draws = sqliteTable("draws", {
 export const drawImportJobs = sqliteTable("draw_import_jobs", {
   id: text("id").primaryKey(),
   drawId: text("draw_id").references(() => draws.id),
-  status: text("status").notNull().default("pending"),
+  status: text("status").$type<DrawImportJobStatus>().notNull().default("pending"),
   startedAt: text("started_at"),
   completedAt: text("completed_at"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),
@@ -241,7 +255,7 @@ export const matches = sqliteTable("matches", {
   prizeTypeSnapshot: text("prize_type_snapshot"),
   prizeAmountSnapshot: real("prize_amount_snapshot"),
   drawDateSnapshot: text("draw_date_snapshot"),
-  status: text("status").notNull().default("unseen"),
+  status: text("status").$type<MatchStatus>().notNull().default("unseen"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),
   updatedAt: text("updated_at").notNull().default("(datetime('now'))"),
 }, (table) => [
@@ -255,9 +269,9 @@ export const matches = sqliteTable("matches", {
 export const notificationBatches = sqliteTable("notification_batches", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  channel: text("channel").notNull(),
+  channel: text("channel").$type<NotificationChannel>().notNull(),
   matchCount: integer("match_count").notNull(),
-  status: text("status").notNull().default("pending"),
+  status: text("status").$type<NotificationBatchStatus>().notNull().default("pending"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),
 });
 
@@ -265,10 +279,10 @@ export const notifications = sqliteTable("notifications", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   batchId: text("batch_id").references(() => notificationBatches.id),
-  channel: text("channel").notNull(),
+  channel: text("channel").$type<NotificationChannel>().notNull(),
   title: text("title"),
   message: text("message"),
-  status: text("status").notNull().default("pending"),
+  status: text("status").$type<NotificationStatus>().notNull().default("pending"),
   sentAt: text("sent_at"),
   readAt: text("read_at"),
   createdAt: text("created_at").notNull().default("(datetime('now'))"),

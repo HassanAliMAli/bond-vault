@@ -177,7 +177,7 @@ export function useAuditLogs(filters?: { userId?: string; entityType?: string; s
   return useQuery({
     queryKey: ["admin", "audit", filters],
     queryFn: () => adminFetch<{ logs: AuditLog[]; total: number }>("/admin/audit-logs", {
-      params: { ...filters as any, page: String(filters?.page || 1), limit: "50" },
+      params: { ...filters, page: String(filters?.page || 1), limit: "50" } as Record<string, string | undefined>,
     }),
   });
 }

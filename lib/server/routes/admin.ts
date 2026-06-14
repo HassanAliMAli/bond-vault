@@ -4,6 +4,7 @@ import {
   users, payments, draws, winningNumbers, auditLogs, systemSettings,
   notifications, plans, subscriptions, subscriptionHistory,
   bonds, matches,
+  type PaymentStatus, type UserStatus, type NotificationStatus,
 } from "../schema";
 import { eq, and, like, isNull, desc, gte, lte } from "drizzle-orm";
 import { success, error, getEnv } from "../lib";
@@ -59,7 +60,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const [bondsCount, matchesCount, activeSub] = await Promise.all([
       (await db.select({ count: bonds.id }).from(bonds).where(and(eq(bonds.userId, id), isNull(bonds.deletedAt))).all()).length,
       (await db.select({ count: matches.id }).from(matches).where(eq(matches.userId, id)).all()).length,
-      db.select().from(subscriptions).where(and(eq(subscriptions.userId, id), eq(subscriptions.status, "active" as any))).get(),
+      db.select().from(subscriptions).where(and(eq(subscriptions.userId, id), eq(subscriptions.status, "active"))).get(),
     ]);
 
     return success(c, { ...user, stats: { bondsCount, matchesCount, activeSubscription: !!activeSub } });
@@ -73,7 +74,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const parsed = updateUserSchema.safeParse(body);
     if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
 
-    await db.update(users).set({ ...parsed.data, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
+    await db.update(users).set({ ...parsed.data, updatedAt: new Date().toISOString() }).where(eq(users.id, id));
     await logAudit(env, { userId: adminId, action: "admin.user.update", entityType: "user", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "User updated" });
   })
@@ -82,7 +83,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const db = getDb(env.DB);
     const adminId = c.get("adminId");
     const id = c.req.param("id");
-    await db.update(users).set({ status: "suspended" as any, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
+    await db.update(users).set({ status: "suspended", updatedAt: new Date().toISOString() }).where(eq(users.id, id));
     await logAudit(env, { userId: adminId, action: "admin.user.suspend", entityType: "user", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "User suspended" });
   })
@@ -91,7 +92,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const db = getDb(env.DB);
     const adminId = c.get("adminId");
     const id = c.req.param("id");
-    await db.update(users).set({ status: "active" as any, deletedAt: null, updatedAt: new Date().toISOString() } as any).where(eq(users.id, id));
+    await db.update(users).set({ status: "active", deletedAt: null, updatedAt: new Date().toISOString() }).where(eq(users.id, id));
     await logAudit(env, { userId: adminId, action: "admin.user.restore", entityType: "user", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "User restored" });
   })
@@ -99,8 +100,8 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
   .get("/admin/payments", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const status = c.req.query("status") || "pending";
-    const data = await db.select().from(payments).where(eq(payments.status, status as any)).all();
+    const status = (c.req.query("status") || "pending") as PaymentStatus;
+    const data = await db.select().from(payments).where(eq(payments.status, status)).all();
     return success(c, { payments: data });
   })
   .post("/admin/payments/:id/approve", async (c) => {
@@ -112,7 +113,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const payment = await db.select().from(payments).where(eq(payments.id, id)).get();
     if (!payment) return error(c, "NOT_FOUND", "Payment not found", 404);
 
-    await db.update(payments).set({ status: "approved" as any, reviewedBy: adminId, reviewedAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as any).where(eq(payments.id, id));
+    await db.update(payments).set({ status: "approved", reviewedBy: adminId, reviewedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }).where(eq(payments.id, id));
 
     const plan = await db.select().from(plans).where(eq(plans.name, "Monthly")).get();
     if (plan) {
@@ -129,7 +130,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
         expiresAt: expiresAt.toISOString(),
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
-      } as any);
+      });
 
       await db.insert(subscriptionHistory).values({
         id: generateId(),
@@ -139,7 +140,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
         startedAt: now.toISOString(),
         expiredAt: expiresAt.toISOString(),
         createdAt: now.toISOString(),
-      } as any);
+      });
     }
 
     await logAudit(env, { userId: adminId, action: "admin.payment.approve", entityType: "payment", entityId: id, ipAddress: getClientIp(c) });
@@ -150,7 +151,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const db = getDb(env.DB);
     const adminId = c.get("adminId");
     const id = c.req.param("id");
-    await db.update(payments).set({ status: "rejected" as any, reviewedBy: adminId, reviewedAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as any).where(eq(payments.id, id));
+    await db.update(payments).set({ status: "rejected", reviewedBy: adminId, reviewedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }).where(eq(payments.id, id));
     await logAudit(env, { userId: adminId, action: "admin.payment.reject", entityType: "payment", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Payment rejected" });
   })
@@ -178,7 +179,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
       source: parsed.data.source || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    } as any);
+    });
 
     await logAudit(env, { userId: adminId, action: "admin.draw.create", entityType: "draw", entityId: id, ipAddress: getClientIp(c) });
     return success(c, await db.select().from(draws).where(eq(draws.id, id)).get(), 201);
@@ -201,7 +202,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const key = `draws/${id}/${file.name}`;
     await storage.upload(key, buffer, file.type);
 
-    await db.update(draws).set({ pdfR2Key: key, updatedAt: new Date().toISOString() } as any).where(eq(draws.id, id));
+    await db.update(draws).set({ pdfR2Key: key, updatedAt: new Date().toISOString() }).where(eq(draws.id, id));
     await logAudit(env, { userId: adminId, action: "admin.draw.pdf.upload", entityType: "draw", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "PDF uploaded" });
   })
@@ -228,7 +229,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
         prizeType: parsed.data.prizeType,
         prizeAmount: parsed.data.prizeAmount,
         createdAt: new Date().toISOString(),
-      } as any);
+      });
     }
 
     await logAudit(env, { userId: adminId, action: "admin.draw.winners.create", entityType: "draw", entityId: drawId, ipAddress: getClientIp(c) });
@@ -240,7 +241,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const drawId = c.req.param("id");
 
     const count = await generateMatchesForDraw(env, drawId);
-    await logAudit(env, { userId: adminId, action: "admin.draw.matches.generate", entityType: "draw", entityId: drawId, metadata: { matchCount: count } as any, ipAddress: getClientIp(c) });
+    await logAudit(env, { userId: adminId, action: "admin.draw.matches.generate", entityType: "draw", entityId: drawId, metadata: { matchCount: count }, ipAddress: getClientIp(c) });
     return success(c, { matchesGenerated: count });
   })
   .patch("/admin/draws/:id", async (c) => {
@@ -253,7 +254,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const draw = await db.select().from(draws).where(eq(draws.id, id)).get();
     if (!draw) return error(c, "NOT_FOUND", "Draw not found", 404);
 
-    await db.update(draws).set({ ...body, updatedAt: new Date().toISOString() } as any).where(eq(draws.id, id));
+    await db.update(draws).set({ ...body, updatedAt: new Date().toISOString() }).where(eq(draws.id, id));
     await logAudit(env, { userId: adminId, action: "admin.draw.update", entityType: "draw", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Draw updated" });
   })
@@ -261,9 +262,9 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
   .get("/admin/notifications", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const status = c.req.query("status");
+    const status = c.req.query("status") as NotificationStatus | undefined;
     const conditions: any[] = [];
-    if (status) conditions.push(eq(notifications.status, status as any));
+    if (status) conditions.push(eq(notifications.status, status));
     const data = conditions.length > 0
       ? await db.select().from(notifications).where(and(...conditions)).all()
       : await db.select().from(notifications).all();
@@ -273,7 +274,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const env = getEnv(c);
     const db = getDb(env.DB);
     const adminId = c.get("adminId");
-    await db.update(notifications).set({ status: "pending" as any, sentAt: null } as any).where(eq(notifications.status, "failed" as any));
+    await db.update(notifications).set({ status: "pending", sentAt: null }).where(eq(notifications.status, "failed"));
     await logAudit(env, { userId: adminId, action: "admin.notifications.retry", entityType: "notification", ipAddress: getClientIp(c) });
     return success(c, { message: "Failed notifications queued for retry" });
   })
@@ -315,9 +316,9 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
 
     const existing = await db.select().from(systemSettings).where(eq(systemSettings.key, parsed.data.key)).get();
     if (existing) {
-      await db.update(systemSettings).set({ value: parsed.data.value, updatedAt: new Date().toISOString() } as any).where(eq(systemSettings.key, parsed.data.key));
+      await db.update(systemSettings).set({ value: parsed.data.value, updatedAt: new Date().toISOString() }).where(eq(systemSettings.key, parsed.data.key));
     } else {
-      await db.insert(systemSettings).values({ key: parsed.data.key, value: parsed.data.value, updatedAt: new Date().toISOString() } as any);
+      await db.insert(systemSettings).values({ key: parsed.data.key, value: parsed.data.value, updatedAt: new Date().toISOString() });
     }
 
     await logAudit(env, { userId: adminId, action: "admin.settings.update", entityType: "system_settings", entityId: parsed.data.key, ipAddress: getClientIp(c) });
@@ -331,8 +332,8 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
       (await db.select({ count: users.id }).from(users).where(isNull(users.deletedAt)).all()).length,
       (await db.select({ count: bonds.id }).from(bonds).where(isNull(bonds.deletedAt)).all()).length,
       (await db.select({ count: matches.id }).from(matches).all()).length,
-      (await db.select({ count: payments.id }).from(payments).where(eq(payments.status, "pending" as any)).all()).length,
-      (await db.select({ count: subscriptions.id }).from(subscriptions).where(eq(subscriptions.status, "active" as any)).all()).length,
+      (await db.select({ count: payments.id }).from(payments).where(eq(payments.status, "pending")).all()).length,
+      (await db.select({ count: subscriptions.id }).from(subscriptions).where(eq(subscriptions.status, "active")).all()).length,
     ]);
     return success(c, { stats: { totalUsers, totalBonds, totalMatches, pendingPayments, activeSubscriptions: activeSubs } });
   });

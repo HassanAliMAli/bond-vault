@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { importJobs, bonds } from "../schema";
+import { importJobs, bonds, type BondEntryMethod, type ImportJobFileType } from "../schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { generateId } from "../id";
@@ -20,11 +20,10 @@ export const importRoutes = new Hono()
     if (!file) return error(c, "VALIDATION_ERROR", "File is required");
 
     const fileName = file.name.toLowerCase();
-    let fileType: string;
+    let fileType: ImportJobFileType = "csv";
     if (fileName.endsWith(".csv")) fileType = "csv";
     else if (fileName.endsWith(".xlsx")) fileType = "xlsx";
-    else if (fileName.endsWith(".txt")) fileType = "txt";
-    else return error(c, "VALIDATION_ERROR", "Unsupported file type. Supported: CSV, XLSX, TXT");
+    else return error(c, "VALIDATION_ERROR", "Unsupported file type. Supported: CSV, XLSX");
 
     const buffer = await file.arrayBuffer();
     const content = new TextDecoder().decode(buffer);
@@ -78,9 +77,9 @@ export const importRoutes = new Hono()
       r2FileKey: `imports/${userId}/${importId}_${file.name}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    } as any);
+    });
 
-    await logAudit(env, { userId, action: "import.create", entityType: "import_job", entityId: importId, metadata: { total: lines.length, valid: valid.length, invalid: invalid.length, duplicates: duplicates.length } as any, ipAddress: getClientIp(c) });
+    await logAudit(env, { userId, action: "import.create", entityType: "import_job", entityId: importId, metadata: { total: lines.length, valid: valid.length, invalid: invalid.length, duplicates: duplicates.length }, ipAddress: getClientIp(c) });
 
     return success(c, {
       importId,
@@ -130,15 +129,15 @@ export const importRoutes = new Hono()
         bondNumber,
         denomination,
         status: "active",
-        entryMethod: job.fileType as any || "csv",
+        entryMethod: (job.fileType as BondEntryMethod) || "csv",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      } as any);
+      });
       saved++;
     }
 
-    await db.update(importJobs).set({ status: "completed", successfulRecords: saved, updatedAt: new Date().toISOString() } as any).where(eq(importJobs.id, id));
-    await logAudit(env, { userId, action: "import.confirm", entityType: "import_job", entityId: id, metadata: { saved } as any, ipAddress: getClientIp(c) });
+    await db.update(importJobs).set({ status: "completed", successfulRecords: saved, updatedAt: new Date().toISOString() }).where(eq(importJobs.id, id));
+    await logAudit(env, { userId, action: "import.confirm", entityType: "import_job", entityId: id, metadata: { saved }, ipAddress: getClientIp(c) });
     return success(c, { message: `Import completed. ${saved} bonds saved.` });
   })
   .get("/imports", async (c) => {
@@ -164,6 +163,6 @@ export const importRoutes = new Hono()
     const id = c.req.param("id");
     const job = await db.select().from(importJobs).where(and(eq(importJobs.id, id), eq(importJobs.userId, userId))).get();
     if (!job) return error(c, "NOT_FOUND", "Import job not found", 404);
-    await db.update(importJobs).set({ deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as any).where(eq(importJobs.id, id));
+    await db.update(importJobs).set({ deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }).where(eq(importJobs.id, id));
     return success(c, { message: "Import record deleted" });
   });

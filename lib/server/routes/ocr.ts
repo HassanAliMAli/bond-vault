@@ -33,7 +33,7 @@ export const ocrRoutes = new Hono()
     if (existing) {
       await db
         .update(ocrUsage)
-        .set({ successfulScans: existing.successfulScans + 1, updatedAt: now.toISOString() } as any)
+        .set({ successfulScans: existing.successfulScans + 1, updatedAt: now.toISOString() })
         .where(eq(ocrUsage.id, existing.id));
     } else {
       await db.insert(ocrUsage).values({
@@ -44,7 +44,7 @@ export const ocrRoutes = new Hono()
         successfulScans: 1,
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
-      } as any);
+      });
     }
 
     await logAudit(env, { userId, action: "ocr.scan", entityType: "ocr_usage", ipAddress: getClientIp(c) });

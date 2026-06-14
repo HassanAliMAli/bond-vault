@@ -12,7 +12,7 @@ async function getActiveSubscription(env: Env, userId: string) {
     .where(
       and(
         eq(subscriptions.userId, userId),
-        eq(subscriptions.status, "active" as any),
+        eq(subscriptions.status, "active"),
         lte(subscriptions.startedAt, now),
         gte(subscriptions.expiresAt, now)
       )

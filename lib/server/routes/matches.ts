@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { matches } from "../schema";
+import { matches, type MatchStatus } from "../schema";
 import { eq, and } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { logAudit, getClientIp } from "../services";
@@ -10,13 +10,13 @@ export const matchRoutes = new Hono()
     const env = getEnv(c);
     const db = getDb(env.DB);
     const userId = getUserId(c);
-    const status = c.req.query("status");
+    const status = c.req.query("status") as MatchStatus | undefined;
     const denomination = c.req.query("denomination");
     const page = Math.max(1, parseInt(c.req.query("page") || "1"));
     const limit = Math.min(100, Math.max(1, parseInt(c.req.query("limit") || "50")));
 
     const conditions = [eq(matches.userId, userId)];
-    if (status) conditions.push(eq(matches.status, status as any));
+    if (status) conditions.push(eq(matches.status, status));
     if (denomination) conditions.push(eq(matches.denominationSnapshot, parseInt(denomination)));
 
     const total = (await db.select({ count: matches.id }).from(matches).where(and(...conditions)).all()).length;
@@ -39,7 +39,7 @@ export const matchRoutes = new Hono()
     const id = c.req.param("id");
     const match = await db.select().from(matches).where(and(eq(matches.id, id), eq(matches.userId, userId))).get();
     if (!match) return error(c, "NOT_FOUND", "Match not found", 404);
-    await db.update(matches).set({ status: "viewed" as any, updatedAt: new Date().toISOString() } as any).where(eq(matches.id, id));
+    await db.update(matches).set({ status: "viewed", updatedAt: new Date().toISOString() }).where(eq(matches.id, id));
     await logAudit(env, { userId, action: "match.viewed", entityType: "match", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Match marked as viewed" });
   });

@@ -22,7 +22,7 @@ export const userRoutes = new Hono()
     const body = await c.req.json();
     const parsed = updateProfileSchema.safeParse(body);
     if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
-    await db.update(users).set({ ...parsed.data, updatedAt: new Date().toISOString() } as any).where(eq(users.id, userId));
+    await db.update(users).set({ ...parsed.data, updatedAt: new Date().toISOString() }).where(eq(users.id, userId));
     await logAudit(env, { userId, action: "user.profile.update", entityType: "user", entityId: userId, ipAddress: getClientIp(c) });
     return success(c, await db.select().from(users).where(eq(users.id, userId)).get());
   })
@@ -30,7 +30,7 @@ export const userRoutes = new Hono()
     const env = getEnv(c);
     const db = getDb(env.DB);
     const userId = getUserId(c);
-    await db.update(users).set({ status: "deleted" as any, deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as any).where(eq(users.id, userId));
+    await db.update(users).set({ status: "deleted", deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }).where(eq(users.id, userId));
     await logAudit(env, { userId, action: "user.account.delete", entityType: "user", entityId: userId, ipAddress: getClientIp(c) });
     return success(c, { message: "Account deletion requested. Data will be permanently deleted after 90 days." });
   })
@@ -62,7 +62,7 @@ export const notificationRoutes = new Hono()
     let prefs = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId)).get();
     if (!prefs) {
       const id = (await import("../id")).generateId();
-      await db.insert(notificationPreferences).values({ id, userId, emailEnabled: true, whatsappEnabled: false, smsEnabled: false } as any);
+      await db.insert(notificationPreferences).values({ id, userId, emailEnabled: true, whatsappEnabled: false, smsEnabled: false });
       prefs = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId)).get();
     }
     return success(c, prefs);
@@ -74,12 +74,12 @@ export const notificationRoutes = new Hono()
     const body = await c.req.json();
     const parsed = notificationPrefsSchema.safeParse(body);
     if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
-    let prefs = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId)).get();
+    const prefs = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId)).get();
     if (!prefs) {
       const id = (await import("../id")).generateId();
-      await db.insert(notificationPreferences).values({ id, userId, ...parsed.data, emailEnabled: parsed.data.emailEnabled ?? true, whatsappEnabled: parsed.data.whatsappEnabled ?? false, smsEnabled: parsed.data.smsEnabled ?? false } as any);
+      await db.insert(notificationPreferences).values({ id, userId, ...parsed.data, emailEnabled: parsed.data.emailEnabled ?? true, whatsappEnabled: parsed.data.whatsappEnabled ?? false, smsEnabled: parsed.data.smsEnabled ?? false });
     } else {
-      await db.update(notificationPreferences).set({ ...parsed.data, updatedAt: new Date().toISOString() } as any).where(eq(notificationPreferences.userId, userId));
+      await db.update(notificationPreferences).set({ ...parsed.data, updatedAt: new Date().toISOString() }).where(eq(notificationPreferences.userId, userId));
     }
     await logAudit(env, { userId, action: "notification.preferences.update", entityType: "user", entityId: userId, ipAddress: getClientIp(c) });
     return success(c, await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId)).get());
@@ -90,9 +90,9 @@ export const subscriptionRoutes = new Hono()
     const env = getEnv(c);
     const db = getDb(env.DB);
     const userId = getUserId(c);
-    const sub = await db.select().from(subscriptions).where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active" as any))).get();
+    const sub = await db.select().from(subscriptions).where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "active"))).get();
     if (!sub) {
-      const graceSub = await db.select().from(subscriptions).where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "grace_period" as any))).get();
+      const graceSub = await db.select().from(subscriptions).where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, "grace_period"))).get();
       return success(c, graceSub || null);
     }
     return success(c, sub);

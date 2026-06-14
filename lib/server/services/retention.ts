@@ -7,13 +7,13 @@ export async function handleRetentionCleanup(env: Env): Promise<{ deletedUsers: 
   const now = new Date().toISOString();
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const importedDeleted = await db.update(importJobs).set({ deletedAt: now } as any).where(
+  const importedDeleted = await db.update(importJobs).set({ deletedAt: now }).where(
     and(isNull(importJobs.deletedAt), lt(importJobs.createdAt, thirtyDaysAgo))
   );
 
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
   const expiredUsers = await db.select().from(users).where(
-    and(eq(users.status, "deleted" as any), lt(users.deletedAt!, ninetyDaysAgo))
+    and(eq(users.status, "deleted"), lt(users.deletedAt!, ninetyDaysAgo))
   ).all();
 
   for (const user of expiredUsers) {
@@ -40,7 +40,7 @@ export async function handleRetentionCleanup(env: Env): Promise<{ deletedUsers: 
 export async function handleImportCleanup(env: Env): Promise<number> {
   const db = getDb(env.DB);
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const result = await db.update(importJobs).set({ deletedAt: new Date().toISOString() } as any).where(
+  const result = await db.update(importJobs).set({ deletedAt: new Date().toISOString() }).where(
     and(isNull(importJobs.deletedAt), lt(importJobs.createdAt, thirtyDaysAgo))
   );
   return result.meta.changes || 0;

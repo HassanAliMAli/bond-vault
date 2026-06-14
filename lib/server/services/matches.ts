@@ -7,6 +7,7 @@ import {
   notificationBatches,
   notifications,
   notificationPreferences,
+  type NotificationChannel,
 } from "../schema";
 import { eq, and, isNull, inArray } from "drizzle-orm";
 import { generateId } from "../id";
@@ -31,7 +32,7 @@ export async function generateMatchesForDraw(env: Env, drawId: string): Promise<
     .where(
       and(
         eq(bonds.denomination, draw.denomination),
-        eq(bonds.status, "active" as any),
+        eq(bonds.status, "active"),
         isNull(bonds.deletedAt)
       )
     )
@@ -79,7 +80,7 @@ export async function generateMatchesForDraw(env: Env, drawId: string): Promise<
         status: "unseen",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      } as any);
+      });
 
       matchCount++;
 
@@ -114,7 +115,7 @@ async function createNotificationBatch(
     .where(eq(notificationPreferences.userId, userId))
     .get();
 
-  const channels: string[] = [];
+  const channels: NotificationChannel[] = [];
   if (prefs?.emailEnabled) channels.push("email");
   if (prefs?.whatsappEnabled) channels.push("whatsapp");
   if (prefs?.smsEnabled) channels.push("sms");
@@ -143,7 +144,7 @@ async function createNotificationBatch(
       matchCount: data.matchIds.length,
       status: "pending",
       createdAt: new Date().toISOString(),
-    } as any);
+    });
 
     await db.insert(notifications).values({
       id: generateId(),
@@ -154,7 +155,7 @@ async function createNotificationBatch(
       message,
       status: "pending",
       createdAt: new Date().toISOString(),
-    } as any);
+    });
   }
 }
 
@@ -166,7 +167,7 @@ export async function generateMatchesForAllActiveBonds(env: Env, userId: string)
     .where(
       and(
         eq(bonds.userId, userId),
-        eq(bonds.status, "active" as any),
+        eq(bonds.status, "active"),
         isNull(bonds.deletedAt)
       )
     )
@@ -215,7 +216,7 @@ export async function generateMatchesForAllActiveBonds(env: Env, userId: string)
         status: "unseen",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      } as any);
+      });
       totalMatches++;
     }
   }

@@ -24,7 +24,7 @@ export async function logAudit(
     ipAddress: params.ipAddress || null,
     metadataJson: params.metadata ? JSON.stringify(params.metadata) : null,
     createdAt: new Date().toISOString(),
-  } as any);
+  });
 }
 
 export function getClientIp(c: any): string {
