@@ -9,8 +9,9 @@ import {
 import { eq, and, like, isNull, desc, gte, lte } from "drizzle-orm";
 import { success, error, getEnv } from "../lib";
 import { generateId } from "../id";
-import { createDrawSchema, createWinningNumberSchema, updateUserSchema, updateSettingsSchema } from "../validations";
+import { createDrawSchema, createWinningNumberSchema, updateUserSchema, updateSettingsSchema, updateDrawSchema } from "../validations";
 import { logAudit, getClientIp, createStorageProvider, generateMatchesForDraw } from "../services";
+import { logger } from "../logger";
 
 type AdminVariables = {
   adminId: string;
@@ -28,7 +29,7 @@ const isAdmin = async (c: any, next: any) => {
     c.set("adminId", session.user.id);
     await next();
   } catch (e) {
-    console.error("Admin auth error:", e);
+    logger.error("Admin auth error", { message: (e as Error).message });
     return c.json({ success: false, error: { code: "UNAUTHORIZED", message: "Not authenticated" } }, 401);
   }
 };
@@ -250,11 +251,13 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const adminId = c.get("adminId");
     const id = c.req.param("id");
     const body = await c.req.json();
+    const parsed = updateDrawSchema.safeParse(body);
+    if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
 
     const draw = await db.select().from(draws).where(eq(draws.id, id)).get();
     if (!draw) return error(c, "NOT_FOUND", "Draw not found", 404);
 
-    await db.update(draws).set({ ...body, updatedAt: new Date().toISOString() }).where(eq(draws.id, id));
+    await db.update(draws).set({ ...parsed.data, updatedAt: new Date().toISOString() }).where(eq(draws.id, id));
     await logAudit(env, { userId: adminId, action: "admin.draw.update", entityType: "draw", entityId: id, ipAddress: getClientIp(c) });
     return success(c, { message: "Draw updated" });
   })

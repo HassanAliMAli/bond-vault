@@ -4,6 +4,12 @@ type RequestConfig = {
   params?: Record<string, string | undefined>;
 };
 
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: { code?: string; message?: string };
+}
+
 async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
   const { method = "GET", body, params } = config;
 
@@ -27,14 +33,15 @@ async function apiFetch<T>(endpoint: string, config: RequestConfig = {}): Promis
   });
 
   if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    const msg = (errorBody as any)?.error?.message || `Request failed with status ${res.status}`;
+    let errorBody: ApiResponse<never> | null = null;
+    try { errorBody = await res.json(); } catch { /* ignore parse errors */ }
+    const msg = errorBody?.error?.message || `Request failed with status ${res.status}`;
     throw new Error(msg);
   }
 
-  const json = await res.json() as any;
+  const json: ApiResponse<T> = await res.json();
   if (!json.success) {
-    throw new Error(json?.error?.message || "API error");
+    throw new Error(json.error?.message || "API error");
   }
   return json.data as T;
 }

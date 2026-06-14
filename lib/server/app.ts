@@ -42,6 +42,18 @@ export function createApp() {
   }));
 
   app.use("*", async (c, next) => {
+    if (!c.env.BETTER_AUTH_SECRET) {
+      logger.error("BETTER_AUTH_SECRET is not set");
+      return c.json({ success: false, error: { code: "CONFIG_ERROR", message: "Server configuration error" } }, 500);
+    }
+    if (!c.env.DB) {
+      logger.error("DB binding is not configured");
+      return c.json({ success: false, error: { code: "CONFIG_ERROR", message: "Database not configured" } }, 500);
+    }
+    await next();
+  });
+
+  app.use("*", async (c, next) => {
     c.header("X-Content-Type-Options", "nosniff");
     c.header("X-Frame-Options", "DENY");
     c.header("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -75,7 +87,7 @@ export function createApp() {
       const res = await (c as any).__auth.handler(c.req.raw);
       return res;
     } catch (e) {
-      console.error("Better Auth error:", e);
+      logger.error("Better Auth error", { message: (e as Error).message });
       return c.json({ success: false, error: String(e), message: (e as any)?.message }, 500);
     }
   });
@@ -85,7 +97,7 @@ export function createApp() {
       const session = await (c as any).__auth.api.getSession({ headers: c.req.raw.headers });
       if (session) c.set("userId", session.user.id);
     } catch (e) {
-      console.error("Session fetch error:", e);
+      logger.error("Session fetch error", { message: (e as Error).message });
     }
     await next();
   });

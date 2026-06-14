@@ -3,6 +3,7 @@ import { success, getEnv } from "../lib";
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "../schema";
 import { handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup } from "../services";
+import { logger } from "../logger";
 
 const LAST_CLEANUP_KEY = "last_daily_cleanup";
 
@@ -16,17 +17,17 @@ async function maybeRunCleanup(env: Env) {
     try {
       await handleSubscriptionExpiration(env);
     } catch (e) {
-      console.error("[cleanup] handleSubscriptionExpiration error:", e);
+      logger.error("[cleanup] handleSubscriptionExpiration error", { message: (e as Error).message });
     }
     try {
       await handleRetentionCleanup(env);
     } catch (e) {
-      console.error("[cleanup] handleRetentionCleanup error:", e);
+      logger.error("[cleanup] handleRetentionCleanup error", { message: (e as Error).message });
     }
     try {
       await handleImportCleanup(env);
     } catch (e) {
-      console.error("[cleanup] handleImportCleanup error:", e);
+      logger.error("[cleanup] handleImportCleanup error", { message: (e as Error).message });
     }
   }
 }
@@ -39,7 +40,7 @@ export const healthRoute = new Hono()
       await env.DB.prepare("SELECT 1").first();
       dbOk = true;
     } catch (e) {
-      console.warn("Health check DB error:", e);
+      logger.warn("Health check DB error", { message: (e as Error).message });
     }
     c.executionCtx.waitUntil(maybeRunCleanup(env));
     return success(c, { status: "ok", timestamp: new Date().toISOString(), database: dbOk ? "connected" : "disconnected" });
@@ -66,9 +67,9 @@ export const healthRoute = new Hono()
         id: testId,
         email: testId + "@drizzle.com",
         name: "Drizzle Test",
-        emailVerified: false as any,
-        createdAt: new Date().toISOString() as any,
-        updatedAt: new Date().toISOString() as any,
+        emailVerified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
       const result = await stmt.returning();
       return success(c, { drizzleResult: result[0] || null });

@@ -77,3 +77,11 @@ export const contactSchema = z.object({
   email: z.string().email(),
   message: z.string().min(10),
 });
+
+export const updateDrawSchema = z.object({
+  denomination: denominationSchema.optional(),
+  drawNumber: z.string().min(1).optional(),
+  drawDate: z.string().min(1).optional(),
+  source: z.string().optional(),
+  pdfR2Key: z.string().optional(),
+});

@@ -71,7 +71,7 @@ export const bondRoutes = new Hono()
     const bond = await db.select().from(bonds).where(and(eq(bonds.id, id), eq(bonds.userId, userId))).get();
     if (!bond) return error(c, "NOT_FOUND", "Bond not found", 404);
 
-    const updateData: any = { updatedAt: new Date().toISOString() };
+    const updateData: Partial<typeof bonds.$inferInsert> = { updatedAt: new Date().toISOString() };
     if (parsed.data.bondNumber) updateData.bondNumber = parsed.data.bondNumber;
     if (parsed.data.denomination) updateData.denomination = parsed.data.denomination;
 
@@ -88,7 +88,7 @@ export const bondRoutes = new Hono()
       if (dupCheck && dupCheck.id !== id) return error(c, "CONFLICT", "A bond with these details already exists", 409);
     }
 
-    await db.update(bonds).set(updateData as any).where(eq(bonds.id, id));
+    await db.update(bonds).set(updateData).where(eq(bonds.id, id));
     await logAudit(env, { userId, action: "bond.update", entityType: "bond", entityId: id, ipAddress: getClientIp(c) });
     return success(c, await db.select().from(bonds).where(eq(bonds.id, id)).get());
   })
