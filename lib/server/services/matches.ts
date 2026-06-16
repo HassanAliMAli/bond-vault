@@ -9,7 +9,7 @@ import {
   notificationPreferences,
   type NotificationChannel,
 } from "../schema";
-import { eq, and, isNull, inArray } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import { generateId } from "../id";
 
 export async function generateMatchesForDraw(env: Env, drawId: string): Promise<number> {

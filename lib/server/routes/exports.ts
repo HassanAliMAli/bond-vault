@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
 import { bonds } from "../schema";
-import { eq, and, isNull } from "drizzle-orm";
-import { error, getUserId, getEnv } from "../lib";
+import { eq, and } from "drizzle-orm";
+import { getUserId, getEnv } from "../lib";
 import { canExport, logAudit, getClientIp } from "../services";
 
 const DENOMINATION_LABELS: Record<number, string> = {

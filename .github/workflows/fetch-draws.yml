@@ -1,0 +1,42 @@
+name: Fetch Prize Bond Draws
+
+on:
+  schedule:
+    - cron: "0 6 1,15 * *"
+  workflow_dispatch:
+
+concurrency:
+  group: fetch-draws
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - name: Fetch and parse draws
+        run: node scripts/fetch-draws.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET_NAME: bondvault-assets
+
+      - name: Commit parsed data to repo
+        run: |
+          git config user.name "bondvault-bot"
+          git config user.email "bot@bondvault.app"
+          git add data/draws/
+          if git diff --cached --quiet; then
+            echo "No new data to commit"
+          else
+            git commit -m "chore: update draw data [skip ci]"
+            git push
+          fi

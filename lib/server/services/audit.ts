@@ -1,6 +1,7 @@
 import { getDb } from "../db";
 import { auditLogs } from "../schema";
 import { generateId } from "../id";
+import type { Context } from "hono";
 
 export async function logAudit(
   env: Env,
@@ -27,7 +28,7 @@ export async function logAudit(
   });
 }
 
-export function getClientIp(c: any): string {
+export function getClientIp(c: Context): string {
   const cfIp = c.req.raw?.cf?.requestIp;
   if (cfIp) return cfIp;
   const forwarded = c.req.header("x-forwarded-for");

@@ -18,7 +18,7 @@ export function AdminSettingsClient() {
 
   const handleSave = async (key: string) => {
     await updateSetting.mutateAsync({ key, value: edits[key] });
-    setEdits(prev => { const { [key]: _unused, ...rest } = prev; return rest; });
+    setEdits(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== key)));
   };
 
   return (

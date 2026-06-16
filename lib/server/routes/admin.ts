@@ -4,9 +4,9 @@ import {
   users, payments, draws, winningNumbers, auditLogs, systemSettings,
   notifications, plans, subscriptions, subscriptionHistory,
   bonds, matches,
-  type PaymentStatus, type UserStatus, type NotificationStatus,
+  type PaymentStatus, type NotificationStatus,
 } from "../schema";
-import { eq, and, like, isNull, desc, gte, lte } from "drizzle-orm";
+import { eq, and, like, isNull, desc, gte, lte, type SQL } from "drizzle-orm";
 import { success, error, getEnv } from "../lib";
 import { generateId } from "../id";
 import { createDrawSchema, createWinningNumberSchema, updateUserSchema, updateSettingsSchema, updateDrawSchema } from "../validations";
@@ -17,7 +17,12 @@ type AdminVariables = {
   adminId: string;
 };
 
-const isAdmin = async (c: any, next: any) => {
+const isAdmin = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  c: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  next: any,
+) => {
   try {
     const auth = c.__auth;
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
@@ -266,7 +271,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const env = getEnv(c);
     const db = getDb(env.DB);
     const status = c.req.query("status") as NotificationStatus | undefined;
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
     if (status) conditions.push(eq(notifications.status, status));
     const data = conditions.length > 0
       ? await db.select().from(notifications).where(and(...conditions)).all()
@@ -292,7 +297,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const page = Math.max(1, parseInt(c.req.query("page") || "1"));
     const limit = Math.min(100, Math.max(1, parseInt(c.req.query("limit") || "50")));
 
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
     if (userId) conditions.push(eq(auditLogs.userId, userId));
     if (entityType) conditions.push(eq(auditLogs.entityType, entityType));
     if (startDate) conditions.push(gte(auditLogs.createdAt, startDate));

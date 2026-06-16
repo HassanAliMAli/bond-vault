@@ -12,12 +12,11 @@ import { PlusCircle } from "lucide-react";
 
 export function BondsPageClient() {
   const router = useRouter();
-  const [denomination, setDenomination] = useState<string | undefined>();
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<string>("newest");
+  const [denomination] = useState<string | undefined>();
+  const [search] = useState("");
   const [deletingBond, setDeletingBond] = useState<{ id: string; bondNumber: string; denomination: number } | null>(null);
 
-  const { data, isLoading, isError, refetch } = useBonds({ denomination, search });
+  const { data, isError, refetch } = useBonds({ denomination, search });
   const deleteBond = useDeleteBond();
 
   const bonds = data?.bonds ?? [];

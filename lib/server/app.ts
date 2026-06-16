@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { cors } from "hono/cors";
 import { createAuth } from "./auth";
 import { bondRoutes } from "./routes/bonds";
@@ -13,12 +13,14 @@ import { importRoutes } from "./routes/imports";
 import { exportRoutes } from "./routes/exports";
 import { searchRoutes } from "./routes/search";
 import { adminRoutes } from "./routes/admin";
+import { externalDrawRoutes } from "./routes/external-draws";
 import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup } from "./services";
 import { logger } from "./logger";
 
 type Variables = {
   userId: string;
   adminId: string;
+  __auth: ReturnType<typeof createAuth>;
 };
 
 const ALLOWED_ORIGINS = [
@@ -72,29 +74,29 @@ export function createApp() {
     try {
       const auth = createAuth(
         c.env,
-        (c.req.raw as any).cf || {},
+        (c.req.raw as Request & { cf?: IncomingRequestCfProperties }).cf || {},
         new URL(c.req.url).origin
       );
-      (c as any).__auth = auth;
+      c.set("__auth", auth);
     } catch (e) {
-      logger.error("createAuth error", { message: (e as any)?.message });
+      logger.error("createAuth error", { message: (e as Error).message });
     }
     await next();
   });
 
   app.on(["POST", "GET"], "/api/auth/*", async (c) => {
     try {
-      const res = await (c as any).__auth.handler(c.req.raw);
+      const res = await c.get("__auth").handler(c.req.raw);
       return res;
     } catch (e) {
       logger.error("Better Auth error", { message: (e as Error).message });
-      return c.json({ success: false, error: String(e), message: (e as any)?.message }, 500);
+      return c.json({ success: false, error: String(e), message: (e as Error).message }, 500);
     }
   });
 
   app.use("/api/v1/*", async (c, next) => {
     try {
-      const session = await (c as any).__auth.api.getSession({ headers: c.req.raw.headers });
+      const session = await c.get("__auth").api.getSession({ headers: c.req.raw.headers });
       if (session) c.set("userId", session.user.id);
     } catch (e) {
       logger.error("Session fetch error", { message: (e as Error).message });
@@ -107,7 +109,7 @@ export function createApp() {
     await next();
   });
 
-  const cronAuth = async (c: any, next: any) => {
+  const cronAuth = async (c: Context<{ Bindings: Env }>, next: () => Promise<void>) => {
     const authHeader = c.req.header("Authorization");
     if (authHeader !== `Bearer ${c.env.BETTER_AUTH_SECRET}`) {
       return c.json({ success: false, error: "Unauthorized" }, 401);
@@ -144,6 +146,7 @@ export function createApp() {
   app.route("/api/v1", exportRoutes);
   app.route("/api/v1", searchRoutes);
   app.route("/api/v1", adminRoutes);
+  app.route("/api/v1", externalDrawRoutes);
 
   app.onError((err, c) => {
     logger.error("Unhandled error", { message: err.message, stack: err.stack, method: c.req.method, path: c.req.path });

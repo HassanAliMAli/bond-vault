@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      radix:
+        patterns:
+          - "@radix-ui/*"
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+    open-pull-requests-limit: 10
+    versioning-strategy: increase
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+    labels:
+      - "dependencies"
+    reviewers:
+      - "HassanAliMAli"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"

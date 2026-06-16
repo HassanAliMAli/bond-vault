@@ -1,6 +1,6 @@
 import { getDb } from "../db";
 import { users, bonds, matches, subscriptions, subscriptionHistory, importJobs, auditLogs } from "../schema";
-import { eq, and, isNull, lt, or } from "drizzle-orm";
+import { eq, and, isNull, lt } from "drizzle-orm";
 
 export async function handleRetentionCleanup(env: Env): Promise<{ deletedUsers: number; cleanedImports: number; cleanedAuditLogs: number }> {
   const db = getDb(env.DB);

@@ -52,3 +52,8 @@ next-env.d.ts
 *.db
 *.db-shm
 *.db-wal
+
+# draw downloads
+prize_bond_draws/
+logs/
+download_draws.sh

@@ -54,8 +54,8 @@ export const healthRoute = new Hono()
       );
       const result = await stmt.bind(testId, testId + "@raw.com", "Raw Test").all();
       return success(c, { rawResult: result.results?.[0] || null });
-    } catch (e: any) {
-      return c.json({ error: e?.message || String(e) }, 500);
+    } catch (e: unknown) {
+      return c.json({ error: e instanceof Error ? e.message : String(e) }, 500);
     }
   })
   .get("/debug/insert-drizzle", async (c) => {
@@ -73,7 +73,7 @@ export const healthRoute = new Hono()
       });
       const result = await stmt.returning();
       return success(c, { drizzleResult: result[0] || null });
-    } catch (e: any) {
-      return c.json({ error: e?.message || String(e) }, 500);
+    } catch (e: unknown) {
+      return c.json({ error: e instanceof Error ? e.message : String(e) }, 500);
     }
   });

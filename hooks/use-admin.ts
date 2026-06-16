@@ -17,9 +17,9 @@ async function adminFetch<T>(endpoint: string, config: { method?: string; body?:
     body: body ? JSON.stringify(body) : undefined,
     credentials: "include",
   });
-  const json: any = await res.json();
-  if (!json.success) throw new Error(json?.error?.message || "Admin API error");
-  return json.data as T;
+  const json: { success: boolean; data: T; error?: { message: string } } = await res.json();
+  if (!json.success) throw new Error(json.error?.message || "Admin API error");
+  return json.data;
 }
 
 interface DashboardStats {
@@ -58,7 +58,7 @@ export function useAdminUsers(search?: string, page?: number) {
 export function useAdminUser(id: string) {
   return useQuery({
     queryKey: ["admin", "user", id],
-    queryFn: () => adminFetch<any>("/admin/users/" + id),
+    queryFn: () => adminFetch<AdminUser>("/admin/users/" + id),
     enabled: !!id,
   });
 }
@@ -66,7 +66,7 @@ export function useAdminUser(id: string) {
 export function useUpdateUser() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...data }: { id: string; [key: string]: any }) =>
+    mutationFn: ({ id, ...data }: { id: string } & Record<string, unknown>) =>
       adminFetch("/admin/users/" + id, { method: "PATCH", body: data }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin", "users"] }); qc.invalidateQueries({ queryKey: ["admin", "user"] }); },
   });

@@ -1,0 +1,548 @@
+[
+  {
+    "key": "draws/100/16-02-2026-draw-53.json",
+    "denomination": 100,
+    "drawNumber": "53",
+    "drawDate": "16-02-2026",
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/100/unknown-draw-48.json",
+    "denomination": 100,
+    "drawNumber": "48",
+    "drawDate": null,
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/100/unknown-draw-49.json",
+    "denomination": 100,
+    "drawNumber": "49",
+    "drawDate": null,
+    "totalWinners": 0
+  },
+  {
+    "key": "draws/100/unknown-draw-50.json",
+    "denomination": 100,
+    "drawNumber": "50",
+    "drawDate": null,
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/100/unknown-draw-51.json",
+    "denomination": 100,
+    "drawNumber": "51",
+    "drawDate": null,
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/100/unknown-draw-52.json",
+    "denomination": 100,
+    "drawNumber": "52",
+    "drawDate": null,
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/100/unknown-draw-54.json",
+    "denomination": 100,
+    "drawNumber": "54",
+    "drawDate": null,
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/100/unknown.json",
+    "denomination": 100,
+    "drawNumber": null,
+    "drawDate": null,
+    "totalWinners": 1203
+  },
+  {
+    "key": "draws/200/unknown-draw-100.json",
+    "denomination": 200,
+    "drawNumber": "100",
+    "drawDate": null,
+    "totalWinners": 0
+  },
+  {
+    "key": "draws/200/unknown-draw-101.json",
+    "denomination": 200,
+    "drawNumber": "101",
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/200/unknown-draw-103.json",
+    "denomination": 200,
+    "drawNumber": "103",
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/200/unknown-draw-104.json",
+    "denomination": 200,
+    "drawNumber": "104",
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/200/unknown-draw-105.json",
+    "denomination": 200,
+    "drawNumber": "105",
+    "drawDate": null,
+    "totalWinners": 2394
+  },
+  {
+    "key": "draws/200/unknown-draw-106.json",
+    "denomination": 200,
+    "drawNumber": "106",
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/200/unknown-draw-95.json",
+    "denomination": 200,
+    "drawNumber": "95",
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/200/unknown-draw-98.json",
+    "denomination": 200,
+    "drawNumber": "98",
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/200/unknown.json",
+    "denomination": 200,
+    "drawNumber": null,
+    "drawDate": null,
+    "totalWinners": 2400
+  },
+  {
+    "key": "draws/750/unknown-draw-101.json",
+    "denomination": 750,
+    "drawNumber": "101",
+    "drawDate": null,
+    "totalWinners": 0
+  },
+  {
+    "key": "draws/750/unknown-draw-102.json",
+    "denomination": 750,
+    "drawNumber": "102",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/750/unknown-draw-103.json",
+    "denomination": 750,
+    "drawNumber": "103",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/750/unknown-draw-104.json",
+    "denomination": 750,
+    "drawNumber": "104",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/750/unknown-draw-105.json",
+    "denomination": 750,
+    "drawNumber": "105",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/750/unknown-draw-106.json",
+    "denomination": 750,
+    "drawNumber": "106",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/750/unknown.json",
+    "denomination": 750,
+    "drawNumber": null,
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/15-11-2024-draw-100.json",
+    "denomination": 1500,
+    "drawNumber": "100",
+    "drawDate": "15-11-2024",
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/17-02-2025-draw-101.json",
+    "denomination": 1500,
+    "drawNumber": "101",
+    "drawDate": "17-02-2025",
+    "totalWinners": 0
+  },
+  {
+    "key": "draws/1500/unknown-draw-102.json",
+    "denomination": 1500,
+    "drawNumber": "102",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/unknown-draw-103.json",
+    "denomination": 1500,
+    "drawNumber": "103",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/unknown-draw-104.json",
+    "denomination": 1500,
+    "drawNumber": "104",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/unknown-draw-105.json",
+    "denomination": 1500,
+    "drawNumber": "105",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/unknown-draw-106.json",
+    "denomination": 1500,
+    "drawNumber": "106",
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/1500/unknown.json",
+    "denomination": 1500,
+    "drawNumber": null,
+    "drawDate": null,
+    "totalWinners": 1700
+  },
+  {
+    "key": "draws/25000/10-03-2022-draw-5.json",
+    "denomination": 25000,
+    "drawNumber": "5",
+    "drawDate": "10-03-2022",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/10-03-2023-draw-9.json",
+    "denomination": 25000,
+    "drawNumber": "9",
+    "drawDate": "10-03-2023",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/10-06-2022-draw-6.json",
+    "denomination": 25000,
+    "drawNumber": "6",
+    "drawDate": "10-06-2022",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/10-06-2024-draw-14.json",
+    "denomination": 25000,
+    "drawNumber": "14",
+    "drawDate": "10-06-2024",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/10-09-2021-draw-3.json",
+    "denomination": 25000,
+    "drawNumber": "3",
+    "drawDate": "10-09-2021",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/10-09-2024-draw-15.json",
+    "denomination": 25000,
+    "drawNumber": "15",
+    "drawDate": "10-09-2024",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/10-12-2021-draw-4.json",
+    "denomination": 25000,
+    "drawNumber": "4",
+    "drawDate": "10-12-2021",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/11-03-2024-draw-13.json",
+    "denomination": 25000,
+    "drawNumber": "13",
+    "drawDate": "11-03-2024",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/11-09-2023-draw-11.json",
+    "denomination": 25000,
+    "drawNumber": "11",
+    "drawDate": "11-09-2023",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/12-06-2023-draw-10.json",
+    "denomination": 25000,
+    "drawNumber": "10",
+    "drawDate": "12-06-2023",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/12-09-2022-draw-7.json",
+    "denomination": 25000,
+    "drawNumber": "7",
+    "drawDate": "12-09-2022",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/12-12-2022-draw-8.json",
+    "denomination": 25000,
+    "drawNumber": "8",
+    "drawDate": "12-12-2022",
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-1.json",
+    "denomination": 25000,
+    "drawNumber": "1",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-17.json",
+    "denomination": 25000,
+    "drawNumber": "17",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-18.json",
+    "denomination": 25000,
+    "drawNumber": "18",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-19.json",
+    "denomination": 25000,
+    "drawNumber": "19",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-2.json",
+    "denomination": 25000,
+    "drawNumber": "2",
+    "drawDate": null,
+    "totalWinners": 613
+  },
+  {
+    "key": "draws/25000/unknown-draw-20.json",
+    "denomination": 25000,
+    "drawNumber": "20",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-21.json",
+    "denomination": 25000,
+    "drawNumber": "21",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/25000/unknown-draw-22.json",
+    "denomination": 25000,
+    "drawNumber": "22",
+    "drawDate": null,
+    "totalWinners": 707
+  },
+  {
+    "key": "draws/40000/unknown-draw-10.json",
+    "denomination": 40000,
+    "drawNumber": "10",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-11.json",
+    "denomination": 40000,
+    "drawNumber": "11",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-12.json",
+    "denomination": 40000,
+    "drawNumber": "12",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-13.json",
+    "denomination": 40000,
+    "drawNumber": "13",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-14.json",
+    "denomination": 40000,
+    "drawNumber": "14",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-15.json",
+    "denomination": 40000,
+    "drawNumber": "15",
+    "drawDate": null,
+    "totalWinners": 663
+  },
+  {
+    "key": "draws/40000/unknown-draw-17.json",
+    "denomination": 40000,
+    "drawNumber": "17",
+    "drawDate": null,
+    "totalWinners": 577
+  },
+  {
+    "key": "draws/40000/unknown-draw-18.json",
+    "denomination": 40000,
+    "drawNumber": "18",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-19.json",
+    "denomination": 40000,
+    "drawNumber": "19",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-20.json",
+    "denomination": 40000,
+    "drawNumber": "20",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-21.json",
+    "denomination": 40000,
+    "drawNumber": "21",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-22.json",
+    "denomination": 40000,
+    "drawNumber": "22",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-23.json",
+    "denomination": 40000,
+    "drawNumber": "23",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-24.json",
+    "denomination": 40000,
+    "drawNumber": "24",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-25.json",
+    "denomination": 40000,
+    "drawNumber": "25",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-26.json",
+    "denomination": 40000,
+    "drawNumber": "26",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-28.json",
+    "denomination": 40000,
+    "drawNumber": "28",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-29.json",
+    "denomination": 40000,
+    "drawNumber": "29",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-30.json",
+    "denomination": 40000,
+    "drawNumber": "30",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-31.json",
+    "denomination": 40000,
+    "drawNumber": "31",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-34.json",
+    "denomination": 40000,
+    "drawNumber": "34",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-35.json",
+    "denomination": 40000,
+    "drawNumber": "35",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-36.json",
+    "denomination": 40000,
+    "drawNumber": "36",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown-draw-8.json",
+    "denomination": 40000,
+    "drawNumber": "8",
+    "drawDate": null,
+    "totalWinners": 1148
+  },
+  {
+    "key": "draws/40000/unknown-draw-9.json",
+    "denomination": 40000,
+    "drawNumber": "9",
+    "drawDate": null,
+    "totalWinners": 664
+  },
+  {
+    "key": "draws/40000/unknown.json",
+    "denomination": 40000,
+    "drawNumber": null,
+    "drawDate": null,
+    "totalWinners": 664
+  }
+]

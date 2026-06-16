@@ -40,16 +40,12 @@ export function CheckPageClient() {
 
   useEffect(() => {
     if (checkStarted.current && checkState === "checking") {
-      (checkBonds.mutate as () => void)();
       checkStarted.current = false;
+      checkBonds.mutate(undefined, {
+        onSuccess: () => setCheckState("results"),
+      });
     }
   }, [checkState, checkBonds]);
-
-  useEffect(() => {
-    if (checkBonds.isSuccess && checkState === "checking") {
-      setCheckState("results");
-    }
-  }, [checkBonds.isSuccess, checkState]);
 
   const handleCheckAgain = useCallback(() => {
     checkBonds.reset();

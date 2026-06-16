@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { users, notificationPreferences, userPreferences, subscriptions, subscriptionHistory, plans, notifications } from "../schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { users, notificationPreferences, subscriptions, subscriptionHistory, plans, notifications } from "../schema";
+import { eq, and } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { notificationPrefsSchema, updateProfileSchema } from "../validations";
 import { logAudit, getClientIp, canImport, canExport } from "../services";

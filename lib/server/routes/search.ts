@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { bonds, draws, winningNumbers } from "../schema";
-import { eq, and, like, or, isNull } from "drizzle-orm";
+import { bonds } from "../schema";
+import { eq, and, like, isNull } from "drizzle-orm";
 import { success, getUserId, getEnv } from "../lib";
 
 export const searchRoutes = new Hono()

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { winningNumbers, draws, matches } from "../schema";
+import { winningNumbers, draws } from "../schema";
 import { eq, and } from "drizzle-orm";
 import { success, error, getEnv, getUserId } from "../lib";
 import { createBondSchema } from "../validations";

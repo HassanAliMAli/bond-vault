@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { BondCard } from "./bond-card";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/shared/empty-state";

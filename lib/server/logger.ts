@@ -25,6 +25,7 @@ function createLogEntry(level: LogLevel, message: string, meta: Partial<LogEntry
 export const logger = {
   info(message: string, meta: Partial<LogEntry> = {}) {
     const entry = createLogEntry("info", message, meta);
+    // eslint-disable-next-line no-console
     console.log(JSON.stringify(entry));
   },
 
@@ -46,6 +47,7 @@ export const logger = {
       durationMs,
       ...meta,
     });
+    // eslint-disable-next-line no-console
     console.log(JSON.stringify(entry));
   },
 };

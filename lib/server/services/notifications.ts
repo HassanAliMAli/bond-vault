@@ -1,6 +1,6 @@
 import { getDb } from "../db";
-import { notificationBatches, notifications, notificationPreferences, matches, draws, winningNumbers, type NotificationChannel } from "../schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { notificationBatches, notifications, notificationPreferences, type NotificationChannel } from "../schema";
+import { eq, and } from "drizzle-orm";
 import { generateId } from "../id";
 
 export interface BatchNotificationParams {
@@ -97,13 +97,13 @@ export async function sendPendingNotifications(env: Env): Promise<number> {
   return sent;
 }
 
-async function sendNotification(env: Env, notification: any) {
+async function sendNotification(env: Env, notification: { channel: string; userId: string; title: string; message: string }) {
   if (notification.channel === "email") {
     await sendEmail(env, notification);
   }
 }
 
-async function sendEmail(env: Env, notification: any) {
+async function sendEmail(env: Env, notification: { userId: string; title: string; message: string }) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {

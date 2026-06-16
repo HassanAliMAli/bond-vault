@@ -1,0 +1,7 @@
+npx lint-staged
+npm ci --dry-run --ignore-scripts 2>&1 || {
+  echo ""
+  echo "Error: package-lock.json is out of sync with package.json."
+  echo "Run 'npm install' and commit the updated package-lock.json."
+  exit 1
+}

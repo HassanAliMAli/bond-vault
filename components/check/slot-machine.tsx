@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 
 interface SlotMachineProps { isRunning: boolean; onComplete: () => void; totalBonds: number; }
 
+type Phase = "spinning" | "slowing" | "complete";
+
 export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachineProps) {
-  const [phase, setPhase] = useState<"idle" | "spinning" | "slowing" | "complete">("idle");
+  const [phase, setPhase] = useState<Phase>("spinning");
   const [currentBond, setCurrentBond] = useState("");
   const [currentDenom, setCurrentDenom] = useState("");
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -14,8 +16,8 @@ export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachinePr
   const randomDenom = () => ["100", "200", "750", "1500", "7500", "25000", "40000"][Math.floor(Math.random() * 7)];
 
   useEffect(() => {
-    if (!isRunning) { setPhase("idle"); return; }
-    setPhase("spinning"); let speed = 60; let count = 0; const maxCount = 20;
+    if (!isRunning) return;
+    let speed = 60; let count = 0; const maxCount = 20;
     const tick = () => {
       count++; setCurrentBond(randomBond()); setCurrentDenom(randomDenom());
       if (count > maxCount) { setPhase("slowing"); speed += 40; }
@@ -26,7 +28,7 @@ export function SlotMachine({ isRunning, onComplete, totalBonds }: SlotMachinePr
     return () => { if (intervalRef.current) clearTimeout(intervalRef.current); };
   }, [isRunning, onComplete]);
 
-  if (phase === "idle") return null;
+  if (!isRunning) return null;
 
   return (
     <div className="flex flex-col items-center gap-6 py-12">

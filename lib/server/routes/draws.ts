@@ -1,9 +1,8 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { draws, winningNumbers, bonds, matches as matchesTable, notificationBatches, notifications } from "../schema";
+import { draws, winningNumbers } from "../schema";
 import { eq } from "drizzle-orm";
 import { success, error, getEnv } from "../lib";
-import { generateId } from "../id";
 
 export const drawRoutes = new Hono()
   .get("/", async (c) => {

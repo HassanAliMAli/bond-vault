@@ -1,0 +1,3 @@
+# Ignore raw txt/pdf files - only keep parsed JSON
+*.txt
+*.pdf
