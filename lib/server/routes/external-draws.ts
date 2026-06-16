@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { success, error } from "../lib";
 
-export const externalDrawRoutes = new Hono()
+export const externalDrawRoutes = new Hono<{ Bindings: Env }>()
   .get("/external/draws", async (c) => {
     const r2 = c.env.R2;
     const denom = c.req.query("denomination");

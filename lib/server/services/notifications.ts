@@ -97,13 +97,13 @@ export async function sendPendingNotifications(env: Env): Promise<number> {
   return sent;
 }
 
-async function sendNotification(env: Env, notification: { channel: string; userId: string; title: string; message: string }) {
+async function sendNotification(env: Env, notification: { channel: string; userId: string; title: string | null; message: string | null }) {
   if (notification.channel === "email") {
     await sendEmail(env, notification);
   }
 }
 
-async function sendEmail(env: Env, notification: { userId: string; title: string; message: string }) {
+async function sendEmail(env: Env, notification: { userId: string; title: string | null; message: string | null }) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {

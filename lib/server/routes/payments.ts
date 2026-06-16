@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { payments, paymentReceipts } from "../schema";
+import { payments, paymentReceipts, plans } from "../schema";
 import { eq, and } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { paymentSchema } from "../validations";

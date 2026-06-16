@@ -29,7 +29,7 @@ export async function logAudit(
 }
 
 export function getClientIp(c: Context): string {
-  const cfIp = c.req.raw?.cf?.requestIp;
+  const cfIp = (c.req.raw as { cf?: { requestIp?: string } })?.cf?.requestIp;
   if (cfIp) return cfIp;
   const forwarded = c.req.header("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
