@@ -55,7 +55,7 @@
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@types/node": "^20",
+    "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.10",
@@ -66,7 +66,7 @@
     "lint-staged": "^15.5.2",
     "tailwindcss": "^4",
     "toml": "^4.1.1",
-    "typescript": "^5",
+    "typescript": "^6",
     "vitest": "^4.1.8",
     "wrangler": "^4.99.0"
   }
