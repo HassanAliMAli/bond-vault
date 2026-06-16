@@ -24,7 +24,7 @@ const isAdmin = async (
   next: any,
 ) => {
   try {
-    const auth = c.__auth;
+    const auth = c.get("__auth");
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session) return c.json({ success: false, error: { code: "UNAUTHORIZED", message: "Not authenticated" } }, 401);
     const env = getEnv(c);
