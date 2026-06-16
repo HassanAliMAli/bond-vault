@@ -74,7 +74,7 @@ export function createApp() {
     try {
       const auth = createAuth(
         c.env,
-        (c.req.raw as Request & { cf?: IncomingRequestCfProperties }).cf || {},
+        (c.req.raw as Request & { cf: IncomingRequestCfProperties }).cf,
         new URL(c.req.url).origin
       );
       c.set("__auth", auth);
