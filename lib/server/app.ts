@@ -145,8 +145,8 @@ export function createApp() {
   app.route("/api/v1", importRoutes);
   app.route("/api/v1", exportRoutes);
   app.route("/api/v1", searchRoutes);
-  app.route("/api/v1", adminRoutes);
   app.route("/api/v1", externalDrawRoutes);
+  app.route("/api/v1", adminRoutes);
 
   app.onError((err, c) => {
     logger.error("Unhandled error", { message: err.message, stack: err.stack, method: c.req.method, path: c.req.path });
