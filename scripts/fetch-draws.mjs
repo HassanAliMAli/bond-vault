@@ -21,6 +21,8 @@ const CLOUDFLARE_API = "https://api.cloudflare.com/client/v4";
 const R2_BUCKET = process.env.R2_BUCKET_NAME || "bondvault-assets";
 const CF_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const CF_ACCOUNT = process.env.CLOUDFLARE_ACCOUNT_ID;
+const APP_URL = process.env.APP_URL || "https://bondvault.hassanali205031.workers.dev";
+const AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
 
 async function uploadToR2(key, jsonData) {
   if (!CF_TOKEN || !CF_ACCOUNT) {
@@ -77,6 +79,34 @@ async function downloadFile(url) {
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
   const buffer = Buffer.from(await res.arrayBuffer());
   return buffer;
+}
+
+async function importToD1(parsed) {
+  if (!AUTH_SECRET) {
+    console.log(`  [D1] Skipped (no BETTER_AUTH_SECRET)`);
+    return false;
+  }
+  try {
+    const res = await fetch(`${APP_URL}/api/v1/external/draws/import`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${AUTH_SECRET}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(parsed),
+    });
+    const data = await res.json();
+    if (data?.success) {
+      const status = data?.data?.status;
+      console.log(`  [D1] ${status === "already_exists" ? "Already exists" : `Imported (id: ${data.data.id})`}`);
+    } else {
+      console.error(`  [D1] Failed: ${data?.error?.message || res.status}`);
+    }
+    return data?.success;
+  } catch (e) {
+    console.error(`  [D1] Error: ${e.message}`);
+    return false;
+  }
 }
 
 async function main() {
@@ -139,6 +169,9 @@ async function main() {
         // Upload to R2
         const uploaded = await uploadToR2(r2Key, parsed);
         if (uploaded) allUploads.push(r2Key);
+
+        // Import into D1 database (for matching engine)
+        await importToD1(parsed);
       } catch (e) {
         console.error(`  [PARSE FAIL] ${filename}: ${e.message}`);
       }
