@@ -111,6 +111,22 @@ export interface CheckMatch {
   drawNumber: string;
 }
 
+export interface CheckMatchResult {
+  id: string;
+  bondNumber: string;
+  denomination: string;
+  prizeType: string;
+  prizeAmount: string;
+  drawDate: string;
+  drawNumber: string;
+}
+
+export interface CheckAllResponse {
+  matchesCreated: number;
+  totalChecked: number;
+  matches: CheckMatchResult[];
+}
+
 export interface CheckResponse {
   isWinner: boolean;
   matches: CheckMatch[];
@@ -186,7 +202,7 @@ export const api = {
       apiFetch<CheckResponse>("/check", { method: "POST", body: data }),
 
     runAll: () =>
-      apiFetch<{ matchesCreated: number }>("/check/all", { method: "POST" }),
+      apiFetch<CheckAllResponse>("/check/all", { method: "POST" }),
   },
 
   notifications: {

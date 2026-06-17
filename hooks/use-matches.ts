@@ -53,7 +53,7 @@ export function useCheckBonds() {
       if (!data) {
         const allBonds = (await api.bonds.list()).bonds ?? [];
         const result = await api.check.runAll();
-        return { matchesCreated: result.matchesCreated, totalChecked: allBonds.length };
+        return { matches: result.matches, matchesCreated: result.matchesCreated, totalChecked: allBonds.length };
       }
       const r = await api.check.run(data);
       return { matches: r.matches.map((m,i) => ({ id: m.bondNumber+m.drawDate+i, bondNumber: m.bondNumber, denomination: String(data.denomination), prizeType: m.prizeType, prizeAmount: `Rs. ${m.prizeAmount.toLocaleString()}`, drawDate: m.drawDate, drawNumber: m.drawNumber })), totalChecked: 1 };
