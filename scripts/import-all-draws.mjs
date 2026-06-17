@@ -22,7 +22,7 @@ function extractDateFromText(text, filePath) {
   for (const pat of datePatterns) {
     const m = text.match(pat);
     if (m) {
-      let [, dd, mm, yyyy] = m;
+      const [, dd, mm, yyyy] = m;
       yyyy = yyyy.length === 2 ? `20${yyyy}` : yyyy;
       if (parseInt(m[1], 10) <= 31 && parseInt(m[2], 10) <= 12) {
         return `${dd.padStart(2, "0")}-${mm.padStart(2, "0")}-${yyyy}`;

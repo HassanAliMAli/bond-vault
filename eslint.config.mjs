@@ -20,6 +20,13 @@ const eslintConfig = defineConfig([
       "eqeqeq": ["error", "always", { null: "ignore" }],
     },
   },
+  {
+    files: ["scripts/**"],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
   globalIgnores([
     ".next/**",
     ".open-next/**",
