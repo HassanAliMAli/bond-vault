@@ -9,7 +9,7 @@ import {
   notificationPreferences,
   type NotificationChannel,
 } from "../schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and, isNull, sql } from "drizzle-orm";
 import { generateId } from "../id";
 
 export async function generateMatchesForDraw(env: Env, drawId: string): Promise<number> {
@@ -40,7 +40,7 @@ export async function generateMatchesForDraw(env: Env, drawId: string): Promise<
 
   const bondMap = new Map<string, typeof userBonds[number][]>();
   for (const bond of userBonds) {
-    const key = bond.bondNumber;
+    const key = bond.bondNumber.padStart(6, "0");
     if (!bondMap.has(key)) bondMap.set(key, []);
     bondMap.get(key)!.push(bond);
   }
@@ -49,7 +49,7 @@ export async function generateMatchesForDraw(env: Env, drawId: string): Promise<
   const userMatchesMap = new Map<string, { matchIds: string[]; prizeBreakdown: Record<string, number>; totalPrize: number }>();
 
   for (const wn of winning) {
-    const matchingBonds = bondMap.get(wn.bondNumber) || [];
+    const matchingBonds = bondMap.get(wn.bondNumber.padStart(6, "0")) || [];
     for (const bond of matchingBonds) {
       const existing = await db
         .select({ id: matches.id })
@@ -181,7 +181,7 @@ export async function generateMatchesForAllActiveBonds(env: Env, userId: string)
       .innerJoin(draws, eq(winningNumbers.drawId, draws.id))
       .where(
         and(
-          eq(winningNumbers.bondNumber, bond.bondNumber),
+          sql`CAST(${winningNumbers.bondNumber} AS INTEGER) = CAST(${bond.bondNumber} AS INTEGER)`,
           eq(draws.denomination, bond.denomination)
         )
       )
