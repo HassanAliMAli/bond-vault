@@ -43,6 +43,9 @@ export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string 
       ).all(),
     ]);
 
+    // Clear previous results for a fresh check
+    await db.delete(matches).where(eq(matches.userId, userId));
+
     const count = await generateMatchesForAllActiveBonds(env, userId);
 
     const matchResults = await db
