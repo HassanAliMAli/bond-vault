@@ -17,7 +17,7 @@ type CheckState = "idle" | "slot-machine" | "checking" | "results";
 
 export function CheckPageClient() {
   const router = useRouter();
-  const { data: bondsData } = useBonds();
+  const { data: bondsData, isLoading: bondsLoading, isError: bondsError } = useBonds();
   const totalBonds = bondsData?.total ?? 0;
 
   const [checkState, setCheckState] = useState<CheckState>("idle");
@@ -25,22 +25,21 @@ export function CheckPageClient() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const checkBonds = useCheckBonds();
   const checkStarted = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetCheck = useCallback(() => {
     checkBonds.reset();
     setCheckState("idle");
     setErrorMsg(null);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
   }, [checkBonds]);
 
   const handleStartCheck = useCallback(() => {
     if (totalBonds === 0) return;
+    checkBonds.reset();
     setCheckState("slot-machine");
     setShowSlot(true);
     setErrorMsg(null);
     checkStarted.current = false;
-  }, [totalBonds]);
+  }, [totalBonds, checkBonds]);
 
   const handleSlotComplete = useCallback(() => {
     setShowSlot(false);
@@ -51,26 +50,17 @@ export function CheckPageClient() {
   useEffect(() => {
     if (checkStarted.current && checkState === "checking") {
       checkStarted.current = false;
-
-      // Safety timeout — show error if check takes > 30s
-      timeoutRef.current = setTimeout(() => {
-        setErrorMsg("The check is taking longer than expected. The server may be under load. Please try again.");
-      }, 30000);
+      setErrorMsg(null);
 
       checkBonds.mutate(undefined, {
         onSuccess: () => {
-          if (timeoutRef.current) clearTimeout(timeoutRef.current);
           setCheckState("results");
         },
         onError: (err) => {
-          if (timeoutRef.current) clearTimeout(timeoutRef.current);
           setErrorMsg(err instanceof Error ? err.message : "Check failed. Please try again.");
         },
       });
     }
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
   }, [checkState, checkBonds]);
 
   const handleCheckAgain = useCallback(() => {
@@ -78,7 +68,18 @@ export function CheckPageClient() {
   }, [resetCheck]);
 
   const results = checkBonds.data ?? null;
-  const showError = errorMsg || checkBonds.isError;
+  const isChecking = checkBonds.isPending;
+  const showError = !!errorMsg || checkBonds.isError;
+
+  if (bondsLoading && checkState === "idle") {
+    return (
+      <PageTransition>
+        <div className="flex items-center justify-center py-20">
+          <p className="text-gray">Loading your bonds...</p>
+        </div>
+      </PageTransition>
+    );
+  }
 
   if (totalBonds === 0 && checkState === "idle") {
     return (
@@ -108,6 +109,13 @@ export function CheckPageClient() {
           {checkState === "results" && `${(results?.totalChecked ?? 0).toLocaleString()} bonds checked against historical draws`}
         </p>
       </div>
+
+      {/* Debug info */}
+      <div className="text-xs text-gray text-center space-y-1">
+        <p>State: {checkState} | Slot: {String(showSlot)} | Bonds: {totalBonds} | Error: {String(!!errorMsg)} | isPending: {String(isChecking)} | isError: {String(checkBonds.isError)}</p>
+        {errorMsg && <p className="text-red">Error: {errorMsg}</p>}
+      </div>
+
       <AnimatePresence mode="wait">
         {checkState === "idle" && (
           <motion.div key="idle" className="flex flex-col items-center gap-8 py-16" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -12 }}>
@@ -118,20 +126,29 @@ export function CheckPageClient() {
             </div>
           </motion.div>
         )}
-        {(checkState === "slot-machine" || checkState === "checking") && (
-          <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {showSlot && <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={totalBonds} />}
-            {!showSlot && (
-              <div className="flex items-center justify-center py-20">
-                {showError ? (
-                  <ErrorState title="Check failed" description={errorMsg || "Could not complete the bond check."} onRetry={resetCheck} />
-                ) : (
-                  <CheckButton loading progress={0.85} totalBonds={totalBonds} />
-                )}
-              </div>
-            )}
+
+        {checkState === "slot-machine" && showSlot && (
+          <motion.div key="slot-machine" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={totalBonds} />
           </motion.div>
         )}
+
+        {checkState === "checking" && (
+          <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="flex items-center justify-center py-20">
+              {showError ? (
+                <ErrorState
+                  title="Check failed"
+                  description={errorMsg || "Could not complete the bond check."}
+                  onRetry={resetCheck}
+                />
+              ) : (
+                <CheckButton loading progress={0.85} totalBonds={totalBonds} />
+              )}
+            </div>
+          </motion.div>
+        )}
+
         {checkState === "results" && results && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <ResultsPanel matches={results.matches || []} totalChecked={results.totalChecked || 0} onCheckAgain={handleCheckAgain} />
