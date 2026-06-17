@@ -22,13 +22,23 @@ export function CheckPageClient() {
 
   const [checkState, setCheckState] = useState<CheckState>("idle");
   const [showSlot, setShowSlot] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const checkBonds = useCheckBonds();
   const checkStarted = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetCheck = useCallback(() => {
+    checkBonds.reset();
+    setCheckState("idle");
+    setErrorMsg(null);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  }, [checkBonds]);
 
   const handleStartCheck = useCallback(() => {
     if (totalBonds === 0) return;
     setCheckState("slot-machine");
     setShowSlot(true);
+    setErrorMsg(null);
     checkStarted.current = false;
   }, [totalBonds]);
 
@@ -41,18 +51,34 @@ export function CheckPageClient() {
   useEffect(() => {
     if (checkStarted.current && checkState === "checking") {
       checkStarted.current = false;
+
+      // Safety timeout — show error if check takes > 30s
+      timeoutRef.current = setTimeout(() => {
+        setErrorMsg("The check is taking longer than expected. The server may be under load. Please try again.");
+      }, 30000);
+
       checkBonds.mutate(undefined, {
-        onSuccess: () => setCheckState("results"),
+        onSuccess: () => {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          setCheckState("results");
+        },
+        onError: (err) => {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          setErrorMsg(err instanceof Error ? err.message : "Check failed. Please try again.");
+        },
       });
     }
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [checkState, checkBonds]);
 
   const handleCheckAgain = useCallback(() => {
-    checkBonds.reset();
-    setCheckState("idle");
-  }, [checkBonds]);
+    resetCheck();
+  }, [resetCheck]);
 
   const results = checkBonds.data ?? null;
+  const showError = errorMsg || checkBonds.isError;
 
   if (totalBonds === 0 && checkState === "idle") {
     return (
@@ -97,8 +123,8 @@ export function CheckPageClient() {
             {showSlot && <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={totalBonds} />}
             {!showSlot && (
               <div className="flex items-center justify-center py-20">
-                {checkBonds.isError ? (
-                  <ErrorState title="Check failed" description="Could not complete the bond check." onRetry={() => { checkBonds.reset(); setCheckState("idle"); }} />
+                {showError ? (
+                  <ErrorState title="Check failed" description={errorMsg || "Could not complete the bond check."} onRetry={resetCheck} />
                 ) : (
                   <CheckButton loading progress={0.85} totalBonds={totalBonds} />
                 )}
