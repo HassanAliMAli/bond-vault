@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getDb } from "../db";
-import { winningNumbers, draws, matches } from "../schema";
-import { eq, and, desc } from "drizzle-orm";
+import { winningNumbers, draws, matches, bonds } from "../schema";
+import { eq, and, desc, isNull } from "drizzle-orm";
 import { success, error, getEnv, getUserId } from "../lib";
 import { createBondSchema } from "../validations";
 import { generateMatchesForAllActiveBonds } from "../services/matches";
@@ -37,6 +37,12 @@ export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string 
     const userId = getUserId(c);
     if (!userId) return error(c, "UNAUTHORIZED", "Not logged in", 401);
 
+    const [userBonds] = await Promise.all([
+      db.select({ id: bonds.id }).from(bonds).where(
+        and(eq(bonds.userId, userId), eq(bonds.status, "active"), isNull(bonds.deletedAt))
+      ).all(),
+    ]);
+
     const count = await generateMatchesForAllActiveBonds(env, userId);
 
     const matchResults = await db
@@ -48,7 +54,7 @@ export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string 
 
     return success(c, {
       matchesCreated: count,
-      totalChecked: 0,
+      totalChecked: userBonds.length,
       matches: matchResults.map((m) => ({
         id: m.id,
         bondNumber: m.bondNumberSnapshot,
