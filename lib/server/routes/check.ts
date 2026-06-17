@@ -6,7 +6,7 @@ import { success, error, getEnv, getUserId } from "../lib";
 import { createBondSchema } from "../validations";
 import { generateMatchesForAllActiveBonds } from "../services/matches";
 
-export const checkRoute = new Hono<{ Bindings: Env }>()
+export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string } }>()
   .post("/check", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
@@ -34,7 +34,7 @@ export const checkRoute = new Hono<{ Bindings: Env }>()
   .post("/check/all", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const userId = c.get("userId");
+    const userId = getUserId(c);
     if (!userId) return error(c, "UNAUTHORIZED", "Not logged in", 401);
 
     const count = await generateMatchesForAllActiveBonds(env, userId);
