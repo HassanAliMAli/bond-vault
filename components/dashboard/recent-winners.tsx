@@ -51,7 +51,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
               className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-800/80 border border-dark-600"
             >
               <div className="flex items-center gap-3">
-                <div className={cn("w-2 h-2 rounded-full", (PRIZE_LABELS[winner.prizeType] || winner.prizeType) === "1st Prize" ? "bg-gold" : (PRIZE_LABELS[winner.prizeType] || winner.prizeType) === "2nd Prize" ? "bg-blue" : "bg-green")} />
+                <div className={cn("w-2 h-2 rounded-full", (PRIZE_LABELS[winner.prizeType] || winner.prizeType) === "1st Prize" ? "bg-red" : (PRIZE_LABELS[winner.prizeType] || winner.prizeType) === "2nd Prize" ? "bg-blue" : "bg-gold")} />
                 <div>
                   <p className="text-sm font-medium text-white">{winner.bondNumber}</p>
                   <p className="text-xs text-gray">{winner.drawDate}</p>

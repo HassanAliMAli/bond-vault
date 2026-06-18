@@ -17,14 +17,14 @@ const PRIZE_LABELS: Record<string, string> = {
 };
 
 const prizeIcons: Record<string, React.ReactNode> = {
-  "1st Prize": <Trophy className="h-5 w-5 text-gold" />,
-  "2nd Prize": <Award className="h-5 w-5 text-gold" />,
-  "3rd Prize": <Star className="h-5 w-5 text-blue" />,
+  "1st Prize": <Trophy className="h-5 w-5 text-red" />,
+  "2nd Prize": <Award className="h-5 w-5 text-blue" />,
+  "3rd Prize": <Star className="h-5 w-5 text-gold" />,
 };
 const prizeColors: Record<string, string> = {
-  "1st Prize": "border-l-gold bg-gradient-to-r from-gold/[0.05] to-transparent",
-  "2nd Prize": "border-l-gold bg-gradient-to-r from-gold/[0.03] to-transparent",
-  "3rd Prize": "border-l-blue bg-gradient-to-r from-blue/[0.05] to-transparent",
+  "1st Prize": "border-l-red bg-gradient-to-r from-red/[0.05] to-transparent",
+  "2nd Prize": "border-l-blue bg-gradient-to-r from-blue/[0.05] to-transparent",
+  "3rd Prize": "border-l-gold bg-gradient-to-r from-gold/[0.03] to-transparent",
 };
 
 export function MatchCard({ bondNumber, denomination, prizeType, prizeAmount, drawDate, drawNumber, index = 0 }: MatchCardProps) {
