@@ -65,3 +65,8 @@ data/import_batch_*
 prize_bond_draws/
 logs/
 scripts/import-missing.mjs
+
+# generated batch files
+data/miss_batch_*
+data/miss2_batch_*
+data/missing_draws.sql
