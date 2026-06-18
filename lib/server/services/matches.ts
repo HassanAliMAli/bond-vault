@@ -181,7 +181,7 @@ export async function generateMatchesForAllActiveBonds(env: Env, userId: string)
       .innerJoin(draws, eq(winningNumbers.drawId, draws.id))
       .where(
         and(
-          sql`CAST(${winningNumbers.bondNumber} AS INTEGER) = CAST(${bond.bondNumber} AS INTEGER)`,
+          sql`CAST(${winningNumbers.bondNumber} AS INTEGER) = ${parseInt(bond.bondNumber, 10)}`,
           eq(draws.denomination, bond.denomination)
         )
       )
