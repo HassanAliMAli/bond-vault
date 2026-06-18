@@ -70,3 +70,4 @@ scripts/import-missing.mjs
 data/miss_batch_*
 data/miss2_batch_*
 data/missing_draws.sql
+.commandcode/
