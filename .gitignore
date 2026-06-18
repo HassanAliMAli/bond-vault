@@ -57,3 +57,10 @@ next-env.d.ts
 prize_bond_draws/
 logs/
 download_draws.sh
+
+# generated files
+data/sql_imports/
+data/import_*.sql
+data/import_batch_*
+prize_bond_draws/
+logs/
