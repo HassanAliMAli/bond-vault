@@ -106,7 +106,11 @@ export function CheckPageClient() {
           {checkState === "idle" && "Match your entire portfolio against historical draw results in seconds."}
           {checkState === "slot-machine" && "Scanning every bond against draw databases..."}
           {checkState === "checking" && "Processing results..."}
-          {checkState === "results" && `${(results?.totalChecked ?? 0).toLocaleString()} bonds checked against historical draws`}
+          {checkState === "results"
+            ? `${(results?.matches?.length ?? 0) > 0
+                ? `${results.matches.length} winning ${results.matches.length === 1 ? "bond" : "bonds"} found out of ${(results?.totalChecked ?? 0).toLocaleString()} checked`
+                : `${(results?.totalChecked ?? 0).toLocaleString()} bonds checked — no winners this time`}`
+            : ""}
         </p>
       </div>
 

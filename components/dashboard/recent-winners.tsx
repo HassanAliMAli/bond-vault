@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { DenominationBadge } from "@/components/ui/badge";
 import { Trophy, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface Winner {
   id: string;
@@ -23,6 +24,7 @@ const PRIZE_LABELS: Record<string, string> = {
 };
 
 export function RecentWinners({ winners }: RecentWinnersProps) {
+  const router = useRouter();
   return (
     <div className="rounded-[var(--radius-lg)] bg-dark-800/50 border border-dark-600 p-5">
       <div className="flex items-center justify-between mb-4">
@@ -31,7 +33,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
           <h2 className="text-lg font-semibold text-white">Recent Winners</h2>
         </div>
         {winners.length > 0 && (
-          <button className="text-sm text-gold hover:text-gold/80 transition-colors flex items-center gap-1">
+          <button onClick={() => router.push("/check")} className="text-sm text-gold hover:text-gold/80 transition-colors flex items-center gap-1">
             View All <ArrowRight className="h-3 w-3" />
           </button>
         )}

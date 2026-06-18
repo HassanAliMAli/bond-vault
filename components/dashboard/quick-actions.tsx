@@ -17,12 +17,12 @@ export function QuickActions() {
     <Card variant="elevated">
       <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {actions.map((action, i) => (
             <motion.div key={action.href} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300, damping: 24, delay: 0.3 + i * 0.06 }}>
-              <Link href={action.href} className={`group flex flex-col items-center gap-2.5 p-4 rounded-[var(--radius-md)] border border-transparent hover:border-dark-500 bg-dark-700 hover:shadow-elevation-2 transition-all text-center cursor-pointer ${action.primary ? "ring-1 ring-gold/30" : ""}`}>
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${action.accent}`}><action.icon className="h-5 w-5" /></div>
-                <div><p className="text-sm font-medium text-white">{action.label}</p><p className="text-[11px] text-gray mt-0.5">{action.description}</p></div>
+              <Link href={action.href} className={`group flex flex-col items-center gap-3 p-5 rounded-[var(--radius-md)] border border-transparent hover:border-dark-500 bg-dark-700 hover:shadow-elevation-2 transition-all text-center cursor-pointer ${action.primary ? "ring-1 ring-gold/30" : ""}`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${action.accent}`}><action.icon className="h-5.5 w-5.5" /></div>
+                <div><p className="text-sm font-medium text-white">{action.label}</p><p className="text-xs text-gray mt-0.5">{action.description}</p></div>
               </Link>
             </motion.div>
           ))}
