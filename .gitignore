@@ -64,3 +64,4 @@ data/import_*.sql
 data/import_batch_*
 prize_bond_draws/
 logs/
+scripts/import-missing.mjs
