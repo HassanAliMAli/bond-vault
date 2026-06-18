@@ -5,6 +5,7 @@ import { eq, and, desc, isNull } from "drizzle-orm";
 import { success, error, getEnv, getUserId } from "../lib";
 import { createBondSchema } from "../validations";
 import { generateMatchesForAllActiveBonds } from "../services/matches";
+import { generateId } from "../id";
 
 export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string } }>()
   .post("/check", async (c) => {
@@ -37,35 +38,64 @@ export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string 
     const userId = getUserId(c);
     if (!userId) return error(c, "UNAUTHORIZED", "Not logged in", 401);
 
-    const [userBonds] = await Promise.all([
-      db.select({ id: bonds.id }).from(bonds).where(
-        and(eq(bonds.userId, userId), eq(bonds.status, "active"), isNull(bonds.deletedAt))
-      ).all(),
-    ]);
-
-    // Clear previous results for a fresh check
-    await db.delete(matches).where(eq(matches.userId, userId));
-
-    const count = await generateMatchesForAllActiveBonds(env, userId);
-
-    const matchResults = await db
+    // Fetch user's active bonds
+    const userBonds = await db
       .select()
-      .from(matches)
-      .where(and(eq(matches.userId, userId), eq(matches.status, "unseen")))
-      .orderBy(desc(matches.createdAt))
+      .from(bonds)
+      .where(and(eq(bonds.userId, userId), eq(bonds.status, "active"), isNull(bonds.deletedAt)))
       .all();
 
+    // Clear previous results
+    await db.delete(matches).where(eq(matches.userId, userId));
+
+    // Check each bond against winning numbers using the same proven approach as /check
+    const matchResults = [];
+    for (const bond of userBonds) {
+      const wns = await db
+        .select()
+        .from(winningNumbers)
+        .innerJoin(draws, eq(winningNumbers.drawId, draws.id))
+        .where(
+          and(
+            eq(winningNumbers.bondNumber, bond.bondNumber),
+            eq(draws.denomination, bond.denomination)
+          )
+        )
+        .all();
+
+      for (const row of wns) {
+        const matchId = generateId();
+        await db.insert(matches).values({
+          id: matchId,
+          userId,
+          bondId: bond.id,
+          winningNumberId: row.winning_numbers.id,
+          drawId: row.draws.id,
+          bondNumberSnapshot: bond.bondNumber,
+          denominationSnapshot: bond.denomination,
+          prizeTypeSnapshot: row.winning_numbers.prizeType,
+          prizeAmountSnapshot: row.winning_numbers.prizeAmount,
+          drawDateSnapshot: row.draws.drawDate,
+          status: "unseen",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+
+        matchResults.push({
+          id: matchId,
+          bondNumber: bond.bondNumber,
+          denomination: String(bond.denomination),
+          prizeType: row.winning_numbers.prizeType,
+          prizeAmount: `Rs. ${row.winning_numbers.prizeAmount.toLocaleString()}`,
+          drawDate: row.draws.drawDate,
+          drawNumber: "",
+        });
+      }
+    }
+
     return success(c, {
-      matchesCreated: count,
+      matchesCreated: matchResults.length,
       totalChecked: userBonds.length,
-      matches: matchResults.map((m) => ({
-        id: m.id,
-        bondNumber: m.bondNumberSnapshot,
-        denomination: String(m.denominationSnapshot ?? ""),
-        prizeType: m.prizeTypeSnapshot ?? "",
-        prizeAmount: m.prizeAmountSnapshot ? `Rs. ${m.prizeAmountSnapshot.toLocaleString()}` : "",
-        drawDate: m.drawDateSnapshot ?? "",
-        drawNumber: "",
-      })),
+      matches: matchResults,
     });
   });
