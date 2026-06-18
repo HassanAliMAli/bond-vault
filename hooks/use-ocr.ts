@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { createWorker } from "tesseract.js";
 import { api } from "@/lib/api-client";
 
 export interface ScannedBond {
   bondNumber: string;
   denomination: number | null;
-  confidence: number;
 }
 
 export function useOcr() {
@@ -15,6 +14,13 @@ export function useOcr() {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<ScannedBond[]>([]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    };
+  }, []);
 
   const scan = useCallback(async (file: File) => {
     setIsProcessing(true);
@@ -22,6 +28,7 @@ export function useOcr() {
     setResults([]);
 
     const objectUrl = URL.createObjectURL(file);
+    objectUrlRef.current = objectUrl;
     setImageUrl(objectUrl);
 
     try {
@@ -37,7 +44,6 @@ export function useOcr() {
 
       await worker.terminate();
 
-      // Extract bond numbers from recognized text
       const lines = data.text.split("\n").map((l) => l.trim()).filter(Boolean);
       const bondRegex = /\b(\d{6})\b/g;
       const found: ScannedBond[] = [];
@@ -48,23 +54,20 @@ export function useOcr() {
           found.push({
             bondNumber: match[1],
             denomination: null,
-            confidence: 0,
           });
         }
       }
 
-      // Deduplicate
       const seen = new Set<string>();
-      const deduped = found.filter((b) => {
+      const unique = found.filter((b) => {
         if (seen.has(b.bondNumber)) return false;
         seen.add(b.bondNumber);
         return true;
       });
 
-      setResults(deduped);
+      setResults(unique);
     } catch (e) {
-      console.error("OCR error:", e);
-      throw e;
+      setResults([]);
     } finally {
       setIsProcessing(false);
       setProgress(100);
@@ -84,7 +87,7 @@ export function useOcr() {
   }, []);
 
   const saveBonds = useCallback(async () => {
-    const saved = [];
+    const saved: ScannedBond[] = [];
     for (const bond of results) {
       if (!bond.denomination) continue;
       try {
@@ -101,11 +104,15 @@ export function useOcr() {
   }, [results]);
 
   const reset = useCallback(() => {
+    setIsProcessing(false);
     setResults([]);
     setImageUrl(null);
     setProgress(0);
-    if (imageUrl) URL.revokeObjectURL(imageUrl);
-  }, [imageUrl]);
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  }, []);
 
   return {
     isProcessing,
