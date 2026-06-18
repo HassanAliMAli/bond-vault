@@ -5,6 +5,7 @@ import { PageTransition } from "@/components/shared/page-transition";
 import { ErrorState } from "@/components/shared/error-state";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import { formatDrawDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useAdminDraws, useCreateDraw, useUploadDrawPdf, useAddWinners, useGenerateMatches, type Draw } from "@/hooks/use-admin";
 import { Plus, Upload, Award, Zap } from "lucide-react";
@@ -74,7 +75,7 @@ export function AdminDrawsClient() {
                 <div>
                   <h3 className="text-lg font-semibold text-white">Draw #{draw.drawNumber}</h3>
                   <p className="text-sm text-gray mt-1">
-                    Rs. {draw.denomination.toLocaleString()} | {new Date(draw.drawDate).toLocaleDateString()}
+                    Rs. {draw.denomination.toLocaleString()} | {formatDrawDate(draw.drawDate)}
                     {draw.source ? ` | ${draw.source}` : ""}
                   </p>
                 </div>
