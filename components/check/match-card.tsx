@@ -10,6 +10,12 @@ interface MatchCardProps {
   prizeAmount: string; drawDate: string; drawNumber: string; index?: number;
 }
 
+const PRIZE_LABELS: Record<string, string> = {
+  f: "1st Prize", s: "2nd Prize", t: "3rd Prize",
+  first: "1st Prize", second: "2nd Prize", third: "3rd Prize",
+  "1st Prize": "1st Prize", "2nd Prize": "2nd Prize", "3rd Prize": "3rd Prize",
+};
+
 const prizeIcons: Record<string, React.ReactNode> = {
   "1st Prize": <Trophy className="h-5 w-5 text-gold" />,
   "2nd Prize": <Award className="h-5 w-5 text-gold" />,
@@ -22,18 +28,19 @@ const prizeColors: Record<string, string> = {
 };
 
 export function MatchCard({ bondNumber, denomination, prizeType, prizeAmount, drawDate, drawNumber, index = 0 }: MatchCardProps) {
+  const label = PRIZE_LABELS[prizeType] || prizeType;
   return (
     <motion.div initial={{ opacity: 0, x: -20, scale: 0.95 }} animate={{ opacity: 1, x: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 350, damping: 26, delay: 0.1 + index * 0.08 }}>
-      <Card variant="outlined" className={`border-l-4 ${prizeColors[prizeType] || "border-l-gold"} p-4`}>
+      <Card variant="outlined" className={`border-l-4 ${prizeColors[label] || "border-l-gold"} p-4`}>
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-full bg-dark-700 border border-dark-600 flex items-center justify-center shrink-0">
-            {prizeIcons[prizeType] || <Trophy className="h-5 w-5 text-gold" />}
+            {prizeIcons[label] || <Trophy className="h-5 w-5 text-gold" />}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap"><span className="text-base font-semibold text-white">#{bondNumber}</span><DenominationBadge denomination={denomination} /></div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-white">{prizeType}</span>
+              <span className="font-medium text-white">{label}</span>
               <span className="text-dark-500">·</span>
               <span className="font-semibold text-green">{prizeAmount}</span>
               <span className="text-dark-500">·</span>

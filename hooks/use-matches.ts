@@ -28,7 +28,7 @@ export function useDashboard() {
           id: m.id,
           bondNumber: m.bondNumberSnapshot,
           denomination: m.denominationSnapshot,
-          prizeType: m.prizeTypeSnapshot,
+          prizeType: ({ f: "1st Prize", s: "2nd Prize", t: "3rd Prize", first: "1st Prize", second: "2nd Prize", third: "3rd Prize" })[m.prizeTypeSnapshot ?? ""] || m.prizeTypeSnapshot || "",
           prizeAmount: `Rs. ${m.prizeAmountSnapshot.toLocaleString()}`,
           drawDate: m.drawDateSnapshot,
         })),

@@ -16,6 +16,12 @@ interface Winner {
 
 interface RecentWinnersProps { winners: Winner[]; }
 
+const PRIZE_LABELS: Record<string, string> = {
+  f: "1st Prize", s: "2nd Prize", t: "3rd Prize",
+  first: "1st Prize", second: "2nd Prize", third: "3rd Prize",
+  "1st Prize": "1st Prize", "2nd Prize": "2nd Prize", "3rd Prize": "3rd Prize",
+};
+
 export function RecentWinners({ winners }: RecentWinnersProps) {
   return (
     <div className="rounded-[var(--radius-lg)] bg-dark-800/50 border border-dark-600 p-5">
@@ -43,7 +49,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
               className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-800/80 border border-dark-600"
             >
               <div className="flex items-center gap-3">
-                <div className={cn("w-2 h-2 rounded-full", winner.prizeType === "1st Prize" ? "bg-gold" : winner.prizeType === "2nd Prize" ? "bg-blue" : "bg-green")} />
+                <div className={cn("w-2 h-2 rounded-full", (PRIZE_LABELS[winner.prizeType] || winner.prizeType) === "1st Prize" ? "bg-gold" : (PRIZE_LABELS[winner.prizeType] || winner.prizeType) === "2nd Prize" ? "bg-blue" : "bg-green")} />
                 <div>
                   <p className="text-sm font-medium text-white">{winner.bondNumber}</p>
                   <p className="text-xs text-gray">{winner.drawDate}</p>
@@ -51,7 +57,7 @@ export function RecentWinners({ winners }: RecentWinnersProps) {
               </div>
               <div className="text-right">
                 <DenominationBadge denomination={winner.denomination} />
-                <p className="text-xs font-medium text-gold mt-0.5">{winner.prizeType}</p>
+                <p className="text-xs font-medium text-gold mt-0.5">{PRIZE_LABELS[winner.prizeType] || winner.prizeType}</p>
               </div>
             </motion.div>
           ))}

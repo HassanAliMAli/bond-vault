@@ -7,6 +7,11 @@ import { createBondSchema } from "../validations";
 import { generateMatchesForAllActiveBonds } from "../services/matches";
 import { generateId } from "../id";
 
+const PRIZE_LABELS: Record<string, string> = { f: "1st Prize", s: "2nd Prize", t: "3rd Prize" };
+function fmtPrize(pt: string) { return PRIZE_LABELS[pt] || pt; }
+const PRIZE_LABELS_SNAPSHOT: Record<string, string> = { f: "1st Prize", s: "2nd Prize", t: "3rd Prize", first: "1st Prize", second: "2nd Prize", third: "3rd Prize" };
+function fmtPrizeSnap(pt: string | null) { return pt ? (PRIZE_LABELS_SNAPSHOT[pt] || pt) : ""; }
+
 export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string } }>()
   .post("/check", async (c) => {
     const env = getEnv(c);
@@ -24,7 +29,7 @@ export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string 
 
     const matchResults = result.map(m => ({
       bondNumber: m.winning_numbers.bondNumber,
-      prizeType: m.winning_numbers.prizeType,
+      prizeType: fmtPrize(m.winning_numbers.prizeType),
       prizeAmount: m.winning_numbers.prizeAmount,
       drawDate: m.draws.drawDate,
       drawNumber: m.draws.drawNumber,
@@ -85,7 +90,7 @@ export const checkRoute = new Hono<{ Bindings: Env; Variables: { userId: string 
           id: matchId,
           bondNumber: bond.bondNumber,
           denomination: String(bond.denomination),
-          prizeType: row.winning_numbers.prizeType,
+          prizeType: fmtPrize(row.winning_numbers.prizeType),
           prizeAmount: `Rs. ${row.winning_numbers.prizeAmount.toLocaleString()}`,
           drawDate: row.draws.drawDate,
           drawNumber: "",
