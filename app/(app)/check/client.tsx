@@ -11,7 +11,7 @@ import { DenominationBadge } from "@/components/ui/badge";
 import { useCheckBonds } from "@/hooks/use-matches";
 import { useBonds } from "@/hooks/use-bonds";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+
 
 type CheckState = "idle" | "slot-machine" | "checking" | "results";
 
@@ -116,45 +116,37 @@ export function CheckPageClient() {
         {errorMsg && <p className="text-red">Error: {errorMsg}</p>}
       </div>
 
-      <AnimatePresence mode="wait">
-        {checkState === "idle" && (
-          <motion.div key="idle" className="flex flex-col items-center gap-8 py-16" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -12 }}>
-            <CheckButton onClick={handleStartCheck} />
-            <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-gray">
-              <span>Will check against:</span>
-              {[100, 200, 750, 1500, 7500, 25000, 40000].map(d => <DenominationBadge key={d} denomination={d} />)}
-            </div>
-          </motion.div>
-        )}
+      {checkState === "idle" && (
+        <div className="flex flex-col items-center gap-8 py-16">
+          <CheckButton onClick={handleStartCheck} />
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-gray">
+            <span>Will check against:</span>
+            {[100, 200, 750, 1500, 7500, 25000, 40000].map(d => <DenominationBadge key={d} denomination={d} />)}
+          </div>
+        </div>
+      )}
 
-        {checkState === "slot-machine" && showSlot && (
-          <motion.div key="slot-machine" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={totalBonds} />
-          </motion.div>
-        )}
+      {checkState === "slot-machine" && showSlot && (
+        <SlotMachine isRunning={showSlot} onComplete={handleSlotComplete} totalBonds={totalBonds} />
+      )}
 
-        {checkState === "checking" && (
-          <motion.div key="checking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="flex items-center justify-center py-20">
-              {showError ? (
-                <ErrorState
-                  title="Check failed"
-                  description={errorMsg || "Could not complete the bond check."}
-                  onRetry={resetCheck}
-                />
-              ) : (
-                <CheckButton loading progress={0.85} totalBonds={totalBonds} />
-              )}
-            </div>
-          </motion.div>
-        )}
+      {checkState === "checking" && (
+        <div className="flex items-center justify-center py-20">
+          {showError ? (
+            <ErrorState
+              title="Check failed"
+              description={errorMsg || "Could not complete the bond check."}
+              onRetry={resetCheck}
+            />
+          ) : (
+            <CheckButton loading progress={0.85} totalBonds={totalBonds} />
+          )}
+        </div>
+      )}
 
-        {checkState === "results" && results && (
-          <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <ResultsPanel matches={results.matches || []} totalChecked={results.totalChecked || 0} onCheckAgain={handleCheckAgain} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {checkState === "results" && results && (
+        <ResultsPanel matches={results.matches || []} totalChecked={results.totalChecked || 0} onCheckAgain={handleCheckAgain} />
+      )}
     </PageTransition>
   );
 }
