@@ -17,7 +17,7 @@ type CheckState = "idle" | "slot-machine" | "checking" | "results";
 
 export function CheckPageClient() {
   const router = useRouter();
-  const { data: bondsData, isLoading: bondsLoading, isError: bondsError } = useBonds();
+  const { data: bondsData, isLoading: bondsLoading } = useBonds();
   const totalBonds = bondsData?.total ?? 0;
 
   const [checkState, setCheckState] = useState<CheckState>("idle");

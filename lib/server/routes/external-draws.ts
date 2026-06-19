@@ -79,7 +79,7 @@ export const externalDrawRoutes = new Hono<{ Bindings: Env }>()
     const env = getEnv(c);
     const db = getDb(env.DB);
     const body = await c.req.json();
-    const { denomination, drawNumber, drawDate, bondType, winningNumbers: winners } = body;
+    const { denomination, drawNumber, drawDate, winningNumbers: winners } = body;
 
     if (!denomination || !drawDate) {
       return error(c, "VALIDATION_ERROR", "denomination and drawDate are required", 400);

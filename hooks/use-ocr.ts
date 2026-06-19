@@ -66,7 +66,7 @@ export function useOcr() {
       });
 
       setResults(unique);
-    } catch (e) {
+    } catch {
       setResults([]);
     } finally {
       setIsProcessing(false);

@@ -5,7 +5,7 @@ import { PageTransition } from "@/components/shared/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOcr } from "@/hooks/use-ocr";
-import { Camera, Upload, ScanLine, X, Save, Plus, Check, AlertTriangle } from "lucide-react";
+import { Camera, Upload, ScanLine, X, Save, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const DENOMINATIONS = [100, 200, 750, 1500, 7500, 25000, 40000] as const;
@@ -125,6 +125,7 @@ export function ScanPageClient() {
                   <CardTitle className="flex items-center gap-2">Scanned Image</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- blob URL */}
                   <img src={imageUrl} alt="Scanned bond" className="w-full rounded-[var(--radius-md)] object-contain max-h-80" />
                 </CardContent>
               </Card>

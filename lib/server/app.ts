@@ -117,22 +117,22 @@ export function createApp() {
     await next();
   };
 
-  app.get("/cron/subscriptions", cronAuth, async (c) => {
+  app.get("/api/v1/cron/subscriptions", cronAuth, async (c) => {
     const count = await handleSubscriptionExpiration(c.env);
     return c.json({ success: true, count });
   });
 
-  app.get("/cron/retention", cronAuth, async (c) => {
+  app.get("/api/v1/cron/retention", cronAuth, async (c) => {
     const result = await handleRetentionCleanup(c.env);
     return c.json({ success: true, ...result });
   });
 
-  app.get("/cron/imports-cleanup", cronAuth, async (c) => {
+  app.get("/api/v1/cron/imports-cleanup", cronAuth, async (c) => {
     const count = await handleImportCleanup(c.env);
     return c.json({ success: true, cleanedImports: count });
   });
 
-  app.get("/cron/notifications", cronAuth, async (c) => {
+  app.get("/api/v1/cron/notifications", cronAuth, async (c) => {
     const sent = await sendPendingNotifications(c.env);
     return c.json({ success: true, notificationsSent: sent });
   });
