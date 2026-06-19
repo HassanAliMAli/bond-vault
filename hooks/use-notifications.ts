@@ -24,7 +24,7 @@ interface NotificationsResponse {
 export function useNotifications(limit = 5) {
   return useQuery({
     queryKey: ["notifications", limit],
-    queryFn: () => api.notifications.list({ limit, page: "1" }) as Promise<NotificationsResponse>,
+    queryFn: () => api.notifications.list({ limit, page: 1 }) as Promise<NotificationsResponse>,
     staleTime: 15_000,
   });
 }
