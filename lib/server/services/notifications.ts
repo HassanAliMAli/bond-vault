@@ -1,5 +1,5 @@
 import { getDb } from "../db";
-import { notificationBatches, notifications, notificationPreferences, type NotificationChannel } from "../schema";
+import { notificationBatches, notifications, notificationPreferences, users, type NotificationChannel } from "../schema";
 import { eq, and } from "drizzle-orm";
 import { generateId } from "../id";
 
@@ -104,15 +104,20 @@ async function sendNotification(env: Env, notification: { channel: string; userI
 }
 
 async function sendEmail(env: Env, notification: { userId: string; title: string | null; message: string | null }) {
+  if (!env.RESEND_API_KEY) return;
+  const db = getDb(env.DB);
+  const user = await db.select({ email: users.email }).from(users).where(eq(users.id, notification.userId)).get();
+  if (!user?.email) return;
+
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${env.RESEND_API_KEY || ""}`,
+      "Authorization": `Bearer ${env.RESEND_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       from: "BondVault <notifications@bondvault.app>",
-      to: notification.userId,
+      to: user.email,
       subject: notification.title,
       text: notification.message,
     }),

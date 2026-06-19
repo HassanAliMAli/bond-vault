@@ -14,7 +14,7 @@ import { exportRoutes } from "./routes/exports";
 import { searchRoutes } from "./routes/search";
 import { adminRoutes } from "./routes/admin";
 import { externalDrawRoutes } from "./routes/external-draws";
-import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup } from "./services";
+import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup, sendPendingNotifications } from "./services";
 import { logger } from "./logger";
 
 type Variables = {
@@ -130,6 +130,11 @@ export function createApp() {
   app.get("/cron/imports-cleanup", cronAuth, async (c) => {
     const count = await handleImportCleanup(c.env);
     return c.json({ success: true, cleanedImports: count });
+  });
+
+  app.get("/cron/notifications", cronAuth, async (c) => {
+    const sent = await sendPendingNotifications(c.env);
+    return c.json({ success: true, notificationsSent: sent });
   });
 
   app.route("/api/v1", healthRoute);
