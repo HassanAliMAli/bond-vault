@@ -1,6 +1,6 @@
 name = "bondvault"
 compatibility_date = "2025-10-01"
-main = ".open-next/worker.js"
+main = "worker.ts"
 
 compatibility_flags = ["nodejs_compat"]
 
@@ -23,6 +23,34 @@ id = "e52470a5785a4ee390df6a979ba30210"
 [[r2_buckets]]
 binding = "R2"
 bucket_name = "bondvault-assets"
+
+[[queues.producers]]
+binding = "MatchGenerationQueue"
+queue = "match-generation"
+
+[[queues.consumers]]
+queue = "match-generation"
+
+[[queues.producers]]
+binding = "NotificationDeliveryQueue"
+queue = "notification-delivery"
+
+[[queues.consumers]]
+queue = "notification-delivery"
+
+[[queues.producers]]
+binding = "DrawProcessingQueue"
+queue = "draw-processing"
+
+[[queues.consumers]]
+queue = "draw-processing"
+
+[[queues.producers]]
+binding = "CleanupJobsQueue"
+queue = "cleanup-jobs"
+
+[[queues.consumers]]
+queue = "cleanup-jobs"
 
 [vars]
 ENVIRONMENT = "production"

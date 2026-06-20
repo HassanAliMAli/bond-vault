@@ -161,5 +161,7 @@ export const externalDrawRoutes = new Hono<{ Bindings: Env }>()
       }
     }
 
+    await c.env.MatchGenerationQueue.send({ drawId });
+
     return success(c, { id: drawId, status: "imported", winnerCount: winners?.length || 0 }, 201);
   });

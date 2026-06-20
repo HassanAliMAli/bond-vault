@@ -10,7 +10,7 @@ import { eq, and, or, like, isNull, desc, gte, lte, count, type SQL } from "driz
 import { success, error, getEnv } from "../lib";
 import { generateId } from "../id";
 import { createDrawSchema, createWinningNumberSchema, updateUserSchema, updateSettingsSchema, updateDrawSchema } from "../validations";
-import { logAudit, getClientIp, createStorageProvider, generateMatchesForDraw } from "../services";
+import { logAudit, getClientIp, createStorageProvider } from "../services";
 import { logger } from "../logger";
 
 type AdminVariables = {
@@ -273,9 +273,9 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const adminId = c.get("adminId");
     const drawId = c.req.param("id");
 
-    const count = await generateMatchesForDraw(env, drawId);
-    await logAudit(env, { userId: adminId, action: "admin.draw.matches.generate", entityType: "draw", entityId: drawId, metadata: { matchCount: count }, ipAddress: getClientIp(c) });
-    return success(c, { matchesGenerated: count });
+    await c.env.MatchGenerationQueue.send({ drawId });
+    await logAudit(env, { userId: adminId, action: "admin.draw.matches.generate", entityType: "draw", entityId: drawId, ipAddress: getClientIp(c) });
+    return success(c, { message: "Match generation queued" });
   })
   .patch("/admin/draws/:id", async (c) => {
     const env = getEnv(c);
