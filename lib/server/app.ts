@@ -136,6 +136,13 @@ export function createApp() {
     return c.json({ success: true, notificationsSent: sent });
   });
 
+  app.get("/api/v1/cron/maintenance", cronAuth, async (c) => {
+    const expired = await handleSubscriptionExpiration(c.env);
+    const retention = await handleRetentionCleanup(c.env);
+    const cleaned = await handleImportCleanup(c.env);
+    return c.json({ success: true, subscriptionsExpired: expired, ...retention, importsCleaned: cleaned });
+  });
+
   app.route("/api/v1", healthRoute);
   app.route("/api/v1/bonds", bondRoutes);
   app.route("/api/v1/matches", matchRoutes);
