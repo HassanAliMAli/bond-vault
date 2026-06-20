@@ -23,6 +23,7 @@ export const paymentRoutes = new Hono()
     await db.insert(payments).values({
       id,
       userId,
+      planId: plan.id,
       amount: plan.priceUsd,
       paymentMethod: null,
       status: "pending",
@@ -31,7 +32,7 @@ export const paymentRoutes = new Hono()
     });
 
     await logAudit(env, { userId, action: "payment.create", entityType: "payment", entityId: id, ipAddress: getClientIp(c) });
-    return success(c, { paymentId: id, amount: plan.priceUsd, status: "pending" }, 201);
+    return success(c, { paymentId: id, amount: plan.priceUsd, planId: plan.id, planName: plan.name, status: "pending" }, 201);
   })
   .get("/payments", async (c) => {
     const env = getEnv(c);

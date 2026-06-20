@@ -94,10 +94,12 @@ export type Payment = {
   reviewedAt: string | null; createdAt: string;
 };
 
-export function useAdminPayments(status?: string) {
+export function useAdminPayments(status?: string, search?: string, page?: number) {
   return useQuery({
-    queryKey: ["admin", "payments", status],
-    queryFn: () => adminFetch<{ payments: Payment[] }>("/admin/payments", { params: { status } }),
+    queryKey: ["admin", "payments", status, search, page],
+    queryFn: () => adminFetch<{ payments: Payment[]; total: number }>("/admin/payments", {
+      params: { status, search, page: String(page || 1), limit: "20" },
+    }),
   });
 }
 
@@ -122,10 +124,12 @@ export type Draw = {
   source: string | null; pdfR2Key: string | null; createdAt: string;
 };
 
-export function useAdminDraws() {
+export function useAdminDraws(search?: string, page?: number) {
   return useQuery({
-    queryKey: ["admin", "draws"],
-    queryFn: () => adminFetch<{ draws: Draw[] }>("/admin/draws"),
+    queryKey: ["admin", "draws", search, page],
+    queryFn: () => adminFetch<{ draws: Draw[]; total: number }>("/admin/draws", {
+      params: { search, page: String(page || 1), limit: "20" },
+    }),
   });
 }
 

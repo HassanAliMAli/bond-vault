@@ -4,13 +4,16 @@ import { importJobs, bonds, type BondEntryMethod, type ImportJobFileType } from 
 import { eq, and, isNull } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { generateId } from "../id";
-import { canImport, logAudit, getClientIp, createStorageProvider } from "../services";
+import { canImport, logAudit, getClientIp, createStorageProvider, checkRateLimit, RATE_LIMITS } from "../services";
 
 export const importRoutes = new Hono()
   .post("/imports", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
     const userId = getUserId(c);
+
+    const { allowed: rateAllowed } = await checkRateLimit(env.KV, `imports:${userId}`, RATE_LIMITS.imports.limit, RATE_LIMITS.imports.window);
+    if (!rateAllowed) return error(c, "RATE_LIMITED", "Too many import requests. Please try again later.", 429);
 
     const allowed = await canImport(env, userId);
     if (!allowed) return error(c, "FORBIDDEN", "Importing bonds requires a paid plan. Upgrade to import.", 403);

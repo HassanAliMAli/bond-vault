@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { MobileNav } from "./mobile-nav";
@@ -19,6 +20,11 @@ export function Shell({ children }: ShellProps) {
             {children}
           </div>
         </main>
+        <footer className="hidden lg:flex items-center justify-center gap-4 py-3 px-4 border-t border-dark-600 text-xs text-dark-500">
+          <span>&copy; {new Date().getFullYear()} BondVault</span>
+          <Link href="/privacy" className="hover:text-gray transition-colors">Privacy</Link>
+          <Link href="/terms" className="hover:text-gray transition-colors">Terms</Link>
+        </footer>
       </div>
       <MobileNav />
     </div>

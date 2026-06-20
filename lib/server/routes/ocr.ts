@@ -5,13 +5,16 @@ import { eq, and } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { ocrUsageSchema } from "../validations";
 import { generateId } from "../id";
-import { getOcrUsage, canUseOcr, logAudit, getClientIp } from "../services";
+import { getOcrUsage, canUseOcr, logAudit, getClientIp, checkRateLimit, RATE_LIMITS } from "../services";
 
 export const ocrRoutes = new Hono()
   .post("/ocr/usage", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
     const userId = getUserId(c);
+
+    const { allowed: rateAllowed } = await checkRateLimit(env.KV, `ocr:${userId}`, RATE_LIMITS.ocr.limit, RATE_LIMITS.ocr.window);
+    if (!rateAllowed) return error(c, "RATE_LIMITED", "Too many OCR requests. Please try again later.", 429);
 
     const allowed = await canUseOcr(env, userId);
     if (!allowed) return error(c, "LIMIT_EXCEEDED", "Monthly OCR scan limit reached. Upgrade your plan for more scans.", 429);

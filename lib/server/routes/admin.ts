@@ -6,7 +6,7 @@ import {
   bonds, matches,
   type PaymentStatus, type NotificationStatus,
 } from "../schema";
-import { eq, and, like, isNull, desc, gte, lte, type SQL } from "drizzle-orm";
+import { eq, and, or, like, isNull, desc, gte, lte, count, type SQL } from "drizzle-orm";
 import { success, error, getEnv } from "../lib";
 import { generateId } from "../id";
 import { createDrawSchema, createWinningNumberSchema, updateUserSchema, updateSettingsSchema, updateDrawSchema } from "../validations";
@@ -107,8 +107,24 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
     const env = getEnv(c);
     const db = getDb(env.DB);
     const status = (c.req.query("status") || "pending") as PaymentStatus;
-    const data = await db.select().from(payments).where(eq(payments.status, status)).all();
-    return success(c, { payments: data });
+    const search = c.req.query("search") || "";
+    const page = Math.max(1, Number(c.req.query("page")) || 1);
+    const limit = Math.min(100, Math.max(1, Number(c.req.query("limit")) || 20));
+    const offset = (page - 1) * limit;
+
+    const conditions = [eq(payments.status, status)];
+    if (search) {
+      conditions.push(
+        or(
+          like(payments.userId, `%${search}%`),
+          like(payments.planId, `%${search}%`),
+        ),
+      );
+    }
+
+    const data = await db.select().from(payments).where(and(...conditions)).limit(limit).offset(offset).all();
+    const countResult = await db.select({ count: count() }).from(payments).where(and(...conditions)).get();
+    return success(c, { payments: data, total: countResult?.count ?? 0 });
   })
   .post("/admin/payments/:id/approve", async (c) => {
     const env = getEnv(c);
@@ -121,7 +137,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
 
     await db.update(payments).set({ status: "approved", reviewedBy: adminId, reviewedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }).where(eq(payments.id, id));
 
-    const plan = await db.select().from(plans).where(eq(plans.name, "Monthly")).get();
+    const plan = await db.select().from(plans).where(eq(plans.id, payment.planId)).get();
     if (plan) {
       const subId = generateId();
       const now = new Date();
@@ -165,8 +181,19 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
   .get("/admin/draws", async (c) => {
     const env = getEnv(c);
     const db = getDb(env.DB);
-    const data = await db.select().from(draws).all();
-    return success(c, { draws: data });
+    const search = c.req.query("search") || "";
+    const page = Math.max(1, Number(c.req.query("page")) || 1);
+    const limit = Math.min(100, Math.max(1, Number(c.req.query("limit")) || 20));
+    const offset = (page - 1) * limit;
+
+    const conditions: SQL[] = [];
+    if (search) {
+      conditions.push(like(draws.drawNumber, `%${search}%`));
+    }
+
+    const data = await db.select().from(draws).where(and(...conditions)).orderBy(desc(draws.drawNumber)).limit(limit).offset(offset).all();
+    const countResult = await db.select({ count: count() }).from(draws).where(and(...conditions)).get();
+    return success(c, { draws: data, total: countResult?.count ?? 0 });
   })
   .post("/admin/draws", async (c) => {
     const env = getEnv(c);

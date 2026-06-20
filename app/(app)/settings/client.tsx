@@ -11,7 +11,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { authClient } from "@/lib/auth-client";
-import { LogOut, Mail, Key, Trash2, Shield, Download, Upload, Check, X } from "lucide-react";
+import { useNotificationPreferences, useUpdateNotificationPreferences } from "@/hooks/use-notifications";
+import { useCurrentSubscription, usePlans, useOcrUsage } from "@/hooks/use-subscription";
+import { Toggle } from "@/components/ui/toggle";
+import { LogOut, Mail, Key, Trash2, Shield, Download, Upload, Check, X, Bell, CreditCard, Clock, AlertCircle, Receipt } from "lucide-react";
 
 export function SettingsPageClient() {
   const router = useRouter();
@@ -23,6 +26,18 @@ export function SettingsPageClient() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const { data: prefs } = useNotificationPreferences();
+  const updatePrefs = useUpdateNotificationPreferences();
+  const { data: subscription } = useCurrentSubscription();
+  const { data: plansData } = usePlans();
+  const { data: ocrUsage } = useOcrUsage();
+
+  const currentPlan = plansData?.plans?.find((p) => p.id === subscription?.planId);
+  const planName = currentPlan?.name || (subscription ? "Unknown" : "Free");
+  const isPaidUser = !!subscription && subscription.status === "active";
+  const ocrUsed = ocrUsage?.used ?? 0;
+  const ocrLimit = ocrUsage?.limit ?? currentPlan?.ocrLimit ?? 3;
 
   const { data: permissions } = useQuery({
     queryKey: ["user", "permissions"],
@@ -90,16 +105,81 @@ export function SettingsPageClient() {
         </CardContent>
       </Card>
       <Card variant="elevated">
-        <CardHeader><CardTitle className="flex items-center gap-2"><Shield className="h-4 w-4 text-gold" />Plan & Permissions</CardTitle><CardDescription>Your current plan and feature access</CardDescription></CardHeader>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Shield className="h-4 w-4 text-gold" />Plan & Permissions</CardTitle>
+          <CardDescription>Your current plan and feature access</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+              <div className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-gray" /><span className="text-sm text-white">Current Plan</span></div>
+              <span className={cn(
+                "text-sm font-semibold",
+                isPaidUser ? "text-gold" : "text-gray"
+              )}>{planName}</span>
+            </div>
+            {subscription && (
+              <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+                <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-gray" /><span className="text-sm text-white">Status</span></div>
+                <span className={cn(
+                  "text-xs px-2 py-0.5 rounded-full font-medium",
+                  subscription.status === "active" ? "bg-green/10 text-green" :
+                  subscription.status === "grace_period" ? "bg-yellow/10 text-yellow" :
+                  "bg-red/10 text-red"
+                )}>{subscription.status.replace("_", " ")}</span>
+              </div>
+            )}
+            {subscription?.expiresAt && (
+              <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+                <div className="flex items-center gap-2"><AlertCircle className="h-4 w-4 text-gray" /><span className="text-sm text-white">Expires</span></div>
+                <span className="text-sm text-gray">{new Date(subscription.expiresAt).toLocaleDateString()}</span>
+              </div>
+            )}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-gray">OCR Usage</span>
+                <span className="text-xs text-gray">{ocrUsed} / {ocrLimit}</span>
+              </div>
+              <div className="w-full h-2 bg-dark-600 rounded-full overflow-hidden">
+                <div className={cn("h-full rounded-full transition-all", ocrUsed >= ocrLimit ? "bg-red" : "bg-gold")} style={{ width: `${Math.min((ocrUsed / ocrLimit) * 100, 100)}%` }} />
+              </div>
+            </div>
+            <div className="border-t border-dark-600 pt-3 space-y-2">
+              <div className="flex items-center justify-between p-2 rounded-[var(--radius-sm)]">
+                <div className="flex items-center gap-2"><Upload className="h-4 w-4 text-gray" /><span className="text-sm text-white">Import Bonds</span></div>
+                {permissions?.canImport ? <Check className="h-4 w-4 text-green" /> : <X className="h-4 w-4 text-red" />}
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-[var(--radius-sm)]">
+                <div className="flex items-center gap-2"><Download className="h-4 w-4 text-gray" /><span className="text-sm text-white">Export Portfolio</span></div>
+                {permissions?.canExport ? <Check className="h-4 w-4 text-green" /> : <X className="h-4 w-4 text-red" />}
+              </div>
+            </div>
+            <Button variant="ghost" size="md" className="w-full text-gray hover:text-white" onClick={() => router.push("/payments")}>
+              <Receipt className="h-4 w-4 mr-1" /> Payment History
+            </Button>
+            {!isPaidUser && (
+              <Button variant="primary" size="lg" className="w-full" onClick={() => router.push("/plans")}>
+                <CreditCard className="h-4 w-4 mr-1" /> Upgrade Plan
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      <Card variant="elevated">
+        <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="h-4 w-4 text-gold" />Notifications</CardTitle><CardDescription>Choose how you receive alerts about winning bonds</CardDescription></CardHeader>
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
-              <div className="flex items-center gap-2"><Upload className="h-4 w-4 text-gray" /><span className="text-sm text-white">Import Bonds</span></div>
-              {permissions?.canImport ? <Check className="h-4 w-4 text-green" /> : <X className="h-4 w-4 text-red" />}
+              <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-gray" /><span className="text-sm text-white">Email Alerts</span></div>
+              <Toggle checked={prefs?.emailEnabled ?? true} onChange={(v) => updatePrefs.mutate({ emailEnabled: v })} />
             </div>
             <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
-              <div className="flex items-center gap-2"><Download className="h-4 w-4 text-gray" /><span className="text-sm text-white">Export Portfolio</span></div>
-              {permissions?.canExport ? <Check className="h-4 w-4 text-green" /> : <X className="h-4 w-4 text-red" />}
+              <div className="flex items-center gap-2"><Bell className="h-4 w-4 text-gray" /><span className="text-sm text-white">WhatsApp Alerts</span><span className="text-[10px] text-gray bg-dark-600 px-1.5 py-0.5 rounded-sm">Not configured</span></div>
+              <Toggle checked={false} onChange={() => {}} disabled />
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+              <div className="flex items-center gap-2"><Bell className="h-4 w-4 text-gray" /><span className="text-sm text-white">SMS Alerts</span><span className="text-[10px] text-gray bg-dark-600 px-1.5 py-0.5 rounded-sm">Not configured</span></div>
+              <Toggle checked={false} onChange={() => {}} disabled />
             </div>
           </div>
         </CardContent>

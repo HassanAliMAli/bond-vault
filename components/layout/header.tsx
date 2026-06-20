@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
-import { Menu, Bell } from "lucide-react";
+import { Menu, Bell, Settings } from "lucide-react";
 import { useNotifications } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +62,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 ))
               )}
             </div>
+            <a href="/settings" className="flex items-center gap-2 p-3 text-sm text-gray hover:text-white hover:bg-dark-700 transition-colors border-t border-dark-600" onClick={() => setOpen(false)}>
+              <Settings className="h-4 w-4" />
+              Notification Settings
+            </a>
           </div>
         )}
       </div>

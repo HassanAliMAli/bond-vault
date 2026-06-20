@@ -2,6 +2,8 @@ import { getDb } from "../db";
 import { notificationBatches, notifications, notificationPreferences, users, type NotificationChannel } from "../schema";
 import { eq, and } from "drizzle-orm";
 import { generateId } from "../id";
+import { sendWhatsApp } from "../providers/whatsapp";
+import { sendSms } from "../providers/sms";
 
 export interface BatchNotificationParams {
   userId: string;
@@ -100,6 +102,10 @@ export async function sendPendingNotifications(env: Env): Promise<number> {
 async function sendNotification(env: Env, notification: { channel: string; userId: string; title: string | null; message: string | null }) {
   if (notification.channel === "email") {
     await sendEmail(env, notification);
+  } else if (notification.channel === "whatsapp") {
+    await sendWhatsApp(notification);
+  } else if (notification.channel === "sms") {
+    await sendSms(notification);
   }
 }
 

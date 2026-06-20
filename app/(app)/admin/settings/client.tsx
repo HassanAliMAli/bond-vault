@@ -7,18 +7,33 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAdminSettings, useUpdateSetting, type SettingsItem } from "@/hooks/use-admin";
-import { Save } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function AdminSettingsClient() {
   const { data, isLoading, isError, refetch } = useAdminSettings();
   const updateSetting = useUpdateSetting();
   const [edits, setEdits] = useState<Record<string, string>>({});
+  const [savingKey, setSavingKey] = useState<string | null>(null);
 
   const getValue = (item: SettingsItem) => edits[item.key] ?? item.value;
 
   const handleSave = async (key: string) => {
-    await updateSetting.mutateAsync({ key, value: edits[key] });
-    setEdits(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== key)));
+    const value = edits[key]?.trim();
+    if (!value) {
+      toast.error("Value cannot be empty");
+      return;
+    }
+    setSavingKey(key);
+    try {
+      await updateSetting.mutateAsync({ key, value });
+      setEdits(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== key)));
+      toast.success(`"${key}" saved`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save setting");
+    } finally {
+      setSavingKey(null);
+    }
   };
 
   return (
@@ -39,25 +54,30 @@ export function AdminSettingsClient() {
       ) : (
         <div className="rounded-[var(--radius-md)] bg-dark-800 border border-dark-600 overflow-hidden">
           <div className="divide-y divide-dark-700">
-            {data.settings.map((item: SettingsItem) => (
-              <div key={item.key} className="p-4 flex items-center gap-4">
-                <div className="flex-1 min-w-0">
-                  <label className="text-sm font-medium text-white block mb-1">{item.key}</label>
-                  <Input
-                    value={getValue(item)}
-                    onChange={e => setEdits({ ...edits, [item.key]: e.target.value })}
-                    className="text-sm"
-                  />
+            {data.settings.map((item: SettingsItem) => {
+              const isSaving = savingKey === item.key;
+              return (
+                <div key={item.key} className="p-4 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <label className="text-sm font-medium text-white block mb-1">{item.key}</label>
+                    <Input
+                      value={getValue(item)}
+                      onChange={e => setEdits({ ...edits, [item.key]: e.target.value })}
+                      className="text-sm"
+                      disabled={isSaving}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 pt-5">
+                    {edits[item.key] !== undefined && edits[item.key] !== item.value && (
+                      <Button size="sm" variant="primary" onClick={() => handleSave(item.key)} disabled={isSaving}>
+                        {isSaving ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <Save className="h-3.5 w-3.5 mr-1" />}
+                        Save
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 pt-5">
-                  {edits[item.key] !== undefined && edits[item.key] !== item.value && (
-                    <Button size="sm" variant="primary" onClick={() => handleSave(item.key)} loading={updateSetting.isPending}>
-                      <Save className="h-3.5 w-3.5 mr-1" /> Save
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -79,11 +99,19 @@ function AddSettingForm({ onSaved }: { onSaved: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!key || !value) return;
-    await updateSetting.mutateAsync({ key, value });
-    setKey("");
-    setValue("");
-    onSaved();
+    const trimmedKey = key.trim();
+    const trimmedValue = value.trim();
+    if (!trimmedKey) { toast.error("Key is required"); return; }
+    if (!trimmedValue) { toast.error("Value is required"); return; }
+    try {
+      await updateSetting.mutateAsync({ key: trimmedKey, value: trimmedValue });
+      setKey("");
+      setValue("");
+      onSaved();
+      toast.success(`"${trimmedKey}" added`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add setting");
+    }
   };
 
   return (

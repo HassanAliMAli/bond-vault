@@ -7,7 +7,8 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminUsers, useSuspendUser, useRestoreUser, type AdminUser } from "@/hooks/use-admin";
-import { Search, UserCheck, UserX } from "lucide-react";
+import { Search, UserCheck, UserX, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   active: "bg-green/10 text-green border border-green/30",
@@ -19,9 +20,36 @@ const statusColors: Record<string, string> = {
 export function AdminUsersClient() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { data, isLoading, isError, refetch } = useAdminUsers(search || undefined, page);
   const suspend = useSuspendUser();
   const restore = useRestoreUser();
+
+  const handleSuspend = async (id: string) => {
+    if (!confirm("Suspend this user? They will lose access until restored.")) return;
+    setActionLoading(id);
+    try {
+      await suspend.mutateAsync(id);
+      toast.success("User suspended");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to suspend user");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRestore = async (id: string) => {
+    if (!confirm("Restore this user?")) return;
+    setActionLoading(id);
+    try {
+      await restore.mutateAsync(id);
+      toast.success("User restored");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to restore user");
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <PageTransition className="space-y-6">
@@ -80,23 +108,26 @@ export function AdminUsersClient() {
                     <td className="py-3 px-4 text-gray">{new Date(user.createdAt).toLocaleDateString()}</td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {user.status === "active" || user.status === "admin" ? (
+                        {(user.status === "active" || user.status === "admin") && (
                           <button
-                            onClick={() => { if (confirm("Suspend this user?")) suspend.mutate(user.id); }}
-                            className="text-red hover:text-red-light transition-colors p-1"
+                            onClick={() => handleSuspend(user.id)}
+                            disabled={actionLoading === user.id}
+                            className="text-red hover:text-red-light transition-colors p-1 disabled:opacity-40 disabled:cursor-not-allowed"
                             title="Suspend"
                           >
-                            <UserX className="h-4 w-4" />
+                            {actionLoading === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
                           </button>
-                        ) : user.status === "suspended" ? (
+                        )}
+                        {user.status === "suspended" && (
                           <button
-                            onClick={() => restore.mutate(user.id)}
-                            className="text-green hover:text-green-light transition-colors p-1"
+                            onClick={() => handleRestore(user.id)}
+                            disabled={actionLoading === user.id}
+                            className="text-green hover:text-green-light transition-colors p-1 disabled:opacity-40 disabled:cursor-not-allowed"
                             title="Restore"
                           >
-                            <UserCheck className="h-4 w-4" />
+                            {actionLoading === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}
                           </button>
-                        ) : null}
+                        )}
                       </div>
                     </td>
                   </tr>

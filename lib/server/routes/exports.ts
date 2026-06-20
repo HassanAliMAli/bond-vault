@@ -31,19 +31,5 @@ export const exportRoutes = new Hono()
     });
   })
   .get("/exports/xlsx", async (c) => {
-    const env = getEnv(c);
-    const db = getDb(env.DB);
-    const userId = getUserId(c);
-
-    const allowed = await canExport(env, userId);
-    if (!allowed) return c.json({ success: false, error: { code: "FORBIDDEN", message: "Exporting requires a paid plan. Upgrade to export." } }, 403);
-
-    const userBonds = await db.select().from(bonds).where(and(eq(bonds.userId, userId), isNull(bonds.deletedAt))).all();
-    const csv = "Bond Number,Denomination,Status,Added Date\n" + userBonds.map(b => `${b.bondNumber},${DENOMINATION_LABELS[b.denomination] || b.denomination},${b.status},${b.createdAt}`).join("\n");
-
-    await logAudit(env, { userId, action: "export.xlsx", entityType: "user", entityId: userId, ipAddress: getClientIp(c) });
-    return c.body(csv, 200, {
-      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="bondvault-portfolio-${new Date().toISOString().split("T")[0]}.csv"`,
-    });
+    return c.redirect("/api/v1/exports/csv", 308);
   });

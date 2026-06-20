@@ -6,13 +6,17 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { useAuth } from "@/hooks/use-auth";
-import { Vault, ScrollText, PlusCircle, SearchCheck, Settings, Shield, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Vault, ScrollText, PlusCircle, SearchCheck, Settings, Shield, PanelLeftClose, PanelLeft, Upload, Download, CreditCard, Receipt } from "lucide-react";
 
 const navItems = [
   { href: "/vault", label: "Vault", icon: Vault },
   { href: "/bonds", label: "My Bonds", icon: ScrollText },
   { href: "/check", label: "Check Bonds", icon: SearchCheck },
   { href: "/bonds/add", label: "Add Bond", icon: PlusCircle },
+  { href: "/bonds/import", label: "Import Bonds", icon: Upload },
+  { href: "/bonds/export", label: "Export", icon: Download },
+  { href: "/plans", label: "Subscription", icon: CreditCard },
+  { href: "/payments", label: "Payments", icon: Receipt },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

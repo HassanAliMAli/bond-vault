@@ -187,6 +187,7 @@ export const importJobs = sqliteTable("import_jobs", {
 export const payments = sqliteTable("payments", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  planId: text("plan_id").notNull().references(() => plans.id),
   amount: real("amount").notNull(),
   paymentMethod: text("payment_method"),
   status: text("status").$type<PaymentStatus>().notNull().default("pending"),
