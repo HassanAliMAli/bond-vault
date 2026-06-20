@@ -123,6 +123,20 @@ export function createApp() {
     await next();
   });
 
+  app.use("/api/v1/*", async (c, next) => {
+    const path = c.req.path;
+    if (path.includes("/cron/") || path.endsWith("/health")) return next();
+
+    const ip = getClientIp(c);
+    const { allowed } = await checkRateLimit(c.env.KV, `api:${ip}`, RATE_LIMITS.api.limit, RATE_LIMITS.api.window);
+    if (!allowed) {
+      logger.warn(`API rate limit exceeded for ${ip}`);
+      return c.json({ success: false, error: { code: "RATE_LIMITED", message: "Too many requests. Please try again later." } }, 429);
+    }
+
+    await next();
+  });
+
   app.use("*", async (c, next) => {
     if (c.env?.DB) await seedPlans(c.env.DB);
     await next();

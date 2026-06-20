@@ -1,18 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, MessageSquare, Send } from "lucide-react";
+import { Mail, MessageSquare, Send, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
 export default function ContactPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-  };
+    setError("");
+    setSending(true);
+
+    try {
+      const res = await fetch("/api/v1/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json() as { error?: { message?: string } };
+        throw new Error(body?.error?.message || "Failed to send message");
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setSending(false);
+    }
+  }, [name, email, message]);
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -32,6 +57,14 @@ export default function ContactPage() {
           <h1 className="text-3xl font-bold text-white">Contact Us</h1>
         </div>
         <p className="text-gray mb-8">Have a question or need help? Send us a message and we will get back to you.</p>
+
+        {error && (
+          <div className="mb-6 p-4 rounded-[var(--radius-md)] bg-red/10 border border-red/30 flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-red shrink-0 mt-0.5" />
+            <p className="text-sm text-red">{error}</p>
+          </div>
+        )}
+
         {submitted ? (
           <div className="p-8 rounded-[var(--radius-lg)] bg-dark-800/50 border border-dark-600 text-center">
             <Mail className="h-12 w-12 text-gold mx-auto mb-4" />
@@ -41,10 +74,27 @@ export default function ContactPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div><label className="block text-sm font-medium text-white mb-2">Name</label><Input placeholder="Your name" required /></div>
-            <div><label className="block text-sm font-medium text-white mb-2">Email</label><Input type="email" placeholder="your@email.com" required /></div>
-            <div><label className="block text-sm font-medium text-white mb-2">Message</label><textarea className="w-full h-32 px-4 py-3 rounded-[var(--radius-sm)] border border-dark-600 bg-dark-800 text-white placeholder:text-gray focus:outline-none focus:ring-2 focus:ring-gold/30 resize-none" placeholder="How can we help?" required /></div>
-            <Button variant="primary" type="submit" className="w-full"><Send className="h-4 w-4" />Send Message</Button>
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">Name</label>
+              <Input placeholder="Your name" required value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">Email</label>
+              <Input type="email" placeholder="your@email.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">Message</label>
+              <textarea
+                className="w-full h-32 px-4 py-3 rounded-[var(--radius-sm)] border border-dark-600 bg-dark-800 text-white placeholder:text-gray focus:outline-none focus:ring-2 focus:ring-gold/30 resize-none"
+                placeholder="How can we help?"
+                required
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            </div>
+            <Button variant="primary" type="submit" className="w-full" disabled={sending}>
+              <Send className="h-4 w-4" />{sending ? "Sending..." : "Send Message"}
+            </Button>
           </form>
         )}
       </section>
