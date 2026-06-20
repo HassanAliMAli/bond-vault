@@ -5,6 +5,7 @@ describe("admin hooks", () => {
     const mod: Record<string, unknown> = await import("@/hooks/use-admin");
     expect(mod.useAdminDashboard).toBeInstanceOf(Function);
     expect(mod.useAdminUsers).toBeInstanceOf(Function);
+    expect(mod.useAdminUser).toBeInstanceOf(Function);
     expect(mod.useAdminPayments).toBeInstanceOf(Function);
     expect(mod.useAdminDraws).toBeInstanceOf(Function);
     expect(mod.useAdminSettings).toBeInstanceOf(Function);
