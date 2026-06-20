@@ -11,7 +11,7 @@ import { Check, X, Shield, Loader2 } from "lucide-react";
 const FEATURES = [
   { key: "ocrLimit", label: "Monthly OCR Scans", free: "3", paid: (p: number) => `${p}` },
   { key: "importsEnabled", label: "CSV Import" },
-  { key: "exportsEnabled", label: "CSV / XLSX Export" },
+  { key: "exportsEnabled", label: "CSV Export" },
   { key: "alertsEnabled", label: "Winner Alerts" },
   { key: "autoMonitoringEnabled", label: "Auto Monitoring" },
 ];
@@ -92,7 +92,7 @@ export function PlansPageClient() {
                           )}
                           <span className="text-gray">{f.label}</span>
                           <span className="ml-auto text-white font-medium">
-                            {isFree ? f.free : f.paid(String(plan.ocrLimit))}
+                            {isFree ? f.free : f.paid!(String(plan.ocrLimit))}
                           </span>
                         </>
                       ) : (

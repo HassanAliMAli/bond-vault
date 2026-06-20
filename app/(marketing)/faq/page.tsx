@@ -16,7 +16,7 @@ const faqs = [
   { q: "How does OCR work?", a: "OCR runs entirely in your browser using Tesseract.js. Your bond certificate images never leave your device. The system extracts the bond number and denomination automatically." },
   { q: "What notifications do I get?", a: "When your bonds win in a draw, you receive a summary notification. You can choose to receive notifications via email, WhatsApp, or SMS." },
   { q: "How are draws imported?", a: "Draw results are sourced from National Savings Pakistan official publications. We process them and make them available for checking in your vault." },
-  { q: "Can I export my portfolio?", a: "Yes! Paid users can export their portfolio as CSV or XLSX files, including bond numbers, denominations, statuses, and creation dates." },
+  { q: "Can I export my portfolio?", a: "Yes! Paid users can export their portfolio as a CSV file, including bond numbers, denominations, statuses, and creation dates." },
   { q: "What happens to my account if I cancel?", a: "Your data remains intact for the duration of your subscription. After expiry, you have a 7-day grace period before reverting to the free tier. You can request account deletion at any time." },
 ];
 

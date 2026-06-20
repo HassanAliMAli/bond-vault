@@ -19,7 +19,7 @@ const plans = [
     period: "/month",
     description: "For active bond collectors and regular checkers.",
     popular: true,
-    features: ["Everything in Free", "30 OCR scans/month", "CSV/XLSX/TXT imports", "CSV/XLSX exports", "Email alerts", "Priority support"],
+    features: ["Everything in Free", "30 OCR scans/month", "CSV/XLSX/TXT imports", "CSV exports", "Email alerts", "Priority support"],
   },
   {
     name: "Annual",

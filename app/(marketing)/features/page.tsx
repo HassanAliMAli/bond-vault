@@ -11,7 +11,7 @@ const features = [
   { icon: Bell, title: "Smart Notifications", description: "Get notified via email, WhatsApp, or SMS when your bonds win. Configurable per-channel preferences." },
   { icon: ScanLine, title: "OCR Scanning", description: "Scan bond numbers using your device camera. Browser-side processing means your images never leave your device." },
   { icon: Upload, title: "Bulk Import", description: "Import hundreds of bonds at once from CSV, XLSX, or TXT files. Automatic duplicate detection." },
-  { icon: Download, title: "Portfolio Export", description: "Export your portfolio as CSV or XLSX. Perfect for record-keeping, tax filing, or analysis." },
+  { icon: Download, title: "Portfolio Export", description: "Export your portfolio as CSV. Perfect for record-keeping, tax filing, or analysis." },
   { icon: BarChart3, title: "Portfolio Analytics", description: "View your portfolio breakdown by denomination, track winnings over time, and analyze your bond holdings." },
   { icon: Clock, title: "Historical Draw Data", description: "Access complete historical draw results from National Savings Pakistan. New draws added promptly." },
   { icon: Database, title: "Match History", description: "Complete record of all winning matches. Each match is snapshot-stored for permanent record keeping." },

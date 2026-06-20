@@ -36,7 +36,7 @@ export function ExportPageClient() {
               </div>
               <div className="text-center max-w-sm">
                 <p className="text-base font-medium text-white">Upgrade to Export</p>
-                <p className="text-sm text-gray mt-1">Exporting your portfolio requires a paid plan. Upgrade to download CSV or XLSX files.</p>
+                <p className="text-sm text-gray mt-1">Exporting your portfolio requires a paid plan. Upgrade to download CSV files.</p>
               </div>
               <Button variant="primary" size="lg" onClick={() => router.push("/settings")}>
                 View Plans
