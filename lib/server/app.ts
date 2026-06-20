@@ -193,7 +193,7 @@ export function createApp() {
     }
 
     if (c.env.RESEND_API_KEY) {
-      await fetch("https://api.resend.com/emails", {
+      const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${c.env.RESEND_API_KEY}`,
@@ -206,6 +206,7 @@ export function createApp() {
           text: `From: ${name} (${email})\n\n${message}`,
         }),
       });
+      if (!res.ok) logger.error("Resend email failed", { status: res.status });
     }
 
     return success(c, { message: "Message sent successfully" });
