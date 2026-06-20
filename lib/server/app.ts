@@ -14,7 +14,8 @@ import { exportRoutes } from "./routes/exports";
 import { searchRoutes } from "./routes/search";
 import { adminRoutes } from "./routes/admin";
 import { externalDrawRoutes } from "./routes/external-draws";
-import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup, sendPendingNotifications } from "./services";
+import { success, error } from "./lib";
+import { seedPlans, handleSubscriptionExpiration, handleRetentionCleanup, handleImportCleanup, sendPendingNotifications, checkRateLimit, RATE_LIMITS, getClientIp } from "./services";
 import { logger } from "./logger";
 
 type Variables = {
@@ -83,6 +84,25 @@ export function createApp() {
     await next();
   });
 
+  app.use("/api/auth/*", async (c, next) => {
+    if (c.req.method !== "POST") return next();
+
+    const path = c.req.path;
+    const ip = getClientIp(c);
+
+    if (path.endsWith("/sign-in/email") || path.endsWith("/signin/email")) {
+      const { allowed } = await checkRateLimit(c.env.KV, `login:${ip}`, RATE_LIMITS.login.limit, RATE_LIMITS.login.window);
+      if (!allowed) return c.json({ success: false, error: { code: "RATE_LIMITED", message: "Too many login attempts. Please try again later." } }, 429);
+    }
+
+    if (path.endsWith("/sign-up/email") || path.endsWith("/signup/email")) {
+      const { allowed } = await checkRateLimit(c.env.KV, `register:${ip}`, RATE_LIMITS.register.limit, RATE_LIMITS.register.window);
+      if (!allowed) return c.json({ success: false, error: { code: "RATE_LIMITED", message: "Too many registration attempts. Please try again later." } }, 429);
+    }
+
+    await next();
+  });
+
   app.on(["POST", "GET"], "/api/auth/*", async (c) => {
     try {
       const res = await c.get("__auth").handler(c.req.raw);
@@ -141,6 +161,40 @@ export function createApp() {
     const retention = await handleRetentionCleanup(c.env);
     const cleaned = await handleImportCleanup(c.env);
     return c.json({ success: true, subscriptionsExpired: expired, ...retention, importsCleaned: cleaned });
+  });
+
+  app.post("/api/v1/contact", async (c) => {
+    const ip = getClientIp(c);
+    const { allowed } = await checkRateLimit(c.env.KV, `contact:${ip}`, RATE_LIMITS.contact.limit, RATE_LIMITS.contact.window);
+    if (!allowed) return error(c, "RATE_LIMITED", "Too many messages. Please try again later.", 429);
+
+    const body = await c.req.json();
+    const { name, email, message } = body;
+
+    if (!name || !email || !message) {
+      return error(c, "VALIDATION_ERROR", "Name, email, and message are required.", 400);
+    }
+    if (typeof message !== "string" || message.length > 2000) {
+      return error(c, "VALIDATION_ERROR", "Message must be under 2000 characters.", 400);
+    }
+
+    if (c.env.RESEND_API_KEY) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${c.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "BondVault Contact <contact@bondvault.app>",
+          to: "hassanali205031@gmail.com",
+          subject: `BondVault Contact: ${name}`,
+          text: `From: ${name} (${email})\n\n${message}`,
+        }),
+      });
+    }
+
+    return success(c, { message: "Message sent successfully" });
   });
 
   app.route("/api/v1", healthRoute);

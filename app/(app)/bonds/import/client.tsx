@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { Upload, FileText, Check, X, AlertTriangle, ArrowLeft, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
+import * as XLSX from "xlsx";
 
 export function ImportPageClient() {
   const router = useRouter();
@@ -38,7 +39,26 @@ export function ImportPageClient() {
       toast.error("Unsupported file type. Please upload a CSV or XLSX file.");
       return;
     }
-    upload.mutate(file);
+
+    let uploadFile = file;
+    if (file.name.endsWith(".xlsx")) {
+      try {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json<string[]>(sheet, { header: 1 }) as string[][];
+        const csv = rows
+          .filter(row => row.some(cell => cell !== undefined && cell !== null && String(cell).trim() !== ""))
+          .map(row => row.join(","))
+          .join("\n");
+        uploadFile = new File([csv], file.name.replace(/\.xlsx$/i, ".csv"), { type: "text/csv" });
+      } catch {
+        toast.error("Failed to parse XLSX file. Please convert to CSV and try again.");
+        return;
+      }
+    }
+
+    upload.mutate(uploadFile);
   }, [upload]);
 
   const onFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
