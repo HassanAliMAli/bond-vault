@@ -92,7 +92,7 @@ export function PlansPageClient() {
                           )}
                           <span className="text-gray">{f.label}</span>
                           <span className="ml-auto text-white font-medium">
-                            {isFree ? f.free : f.paid!(String(plan.ocrLimit))}
+                            {isFree ? f.free : f.paid!(plan.ocrLimit)}
                           </span>
                         </>
                       ) : (

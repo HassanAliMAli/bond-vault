@@ -118,7 +118,7 @@ export const adminRoutes = new Hono<{ Bindings: Env; Variables: AdminVariables }
         or(
           like(payments.userId, `%${search}%`),
           like(payments.planId, `%${search}%`),
-        ),
+        )!,
       );
     }
 
