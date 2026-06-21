@@ -7,12 +7,7 @@ export default {
 
   async queue(batch: MessageBatch, env: Env, ctx: ExecutionContext) {
     for (const msg of batch.messages) {
-      switch (batch.queue) {
-        case "match-generation":
-          const body = msg.body as { drawId: string };
-          await handleQueueMessage(env, body);
-          break;
-      }
+      await handleQueueMessage(env, { queue: batch.queue, body: msg.body });
       msg.ack();
     }
   },

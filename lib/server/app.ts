@@ -171,10 +171,8 @@ export function createApp() {
   });
 
   app.get("/api/v1/cron/maintenance", cronAuth, async (c) => {
-    const expired = await handleSubscriptionExpiration(c.env);
-    const retention = await handleRetentionCleanup(c.env);
-    const cleaned = await handleImportCleanup(c.env);
-    return c.json({ success: true, subscriptionsExpired: expired, ...retention, importsCleaned: cleaned });
+    await c.env.CleanupJobsQueue.send({ type: "maintenance" });
+    return c.json({ success: true, message: "Maintenance queued" });
   });
 
   app.post("/api/v1/contact", async (c) => {

@@ -4,6 +4,7 @@ import { eq, and } from "drizzle-orm";
 import { generateId } from "../id";
 import { sendWhatsApp } from "../providers/whatsapp";
 import { sendSms } from "../providers/sms";
+import { logger } from "../logger";
 
 export interface BatchNotificationParams {
   userId: string;
@@ -103,8 +104,16 @@ async function sendNotification(env: Env, notification: { channel: string; userI
   if (notification.channel === "email") {
     await sendEmail(env, notification);
   } else if (notification.channel === "whatsapp") {
+    if (!env.WHATSAPP_API_KEY) {
+      logger.warn(`Skipping WhatsApp for user ${notification.userId}: provider not configured`);
+      return;
+    }
     await sendWhatsApp(notification);
   } else if (notification.channel === "sms") {
+    if (!env.SMS_API_KEY) {
+      logger.warn(`Skipping SMS for user ${notification.userId}: provider not configured`);
+      return;
+    }
     await sendSms(notification);
   }
 }
