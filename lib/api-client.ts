@@ -283,8 +283,8 @@ export const api = {
     usage: () =>
       apiFetch<OcrUsageResponse>("/ocr/usage"),
 
-    record: (data: { bondNumber: string; denomination: number }) =>
-      apiFetch<{ message: string }>("/ocr/usage", { method: "POST", body: data }),
+    record: () =>
+      apiFetch<{ message: string }>("/ocr/usage", { method: "POST" }),
   },
 
   search: {

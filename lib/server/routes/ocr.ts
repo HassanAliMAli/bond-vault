@@ -3,7 +3,6 @@ import { getDb } from "../db";
 import { ocrUsage } from "../schema";
 import { eq, and } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
-import { ocrUsageSchema } from "../validations";
 import { generateId } from "../id";
 import { getOcrUsage, canUseOcr, logAudit, getClientIp, checkRateLimit, RATE_LIMITS } from "../services";
 
@@ -18,10 +17,6 @@ export const ocrRoutes = new Hono()
 
     const allowed = await canUseOcr(env, userId);
     if (!allowed) return error(c, "LIMIT_EXCEEDED", "Monthly OCR scan limit reached. Upgrade your plan for more scans.", 429);
-
-    const body = await c.req.json();
-    const parsed = ocrUsageSchema.safeParse(body);
-    if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0].message);
 
     const now = new Date();
     const year = now.getFullYear();

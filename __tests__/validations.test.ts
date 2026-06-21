@@ -96,12 +96,12 @@ describe("paymentSchema", () => {
 });
 
 describe("ocrUsageSchema", () => {
-  it("accepts valid OCR data", () => {
-    expect(ocrUsageSchema.safeParse({ bondNumber: "123456", denomination: 1500 }).success).toBe(true);
+  it("accepts empty body", () => {
+    expect(ocrUsageSchema.safeParse({}).success).toBe(true);
   });
 
-  it("rejects invalid bond number", () => {
-    expect(ocrUsageSchema.safeParse({ bondNumber: "abc", denomination: 100 }).success).toBe(false);
+  it("ignores extra body fields", () => {
+    expect(ocrUsageSchema.safeParse({ bondNumber: "abc", denomination: 100 }).success).toBe(true);
   });
 });
 

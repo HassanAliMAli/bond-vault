@@ -7,6 +7,8 @@ import { api } from "@/lib/api-client";
 export interface ScannedBond {
   bondNumber: string;
   denomination: number | null;
+  confidence: number | null;
+  reviewed: boolean;
 }
 
 export function useOcr() {
@@ -14,7 +16,9 @@ export function useOcr() {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<ScannedBond[]>([]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [recordingError, setRecordingError] = useState<string | null>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const fileRef = useRef<File | null>(null);
 
   useEffect(() => {
     return () => {
@@ -26,10 +30,14 @@ export function useOcr() {
     setIsProcessing(true);
     setProgress(0);
     setResults([]);
+    setRecordingError(null);
+
+    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
 
     const objectUrl = URL.createObjectURL(file);
     objectUrlRef.current = objectUrl;
     setImageUrl(objectUrl);
+    fileRef.current = file;
 
     try {
       const worker = await createWorker("eng", 1, {
@@ -41,29 +49,68 @@ export function useOcr() {
       });
 
       const { data } = await worker.recognize(file);
-
       await worker.terminate();
 
-      const lines = data.text.split("\n").map((l) => l.trim()).filter(Boolean);
-      const bondRegex = /\b(\d{6})\b/g;
-      const found: ScannedBond[] = [];
+      const seen = new Map<string, ScannedBond>();
+      let wordMatchCount = 0;
 
-      for (const line of lines) {
-        let match;
-        while ((match = bondRegex.exec(line)) !== null) {
-          found.push({
-            bondNumber: match[1],
-            denomination: null,
-          });
+      const allWords: Array<{ text: string; confidence: number }> = [];
+      for (const block of data.blocks ?? []) {
+        for (const paragraph of block.paragraphs) {
+          for (const line of paragraph.lines) {
+            for (const word of line.words) {
+              allWords.push({ text: word.text, confidence: word.confidence });
+            }
+          }
         }
       }
 
-      const seen = new Set<string>();
-      const unique = found.filter((b) => {
-        if (seen.has(b.bondNumber)) return false;
-        seen.add(b.bondNumber);
-        return true;
-      });
+      for (const word of allWords) {
+        const match = word.text.match(/^(\d{6})$/);
+        if (match) {
+          wordMatchCount++;
+          const bn = match[1];
+          const conf = Math.round(word.confidence);
+          const existing = seen.get(bn);
+          if (!existing || conf > (existing.confidence ?? 0)) {
+            seen.set(bn, {
+              bondNumber: bn,
+              confidence: conf,
+              denomination: null,
+              reviewed: false,
+            });
+          }
+        }
+      }
+
+      if (wordMatchCount === 0) {
+        const bondRegex = /\b(\d{6})\b/g;
+        for (const line of data.text.split("\n")) {
+          let match;
+          while ((match = bondRegex.exec(line)) !== null) {
+            const bn = match[1];
+            if (!seen.has(bn)) {
+              seen.set(bn, {
+                bondNumber: bn,
+                confidence: null,
+                denomination: null,
+                reviewed: false,
+              });
+            }
+          }
+        }
+      }
+
+      const unique = Array.from(seen.values());
+
+      try {
+        await api.ocr.record();
+      } catch (err) {
+        setRecordingError(err instanceof Error ? err.message : "Failed to record OCR scan");
+        setIsProcessing(false);
+        setProgress(100);
+        return;
+      }
 
       setResults(unique);
     } catch {
@@ -90,6 +137,7 @@ export function useOcr() {
     const saved: ScannedBond[] = [];
     for (const bond of results) {
       if (!bond.denomination) continue;
+      if ((bond.confidence === null || bond.confidence < 50) && !bond.reviewed) continue;
       try {
         await api.bonds.create({
           bondNumber: bond.bondNumber,
@@ -103,11 +151,20 @@ export function useOcr() {
     return saved;
   }, [results]);
 
+  const retry = useCallback(async () => {
+    if (fileRef.current) {
+      setRecordingError(null);
+      await scan(fileRef.current);
+    }
+  }, [scan]);
+
   const reset = useCallback(() => {
     setIsProcessing(false);
     setResults([]);
     setImageUrl(null);
     setProgress(0);
+    setRecordingError(null);
+    fileRef.current = null;
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = null;
@@ -119,10 +176,12 @@ export function useOcr() {
     progress,
     results,
     imageUrl,
+    recordingError,
     scan,
     updateBond,
     removeBond,
     saveBonds,
+    retry,
     reset,
   };
 }

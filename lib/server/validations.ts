@@ -26,10 +26,7 @@ export const paymentSchema = z.object({
   planId: z.string().min(1),
 });
 
-export const ocrUsageSchema = z.object({
-  bondNumber: bondNumberSchema,
-  denomination: denominationSchema,
-});
+export const ocrUsageSchema = z.object({});
 
 export const importSchema = z.object({
   fileType: z.enum(["csv", "xlsx", "txt"]),
