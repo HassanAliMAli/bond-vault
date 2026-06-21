@@ -4,10 +4,10 @@ import { sqliteTable, text, integer, real, uniqueIndex, index } from "drizzle-or
 export type UserStatus = "active" | "admin" | "suspended" | "deleted";
 export type SubscriptionStatus = "active" | "grace_period" | "expired" | "cancelled";
 export type BondStatus = "active" | "archived";
-export type BondEntryMethod = "manual" | "csv" | "xlsx" | "ocr";
+export type BondEntryMethod = "manual" | "csv" | "xlsx" | "ocr" | "txt";
 export type PaymentStatus = "pending" | "approved" | "rejected";
 export type ImportJobStatus = "pending" | "processing" | "completed" | "failed";
-export type ImportJobFileType = "csv" | "xlsx";
+export type ImportJobFileType = "csv" | "xlsx" | "txt";
 export type MatchStatus = "unseen" | "viewed";
 export type NotificationBatchStatus = "pending" | "sent" | "failed";
 export type NotificationStatus = "pending" | "sent" | "failed" | "read";

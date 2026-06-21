@@ -5,6 +5,7 @@ import { eq, and, isNull } from "drizzle-orm";
 import { success, error, getUserId, getEnv } from "../lib";
 import { generateId } from "../id";
 import { canImport, logAudit, getClientIp, createStorageProvider, checkRateLimit, RATE_LIMITS } from "../services";
+import { txtImportSchema } from "../validations";
 
 export const importRoutes = new Hono()
   .post("/imports", async (c) => {
@@ -89,6 +90,70 @@ export const importRoutes = new Hono()
       preview: { valid: valid.map(v => v.bondNumber), invalid, duplicates },
       totals: { total: lines.length, valid: valid.length, invalid: invalid.length, duplicates: duplicates.length },
     }, 201);
+  })
+  .post("/imports/txt", async (c) => {
+    const env = getEnv(c);
+    const db = getDb(env.DB);
+    const userId = getUserId(c);
+
+    const { allowed: rateAllowed } = await checkRateLimit(env.KV, `imports:${userId}`, RATE_LIMITS.imports.limit, RATE_LIMITS.imports.window);
+    if (!rateAllowed) return error(c, "RATE_LIMITED", "Too many import requests. Please try again later.", 429);
+
+    const allowed = await canImport(env, userId);
+    if (!allowed) return error(c, "FORBIDDEN", "Importing bonds requires a paid plan. Upgrade to import.", 403);
+
+    const body = await c.req.json();
+    const parsed = txtImportSchema.safeParse(body);
+    if (!parsed.success) return error(c, "VALIDATION_ERROR", parsed.error.issues[0]?.message || "Invalid bond data");
+
+    let saved = 0;
+    let duplicates = 0;
+    const validBonds: Array<{ bondNumber: string; denomination: number }> = [];
+    const invalidBonds: Array<{ bondNumber: string; denomination: number; reason: string }> = [];
+
+    for (const bond of parsed.data.bonds) {
+      const existing = await db.select({ id: bonds.id }).from(bonds).where(
+        and(eq(bonds.userId, userId), eq(bonds.bondNumber, bond.bondNumber), eq(bonds.denomination, bond.denomination), isNull(bonds.deletedAt))
+      ).get();
+      if (existing) {
+        duplicates++;
+        continue;
+      }
+      validBonds.push(bond);
+    }
+
+    for (const bond of validBonds) {
+      const bondId = generateId();
+      await db.insert(bonds).values({
+        id: bondId,
+        userId,
+        bondNumber: bond.bondNumber,
+        denomination: bond.denomination,
+        status: "active",
+        entryMethod: "txt",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      saved++;
+    }
+
+    const importId = generateId();
+    await db.insert(importJobs).values({
+      id: importId,
+      userId,
+      fileType: "txt",
+      status: "completed",
+      totalRecords: parsed.data.bonds.length,
+      successfulRecords: saved,
+      duplicateRecords: duplicates,
+      invalidRecords: parsed.data.bonds.length - saved - duplicates,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    await logAudit(env, { userId, action: "import.txt", entityType: "import_job", entityId: importId, metadata: { total: parsed.data.bonds.length, saved, duplicates, invalid: parsed.data.bonds.length - saved - duplicates }, ipAddress: getClientIp(c) });
+
+    return success(c, { saved, duplicates, invalid: parsed.data.bonds.length - saved - duplicates, importId }, 201);
   })
   .post("/imports/:id/confirm", async (c) => {
     const env = getEnv(c);

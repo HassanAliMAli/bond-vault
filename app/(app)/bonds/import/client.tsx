@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/shared/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useImportUpload, useImportConfirm, useImportHistory } from "@/hooks/use-imports";
+import { useTxtImport } from "@/hooks/use-txt-import";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { Upload, FileText, Check, X, AlertTriangle, ArrowLeft, Save } from "lucide-react";
@@ -22,6 +23,7 @@ export function ImportPageClient() {
   const upload = useImportUpload();
   const confirm = useImportConfirm();
   const { data: history } = useImportHistory();
+  const txt = useTxtImport();
 
   const { data: permissions } = useQuery({
     queryKey: ["user", "permissions"],
@@ -35,8 +37,16 @@ export function ImportPageClient() {
   const isConfirming = confirm.isPending;
 
   const handleFile = useCallback(async (file: File) => {
-    if (!file.name.endsWith(".csv") && !file.name.endsWith(".xlsx")) {
-      toast.error("Unsupported file type. Please upload a CSV or XLSX file.");
+    if (!file.name.endsWith(".csv") && !file.name.endsWith(".xlsx") && !file.name.endsWith(".txt")) {
+      toast.error("Unsupported file type. Please upload a CSV, XLSX, or TXT file.");
+      return;
+    }
+
+    if (file.name.endsWith(".txt")) {
+      const nums = await txt.parseFile(file);
+      if (nums.length === 0) {
+        toast.error("No valid 6-digit bond numbers found in the file.");
+      }
       return;
     }
 
@@ -59,7 +69,7 @@ export function ImportPageClient() {
     }
 
     upload.mutate(uploadFile);
-  }, [upload]);
+  }, [upload, txt]);
 
   const onFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -86,6 +96,23 @@ export function ImportPageClient() {
       },
     });
   };
+
+  const handleTxtSave = async () => {
+    try {
+      const result = await txt.save();
+      toast.success(`${result.saved} bond${result.saved !== 1 ? "s" : ""} saved!${result.duplicates > 0 ? ` ${result.duplicates} duplicate${result.duplicates !== 1 ? "s" : ""} skipped.` : ""}`);
+      txt.reset();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const handleTxtReset = () => {
+    upload.reset();
+    txt.reset();
+  };
+
+  const DENOMINATIONS_LIST = [100, 200, 750, 1500, 7500, 25000, 40000];
 
   if (canImport === false) {
     return (
@@ -119,14 +146,14 @@ export function ImportPageClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-white">Import Bonds</h1>
-          <p className="text-sm text-gray mt-1">Bulk-import your prize bond portfolio from a CSV file</p>
+          <p className="text-sm text-gray mt-1">Bulk-import your prize bond portfolio</p>
         </div>
         <Button variant="secondary" onClick={() => router.push("/bonds/add")}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Add Manually
         </Button>
       </div>
 
-      {!preview && !isProcessing && (
+      {!preview && !isProcessing && txt.numbers.length === 0 && !txt.isParsing && (
         <Card variant="elevated">
           <CardContent className="pt-6">
             <div
@@ -143,7 +170,7 @@ export function ImportPageClient() {
                 <Upload className="h-7 w-7 text-gold" />
               </div>
               <div className="text-center">
-                <p className="text-base font-medium text-white">Upload a CSV file</p>
+                <p className="text-base font-medium text-white">Upload a CSV or TXT file</p>
                 <p className="text-sm text-gray mt-1">Drag & drop or click to browse</p>
                 <p className="text-xs text-dark-500 mt-2">Format: BondNumber, Denomination (one per line)</p>
               </div>
@@ -156,22 +183,33 @@ export function ImportPageClient() {
                 </Button>
               </div>
             </div>
-            <input ref={fileInputRef} type="file" accept=".csv,.xlsx" className="hidden" onChange={onFileChange} />
+            <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.txt" className="hidden" onChange={onFileChange} />
 
-            <div className="mt-6 p-4 rounded-[var(--radius-md)] bg-dark-800/80 border border-dark-600">
-              <p className="text-xs font-medium text-gray uppercase tracking-wider mb-2">CSV Format</p>
-              <code className="block text-xs text-gray font-mono bg-dark-900 p-3 rounded-[var(--radius-sm)]">
-                123456, 100{'\n'}
-                789012, 750{'\n'}
-                345678, 1500
-              </code>
-              <p className="text-xs text-gray mt-2">First column: 6-digit bond number. Second column: denomination (100, 200, 750, 1500, 7500, 25000, 40000).</p>
+            <div className="mt-6 space-y-3">
+              <div className="p-4 rounded-[var(--radius-md)] bg-dark-800/80 border border-dark-600">
+                <p className="text-xs font-medium text-gray uppercase tracking-wider mb-2">CSV Format</p>
+                <code className="block text-xs text-gray font-mono bg-dark-900 p-3 rounded-[var(--radius-sm)]">
+                  123456, 100{'\n'}
+                  789012, 750{'\n'}
+                  345678, 1500
+                </code>
+                <p className="text-xs text-gray mt-2">First column: 6-digit bond number. Second column: denomination (100, 200, 750, 1500, 7500, 25000, 40000).</p>
+              </div>
+              <div className="p-4 rounded-[var(--radius-md)] bg-dark-800/80 border border-dark-600">
+                <p className="text-xs font-medium text-gold uppercase tracking-wider mb-2">TXT Format (one bond per line)</p>
+                <code className="block text-xs text-gray font-mono bg-dark-900 p-3 rounded-[var(--radius-sm)]">
+                  123456{'\n'}
+                  789012{'\n'}
+                  345678
+                </code>
+                <p className="text-xs text-gray mt-2">Each line is one 6-digit bond number. Assign denominations in the preview.</p>
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {isProcessing && (
+      {(isProcessing || txt.isParsing) && (
         <Card variant="elevated">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 py-8">
@@ -293,6 +331,147 @@ export function ImportPageClient() {
             <div className="flex items-center justify-center gap-2 text-sm text-green">
               <Check className="h-4 w-4" /> {confirm.data?.message}
             </div>
+          )}
+        </>
+      )}
+
+      {txt.numbers.length > 0 && (
+        <>
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-gold" />
+                TXT Import
+                <span className="text-sm font-normal text-gray ml-auto">{txt.numbers.length} bond{txt.numbers.length !== 1 ? "s" : ""} found</span>
+              </CardTitle>
+              <CardDescription>Assign denominations, then save your bonds</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <label className="text-sm text-gray shrink-0">Preset denomination:</label>
+                  <select
+                    value={txt.presetDenomination ?? ""}
+                    onChange={(e) => {
+                      if (e.target.value) txt.applyPresetDenomination(parseInt(e.target.value));
+                      else txt.clearPresetDenomination();
+                    }}
+                    className="w-36 px-2 py-1.5 rounded bg-dark-900 border border-dark-600 text-white text-sm focus:outline-none focus:border-gold/50"
+                  >
+                    <option value="">-- select --</option>
+                    {DENOMINATIONS_LIST.map((d) => (
+                      <option key={d} value={d}>Rs. {d.toLocaleString()}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={txt.selected.size === txt.numbers.length && txt.numbers.length > 0}
+                      onChange={txt.toggleSelectAll}
+                      className="accent-gold"
+                    />
+                    <span className="text-sm text-white">Select All</span>
+                  </label>
+                  <span className="text-xs text-gray">{txt.selected.size} of {txt.numbers.length} selected</span>
+                </div>
+
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {txt.numbers.map((num, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-[var(--radius-sm)] border transition-colors",
+                        txt.selected.has(i) ? "border-gold/30 bg-gold/5" : "border-dark-600 bg-dark-800/80"
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={txt.selected.has(i)}
+                        onChange={() => txt.toggleSelect(i)}
+                        className="accent-gold shrink-0"
+                      />
+                      <span className="font-mono text-white flex-1">{num}</span>
+                      <select
+                        value={txt.denominations[i] ?? ""}
+                        onChange={(e) => txt.setDenomination(i, e.target.value ? parseInt(e.target.value) : null)}
+                        className={cn(
+                          "w-28 px-2 py-1 rounded border text-sm focus:outline-none",
+                          txt.denominations[i]
+                            ? "bg-dark-900 border-dark-600 text-white focus:border-gold/50"
+                            : "bg-dark-900/50 border-red/30 text-gray focus:border-red/50"
+                        )}
+                      >
+                        <option value="">Denom</option>
+                        {DENOMINATIONS_LIST.map((d) => (
+                          <option key={d} value={d}>Rs. {d.toLocaleString()}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+
+                {txt.selected.size > 0 && (
+                  <div className="flex items-center gap-3 p-4 rounded-[var(--radius-md)] bg-gold/5 border border-gold/20">
+                    <span className="text-sm text-white font-medium">{txt.selected.size} selected</span>
+                    <span className="text-sm text-gray">→ Set denomination:</span>
+                    <select
+                      defaultValue=""
+                      onChange={(e) => {
+                        if (e.target.value) txt.applyBulkDenomination(parseInt(e.target.value));
+                      }}
+                      className="w-28 px-2 py-1.5 rounded bg-dark-900 border border-dark-600 text-white text-sm focus:outline-none focus:border-gold/50"
+                    >
+                      <option value="">Select</option>
+                      {DENOMINATIONS_LIST.map((d) => (
+                        <option key={d} value={d}>Rs. {d.toLocaleString()}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {txt.unsetCount > 0 && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] bg-yellow/10 text-yellow text-sm">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    {txt.unsetCount} bond{txt.unsetCount !== 1 ? "s" : ""} {txt.unsetCount !== 1 ? "need" : "needs"} a denomination before saving
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="primary" size="lg" onClick={handleTxtSave} disabled={txt.isSaving || txt.unsetCount > 0}>
+              <Save className="h-4 w-4 mr-1" />
+              {txt.isSaving ? "Saving..." : `Save ${txt.numbers.length} Bond${txt.numbers.length !== 1 ? "s" : ""}`}
+            </Button>
+            <Button variant="secondary" size="lg" onClick={handleTxtReset}>
+              <X className="h-4 w-4 mr-1" /> Cancel
+            </Button>
+          </div>
+
+          {txt.result && (
+            <Card variant="elevated">
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <div className="flex items-center gap-2 text-sm text-green">
+                    <Check className="h-4 w-4" />{txt.result.saved} bond{txt.result.saved !== 1 ? "s" : ""} saved
+                  </div>
+                  {txt.result.duplicates > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-yellow">
+                      <AlertTriangle className="h-4 w-4" />{txt.result.duplicates} duplicate{txt.result.duplicates !== 1 ? "s" : ""} skipped
+                    </div>
+                  )}
+                  {txt.result.invalid > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-red">
+                      <X className="h-4 w-4" />{txt.result.invalid} invalid
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           )}
         </>
       )}

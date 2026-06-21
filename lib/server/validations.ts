@@ -35,6 +35,13 @@ export const importSchema = z.object({
   fileType: z.enum(["csv", "xlsx", "txt"]),
 });
 
+export const txtImportSchema = z.object({
+  bonds: z.array(z.object({
+    bondNumber: bondNumberSchema,
+    denomination: denominationSchema,
+  })).min(1).max(10000),
+});
+
 export const notificationPrefsSchema = z.object({
   emailEnabled: z.boolean().optional(),
   whatsappEnabled: z.boolean().optional(),

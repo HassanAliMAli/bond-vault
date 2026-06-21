@@ -257,6 +257,9 @@ export const api = {
   },
 
   imports: {
+    txtImport: (bonds: { bondNumber: string; denomination: number }[]) =>
+      apiFetch<{ saved: number; duplicates: number; invalid: number }>("/imports/txt", { method: "POST", body: { bonds } }),
+
     upload: (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
