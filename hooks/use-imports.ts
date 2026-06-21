@@ -59,13 +59,7 @@ export function useExportXlsx() {
     mutationFn: async () => {
       const blob = await api.exports.csv();
       const text = await blob.text();
-      const lines = text.split("\n").filter(l => l.trim());
-      const rows = lines.map(l => l.split(","));
-
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      XLSX.utils.book_append_sheet(wb, ws, "Portfolio");
-
+      const wb = XLSX.read(text, { type: "string" });
       XLSX.writeFile(wb, `bondvault-portfolio-${new Date().toISOString().split("T")[0]}.xlsx`);
     },
   });
