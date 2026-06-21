@@ -13,4 +13,8 @@ interface Env {
   NotificationDeliveryQueue: Queue;
   DrawProcessingQueue: Queue;
   CleanupJobsQueue: Queue;
+  MatchGenerationDLQ: Queue;
+  NotificationDeliveryDLQ: Queue;
+  DrawProcessingDLQ: Queue;
+  CleanupJobsDLQ: Queue;
 }

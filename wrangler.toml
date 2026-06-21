@@ -30,6 +30,8 @@ queue = "match-generation"
 
 [[queues.consumers]]
 queue = "match-generation"
+max_retries = 3
+dead_letter_queue = "match-generation-dlq"
 
 [[queues.producers]]
 binding = "NotificationDeliveryQueue"
@@ -37,6 +39,8 @@ queue = "notification-delivery"
 
 [[queues.consumers]]
 queue = "notification-delivery"
+max_retries = 3
+dead_letter_queue = "notification-delivery-dlq"
 
 [[queues.producers]]
 binding = "DrawProcessingQueue"
@@ -44,6 +48,8 @@ queue = "draw-processing"
 
 [[queues.consumers]]
 queue = "draw-processing"
+max_retries = 3
+dead_letter_queue = "draw-processing-dlq"
 
 [[queues.producers]]
 binding = "CleanupJobsQueue"
@@ -51,6 +57,24 @@ queue = "cleanup-jobs"
 
 [[queues.consumers]]
 queue = "cleanup-jobs"
+max_retries = 3
+dead_letter_queue = "cleanup-jobs-dlq"
+
+[[queues.producers]]
+binding = "MatchGenerationDLQ"
+queue = "match-generation-dlq"
+
+[[queues.producers]]
+binding = "NotificationDeliveryDLQ"
+queue = "notification-delivery-dlq"
+
+[[queues.producers]]
+binding = "DrawProcessingDLQ"
+queue = "draw-processing-dlq"
+
+[[queues.producers]]
+binding = "CleanupJobsDLQ"
+queue = "cleanup-jobs-dlq"
 
 [vars]
 ENVIRONMENT = "production"
