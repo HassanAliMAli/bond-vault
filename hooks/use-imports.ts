@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
+import * as XLSX from "xlsx";
 
 export function useImportUpload() {
   return useMutation({
@@ -56,13 +57,16 @@ export function useExportCsv() {
 export function useExportXlsx() {
   return useMutation({
     mutationFn: async () => {
-      const blob = await api.exports.xlsx();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `bondvault-portfolio-${new Date().toISOString().split("T")[0]}.xlsx`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = await api.exports.csv();
+      const text = await blob.text();
+      const lines = text.split("\n").filter(l => l.trim());
+      const rows = lines.map(l => l.split(","));
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, "Portfolio");
+
+      XLSX.writeFile(wb, `bondvault-portfolio-${new Date().toISOString().split("T")[0]}.xlsx`);
     },
   });
 }

@@ -4,14 +4,15 @@ import { useRouter } from "next/navigation";
 import { PageTransition } from "@/components/shared/page-transition";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useExportCsv } from "@/hooks/use-imports";
+import { useExportCsv, useExportXlsx } from "@/hooks/use-imports";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
-import { Download, FileText, ArrowLeft } from "lucide-react";
+import { Download, FileText, FileSpreadsheet, ArrowLeft } from "lucide-react";
 
 export function ExportPageClient() {
   const router = useRouter();
   const exportCsv = useExportCsv();
+  const exportXlsx = useExportXlsx();
 
   const { data: permissions } = useQuery({
     queryKey: ["user", "permissions"],
@@ -36,7 +37,7 @@ export function ExportPageClient() {
               </div>
               <div className="text-center max-w-sm">
                 <p className="text-base font-medium text-white">Upgrade to Export</p>
-                <p className="text-sm text-gray mt-1">Exporting your portfolio requires a paid plan. Upgrade to download CSV files.</p>
+                <p className="text-sm text-gray mt-1">Exporting your portfolio requires a paid plan. Upgrade to download CSV or XLSX files.</p>
               </div>
               <Button variant="primary" size="lg" onClick={() => router.push("/settings")}>
                 View Plans
@@ -60,7 +61,7 @@ export function ExportPageClient() {
         </Button>
       </div>
 
-      <div className="max-w-md mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
         <Card variant="elevated" className="cursor-pointer hover:border-gold/30 transition-colors" onClick={() => exportCsv.mutate()}>
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 py-8">
@@ -73,6 +74,23 @@ export function ExportPageClient() {
               </div>
               <Button variant="primary" size="lg" loading={exportCsv.isPending} onClick={(e) => { e.stopPropagation(); exportCsv.mutate(); }}>
                 <Download className="h-4 w-4 mr-1" /> Download CSV
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card variant="elevated" className="cursor-pointer hover:border-gold/30 transition-colors" onClick={() => exportXlsx.mutate()}>
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center gap-4 py-8">
+              <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center">
+                <FileSpreadsheet className="h-7 w-7 text-gold" />
+              </div>
+              <div className="text-center">
+                <p className="text-base font-medium text-white">XLSX Format</p>
+                <p className="text-sm text-gray mt-1">Excel spreadsheet format, ideal for analysis and record-keeping</p>
+              </div>
+              <Button variant="primary" size="lg" loading={exportXlsx.isPending} onClick={(e) => { e.stopPropagation(); exportXlsx.mutate(); }}>
+                <Download className="h-4 w-4 mr-1" /> Download XLSX
               </Button>
             </div>
           </CardContent>
