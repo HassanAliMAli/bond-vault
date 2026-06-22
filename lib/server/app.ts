@@ -191,6 +191,10 @@ export function createApp() {
     }
 
     if (c.env.RESEND_API_KEY) {
+      const adminEmails = (c.env.ADMIN_EMAIL || "hassanali205031@gmail.com")
+        .split(",")
+        .map((e) => e.trim());
+
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -199,7 +203,7 @@ export function createApp() {
         },
         body: JSON.stringify({
           from: "BondVault Contact <contact@bondvault.app>",
-          to: "hassanali205031@gmail.com",
+          to: adminEmails,
           subject: `BondVault Contact: ${name}`,
           text: `From: ${name} (${email})\n\n${message}`,
         }),
