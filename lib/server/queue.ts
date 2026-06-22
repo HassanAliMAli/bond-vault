@@ -21,7 +21,7 @@ async function handleNotificationDelivery(env: Env, _msg: NotifMessage) {
   logger.info("Queue: notifications sent", { count: sent });
 }
 
-async function handleDrawProcessing(env: Env, _msg: DrawProcessMessage) {
+async function handleDrawProcessing(_env: Env, _msg: DrawProcessMessage) {
   logger.info("Queue: draw-processing stub — not yet implemented");
 }
 

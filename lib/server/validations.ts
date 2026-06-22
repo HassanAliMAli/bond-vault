@@ -1,6 +1,5 @@
 import { z } from "zod";
-
-const DENOMINATIONS = [100, 200, 750, 1500, 7500, 25000, 40000] as const;
+import { DENOMINATION_NUMBERS } from "../constants";
 
 export const bondNumberSchema = z
   .string()
@@ -8,8 +7,8 @@ export const bondNumberSchema = z
 
 export const denominationSchema = z
   .number()
-  .refine((v) => DENOMINATIONS.includes(v as typeof DENOMINATIONS[number]), {
-    message: "Invalid denomination. Must be one of: 100, 200, 750, 1500, 7500, 25000, 40000",
+  .refine((v) => DENOMINATION_NUMBERS.includes(v as typeof DENOMINATION_NUMBERS[number]), {
+    message: "Invalid denomination. Must be one of: 100, 200, 750, 1500, 7500, 15000, 25000, 40000",
   });
 
 export const createBondSchema = z.object({

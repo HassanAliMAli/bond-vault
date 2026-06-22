@@ -11,12 +11,95 @@ export interface ScannedBond {
   reviewed: boolean;
 }
 
+export interface BondValidation {
+  isBondCertificate: boolean;
+  confidence: "high" | "medium" | "low";
+  reasons: string[];
+}
+
+interface WordWithBbox {
+  text: string;
+  confidence: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+const BOND_KEYWORDS = [
+  "GOVERNMENT OF PAKISTAN",
+  "PRIZE BOND",
+  "قومی بچت",
+  "پرائز بانڈ",
+];
+
+const LEFT_STUB_REGION = { x0: 0.03, y0: 0.72, x1: 0.24, y1: 0.98 };
+const MAIN_SERIAL_REGION = { x0: 0.72, y0: 0.15, x1: 0.95, y1: 0.35 };
+
+function isInRegion(w: WordWithBbox, region: typeof LEFT_STUB_REGION): boolean {
+  const cx = (w.x0 + w.x1) / 2;
+  const cy = (w.y0 + w.y1) / 2;
+  return cx >= region.x0 && cx <= region.x1 && cy >= region.y0 && cy <= region.y1;
+}
+
+function validateBondImage(text: string, words: WordWithBbox[]): BondValidation {
+  const upper = text.toUpperCase();
+  const reasons: string[] = [];
+  const matchedKeywords: string[] = [];
+
+  for (const kw of BOND_KEYWORDS) {
+    if (upper.includes(kw)) {
+      matchedKeywords.push(kw);
+    }
+  }
+
+  const isBondCertificate = matchedKeywords.length >= 2;
+
+  if (isBondCertificate) {
+    reasons.push(`Matched ${matchedKeywords.length} prize bond keywords`);
+  } else if (matchedKeywords.length > 0) {
+    reasons.push(`Partial keyword match (${matchedKeywords.length}/${BOND_KEYWORDS.length})`);
+  } else {
+    reasons.push("No prize bond keywords detected");
+  }
+
+  const leftSerials = words
+    .filter((w) => isInRegion(w, LEFT_STUB_REGION))
+    .map((w) => w.text.match(/^(\d{6})$/))
+    .filter(Boolean)
+    .map((m) => m![1]);
+
+  const mainSerials = words
+    .filter((w) => isInRegion(w, MAIN_SERIAL_REGION))
+    .map((w) => w.text.match(/^(\d{6})$/))
+    .filter(Boolean)
+    .map((m) => m![1]);
+
+  let confidence: BondValidation["confidence"];
+
+  if (leftSerials.length > 0 && mainSerials.length > 0 && leftSerials[0] === mainSerials[0]) {
+    confidence = "high";
+    reasons.push(`Serial number verified in both regions: ${leftSerials[0]}`);
+  } else if (leftSerials.length > 0 || mainSerials.length > 0) {
+    confidence = "medium";
+    const serial = leftSerials[0] || mainSerials[0];
+    const foundIn = leftSerials.length > 0 ? "left stub" : "main body";
+    reasons.push(`Serial found in ${foundIn} region: ${serial}`);
+  } else {
+    confidence = isBondCertificate ? "medium" : "low";
+    reasons.push("No serial number found in expected bond regions");
+  }
+
+  return { isBondCertificate, confidence, reasons };
+}
+
 export function useOcr() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<ScannedBond[]>([]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [recordingError, setRecordingError] = useState<string | null>(null);
+  const [bondValidation, setBondValidation] = useState<BondValidation | null>(null);
   const objectUrlRef = useRef<string | null>(null);
   const fileRef = useRef<File | null>(null);
 
@@ -31,6 +114,7 @@ export function useOcr() {
     setProgress(0);
     setResults([]);
     setRecordingError(null);
+    setBondValidation(null);
 
     if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
 
@@ -39,8 +123,20 @@ export function useOcr() {
     setImageUrl(objectUrl);
     fileRef.current = file;
 
+    let imgWidth = 0;
+    let imgHeight = 0;
     try {
-      const worker = await createWorker("eng", 1, {
+      const img = new Image();
+      img.src = objectUrl;
+      await img.decode();
+      imgWidth = img.naturalWidth;
+      imgHeight = img.naturalHeight;
+    } catch {
+      // proceed without bbox normalization
+    }
+
+    try {
+      const worker = await createWorker("eng+urd", 1, {
         logger: (m) => {
           if (m.status === "recognizing text") {
             setProgress(Math.round(m.progress * 100));
@@ -51,19 +147,29 @@ export function useOcr() {
       const { data } = await worker.recognize(file);
       await worker.terminate();
 
-      const seen = new Map<string, ScannedBond>();
-      let wordMatchCount = 0;
-
-      const allWords: Array<{ text: string; confidence: number }> = [];
+      const allWords: WordWithBbox[] = [];
       for (const block of data.blocks ?? []) {
         for (const paragraph of block.paragraphs) {
           for (const line of paragraph.lines) {
             for (const word of line.words) {
-              allWords.push({ text: word.text, confidence: word.confidence });
+              allWords.push({
+                text: word.text,
+                confidence: word.confidence,
+                x0: imgWidth > 0 ? word.bbox.x0 / imgWidth : 0,
+                y0: imgHeight > 0 ? word.bbox.y0 / imgHeight : 0,
+                x1: imgWidth > 0 ? word.bbox.x1 / imgWidth : 1,
+                y1: imgHeight > 0 ? word.bbox.y1 / imgHeight : 1,
+              });
             }
           }
         }
       }
+
+      const validation = validateBondImage(data.text, allWords);
+      setBondValidation(validation);
+
+      const seen = new Map<string, ScannedBond>();
+      let wordMatchCount = 0;
 
       for (const word of allWords) {
         const match = word.text.match(/^(\d{6})$/);
@@ -164,6 +270,7 @@ export function useOcr() {
     setImageUrl(null);
     setProgress(0);
     setRecordingError(null);
+    setBondValidation(null);
     fileRef.current = null;
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
@@ -177,6 +284,7 @@ export function useOcr() {
     results,
     imageUrl,
     recordingError,
+    bondValidation,
     scan,
     updateBond,
     removeBond,

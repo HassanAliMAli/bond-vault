@@ -10,6 +10,7 @@ import { useImportUpload, useImportConfirm, useImportHistory } from "@/hooks/use
 import { useTxtImport } from "@/hooks/use-txt-import";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
+import { DENOMINATION_NUMBERS } from "@/lib/constants";
 import { Upload, FileText, Check, X, AlertTriangle, ArrowLeft, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
@@ -112,7 +113,7 @@ export function ImportPageClient() {
     txt.reset();
   };
 
-  const DENOMINATIONS_LIST = [100, 200, 750, 1500, 7500, 25000, 40000];
+  const DENOMINATIONS_LIST = DENOMINATION_NUMBERS;
 
   if (canImport === false) {
     return (

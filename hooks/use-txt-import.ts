@@ -3,8 +3,9 @@
 import { useState, useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
+import { DENOMINATION_NUMBERS } from "@/lib/constants";
 
-const DENOMINATIONS = [100, 200, 750, 1500, 7500, 25000, 40000] as const;
+const DENOMINATIONS = DENOMINATION_NUMBERS;
 
 export interface TxtImportResult {
   saved: number;

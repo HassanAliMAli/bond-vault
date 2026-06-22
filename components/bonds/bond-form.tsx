@@ -7,11 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DenominationBadge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Check, Hash, AlertCircle } from "lucide-react";
-
-const DENOMINATIONS = [
-  { value: "100", label: "Rs. 100" }, { value: "200", label: "Rs. 200" }, { value: "750", label: "Rs. 750" },
-  { value: "1500", label: "Rs. 1,500" }, { value: "7500", label: "Rs. 7,500" }, { value: "25000", label: "Rs. 25,000" }, { value: "40000", label: "Rs. 40,000" },
-];
+import { DENOMINATIONS, DENOMINATION_LABELS } from "@/lib/constants";
 
 interface BondFormProps { onSubmit: (data: { denomination: string; bondNumber: string }) => void; onCancel: () => void; existingNumbers?: string[]; }
 
@@ -28,12 +24,12 @@ export function BondForm({ onSubmit, onCancel, existingNumbers = [] }: BondFormP
         <label className="block text-sm font-medium text-white mb-3">Select Denomination</label>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           {DENOMINATIONS.map((d, i) => {
-            const selected = denomination === d.value;
+            const selected = denomination === d;
             return (
-              <motion.button key={d.value} type="button" onClick={() => { setDenomination(d.value); setError(""); }}
+              <motion.button key={d} type="button" onClick={() => { setDenomination(d); setError(""); }}
                 className={cn("relative p-4 rounded-[var(--radius-md)] border text-center transition-all", selected ? "border-gold bg-gold/5 shadow-elevation-1" : "border-dark-600 bg-dark-800 hover:border-dark-500 hover:bg-dark-700")}
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 350, damping: 26, delay: i * 0.05 }} whileTap={{ scale: 0.97 }}>
-                <span className={cn("text-lg font-semibold block text-white")}>{d.label}</span>
+                <span className={cn("text-lg font-semibold block text-white")}>{DENOMINATION_LABELS[d]}</span>
                 {selected && <motion.div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gold flex items-center justify-center" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}><Check className="h-3 w-3 text-dark-900" /></motion.div>}
               </motion.button>
             );

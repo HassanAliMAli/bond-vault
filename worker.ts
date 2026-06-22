@@ -5,7 +5,7 @@ import { handleQueueMessage } from "./lib/server/queue";
 export default {
   fetch: handler.fetch,
 
-  async queue(batch: MessageBatch, env: Env, ctx: ExecutionContext) {
+  async queue(batch: MessageBatch, env: Env, _ctx: ExecutionContext) {
     for (const msg of batch.messages) {
       await handleQueueMessage(env, { queue: batch.queue, body: msg.body });
       msg.ack();

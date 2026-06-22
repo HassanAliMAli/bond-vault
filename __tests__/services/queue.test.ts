@@ -34,8 +34,6 @@ const mockSendPendingNotifications = sendPendingNotifications as ReturnType<type
 const mockHandleSubscriptionExpiration = handleSubscriptionExpiration as ReturnType<typeof vi.fn>;
 const mockHandleRetentionCleanup = handleRetentionCleanup as ReturnType<typeof vi.fn>;
 const mockHandleImportCleanup = handleImportCleanup as ReturnType<typeof vi.fn>;
-const mockLogger = logger as ReturnType<typeof vi.fn>;
-
 function makeEnv(queueSend?: ReturnType<typeof vi.fn>): any {
   return {
     DB: {},
@@ -96,7 +94,7 @@ describe("handleQueueMessage", () => {
 
     await handleQueueMessage(env, { queue: "draw-processing", body: { drawId: "draw_1", action: "import" } });
 
-    expect(mockLogger.info).toHaveBeenCalledWith("Queue: draw-processing stub — not yet implemented");
+    expect(logger.info).toHaveBeenCalledWith("Queue: draw-processing stub — not yet implemented");
   });
 
   it("does nothing for unknown queue", async () => {

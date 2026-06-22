@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DENOMINATIONS as ALL_DENOMS } from "@/lib/constants";
 
 interface Bond { id: string; bondNumber: string; denomination: number; addedAt: string; }
 interface BondListProps { bonds: Bond[]; onDelete: (id: string) => void; onAddNew: () => void; }
 
-const DENOMINATIONS = ["100", "200", "750", "1500", "7500", "25000", "40000"];
+const DENOMINATIONS = ALL_DENOMS;
 
 export function BondList({ bonds, onDelete, onAddNew }: BondListProps) {
   const [search, setSearch] = useState("");

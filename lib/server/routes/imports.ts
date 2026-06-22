@@ -109,7 +109,6 @@ export const importRoutes = new Hono()
     let saved = 0;
     let duplicates = 0;
     const validBonds: Array<{ bondNumber: string; denomination: number }> = [];
-    const invalidBonds: Array<{ bondNumber: string; denomination: number; reason: string }> = [];
 
     for (const bond of parsed.data.bonds) {
       const existing = await db.select({ id: bonds.id }).from(bonds).where(

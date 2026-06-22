@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { formatDrawDate } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { DENOMINATION_NUMBERS } from "@/lib/constants";
 import { useAdminDraws, useCreateDraw, useUploadDrawPdf, useAddWinners, useGenerateMatches, type Draw } from "@/hooks/use-admin";
 import { Plus, Search, Upload, Award, Zap, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -201,7 +202,7 @@ export function AdminDrawsClient() {
                 <label className="text-sm text-gray mb-1 block">Denomination (Rs.)</label>
                 <select value={newDraw.denomination} onChange={e => setNewDraw({ ...newDraw, denomination: Number(e.target.value) })}
                   className="w-full px-3 py-2.5 rounded-[var(--radius-sm)] bg-dark-900 border border-dark-600 text-white text-sm focus:outline-none focus:border-gold/50">
-                  {[100, 200, 750, 1500, 7500, 15000, 28000, 40000].map(d => (
+                  {DENOMINATION_NUMBERS.map(d => (
                     <option key={d} value={d}>Rs. {d.toLocaleString()}</option>
                   ))}
                 </select>

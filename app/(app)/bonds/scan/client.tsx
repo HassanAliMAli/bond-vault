@@ -5,14 +5,15 @@ import { PageTransition } from "@/components/shared/page-transition";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOcr } from "@/hooks/use-ocr";
+import { DENOMINATION_NUMBERS } from "@/lib/constants";
 import { Camera, Upload, ScanLine, X, Save, Check, AlertTriangle, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const DENOMINATIONS = [100, 200, 750, 1500, 7500, 25000, 40000] as const;
+const DENOMINATIONS = DENOMINATION_NUMBERS;
 
 export function ScanPageClient() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { isProcessing, progress, results, imageUrl, recordingError, scan, updateBond, removeBond, saveBonds, retry, reset } = useOcr();
+  const { isProcessing, progress, results, imageUrl, recordingError, bondValidation, scan, updateBond, removeBond, saveBonds, retry, reset } = useOcr();
   const [saving, setSaving] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
   const [dragOver, setDragOver] = useState(false);
@@ -89,9 +90,7 @@ export function ScanPageClient() {
                 <Button variant="primary" size="sm" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>
                   <Upload className="h-4 w-4 mr-1" /> Choose Image
                 </Button>
-                <Button variant="secondary" size="sm" disabled>
-                  <Camera className="h-4 w-4 mr-1" /> Use Camera
-                </Button>
+
               </div>
             </div>
             <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onFileChange} />
@@ -178,6 +177,33 @@ export function ScanPageClient() {
         </div>
       )}
 
+      {/* Bond validation banner */}
+      {bondValidation && results.length > 0 && (
+        <div className={cn(
+          "flex items-start gap-3 p-4 rounded-[var(--radius-sm)] border",
+          bondValidation.isBondCertificate
+            ? "bg-green/5 border-green/20 text-green"
+            : "bg-amber/5 border-amber/20 text-amber"
+        )}>
+          {bondValidation.isBondCertificate ? (
+            <Check className="h-5 w-5 shrink-0 mt-0.5" />
+          ) : (
+            <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
+          )}
+          <div className="text-sm">
+            <p className="font-medium">
+              {bondValidation.isBondCertificate
+                ? "Pakistani prize bond detected"
+                : "This image doesn't appear to be a standard prize bond certificate"}
+            </p>
+            <p className="text-xs mt-0.5 opacity-80">{bondValidation.reasons.join(" · ")}</p>
+          </div>
+          {!bondValidation.isBondCertificate && (
+            <p className="text-xs opacity-60 ml-auto shrink-0">Verify carefully before saving</p>
+          )}
+        </div>
+      )}
+
       {/* Results */}
       {results.length > 0 && !isProcessing && !recordingError && (
         <>
@@ -207,6 +233,19 @@ export function ScanPageClient() {
                 <CardTitle className="flex items-center gap-2">
                   <ScanLine className="h-5 w-5 text-gold" />
                   Extracted Numbers
+                  {bondValidation && (
+                    <span className={cn(
+                      "text-xs font-medium px-1.5 py-0.5 rounded flex items-center gap-1",
+                      bondValidation.confidence === "high" ? "bg-green/10 text-green" :
+                      bondValidation.confidence === "medium" ? "bg-amber/10 text-amber" :
+                      "bg-dark-600 text-gray"
+                    )}>
+                      {bondValidation.confidence === "high" ? <Check className="h-3 w-3" /> : null}
+                      {bondValidation.confidence === "high" ? "Verified" :
+                       bondValidation.confidence === "medium" ? "Verify manually" :
+                       "Low confidence"}
+                    </span>
+                  )}
                   <span className="text-sm font-normal text-gray ml-auto">{results.length} found</span>
                 </CardTitle>
               </CardHeader>

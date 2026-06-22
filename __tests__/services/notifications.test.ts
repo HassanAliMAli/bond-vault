@@ -50,7 +50,7 @@ describe("createNotificationBatch", () => {
 
     await createNotificationBatch(mockEnv, baseParams);
 
-    const channels = valuesFn.mock.calls.map((call: unknown[]) => call[0].channel);
+    const channels = valuesFn.mock.calls.map((call: unknown[]) => (call[0] as { channel?: string }).channel);
     const uniqueChannels = [...new Set(channels)];
     expect(uniqueChannels).toEqual(["email"]);
   });
@@ -64,7 +64,7 @@ describe("createNotificationBatch", () => {
 
     await createNotificationBatch(mockEnv, baseParams);
 
-    const channels = valuesFn.mock.calls.map((call: unknown[]) => call[0].channel);
+    const channels = valuesFn.mock.calls.map((call: unknown[]) => (call[0] as { channel?: string }).channel);
     const uniqueChannels = [...new Set(channels)];
     expect(uniqueChannels).toEqual(["email", "whatsapp", "sms"]);
     expect(valuesFn.mock.calls.length).toBe(6); // 3 channels × 2 inserts (batch + notification)
@@ -79,7 +79,7 @@ describe("createNotificationBatch", () => {
 
     await createNotificationBatch(mockEnv, baseParams);
 
-    const channels = valuesFn.mock.calls.map((call: unknown[]) => call[0].channel);
+    const channels = valuesFn.mock.calls.map((call: unknown[]) => (call[0] as { channel?: string }).channel);
     const uniqueChannels = [...new Set(channels)];
     expect(uniqueChannels).toEqual(["email", "sms"]);
   });
