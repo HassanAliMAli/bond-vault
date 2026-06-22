@@ -90,7 +90,7 @@ export default function HomePage() {
               transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
               className="relative flex justify-center"
             >
-              <div className="relative w-full max-w-xl">
+              <div className="relative w-full max-w-2xl">
                 <Image
                   src="/hero-vault.png"
                   alt="BondVault secure vault — store and manage your Pakistani prize bonds"
@@ -100,27 +100,27 @@ export default function HomePage() {
                   className="w-full h-auto object-contain drop-shadow-2xl"
                 />
 
-                <div className="absolute -top-3 -left-3 lg:-top-4 lg:-left-4 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float">
                   <Lock className="h-4 w-4 lg:h-5 lg:w-5 text-gold" />
                 </div>
 
-                <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float" style={{ animationDelay: "1s" }}>
+                <div className="absolute top-1/2 -right-4 -translate-y-1/2 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float" style={{ animationDelay: "1s" }}>
                   <ScanSearch className="h-4 w-4 lg:h-5 lg:w-5 text-gold" />
                 </div>
 
-                <div className="absolute -bottom-3 -left-3 lg:-bottom-4 lg:-left-4 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float" style={{ animationDelay: "2s" }}>
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float" style={{ animationDelay: "2s" }}>
                   <Bell className="h-4 w-4 lg:h-5 lg:w-5 text-gold" />
                 </div>
 
-                <div className="absolute -bottom-3 -right-3 lg:-bottom-4 lg:-right-4 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float" style={{ animationDelay: "0.5s" }}>
+                <div className="absolute top-1/2 -left-4 -translate-y-1/2 bg-dark-800/90 border border-gold/30 rounded-lg p-2.5 shadow-lg backdrop-blur-sm animate-float" style={{ animationDelay: "0.5s" }}>
                   <BarChart3 className="h-4 w-4 lg:h-5 lg:w-5 text-gold" />
                 </div>
 
-                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 400" aria-hidden="true">
-                  <line x1="30" y1="30" x2="110" y2="60" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
-                  <line x1="370" y1="30" x2="290" y2="60" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
-                  <line x1="30" y1="370" x2="110" y2="340" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
-                  <line x1="370" y1="370" x2="290" y2="340" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 500 500" aria-hidden="true">
+                  <line x1="250" y1="30" x2="250" y2="110" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
+                  <line x1="470" y1="250" x2="390" y2="250" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
+                  <line x1="250" y1="470" x2="250" y2="390" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
+                  <line x1="30" y1="250" x2="110" y2="250" stroke="#E2B04A" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.25" />
                 </svg>
               </div>
             </motion.div>
