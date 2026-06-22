@@ -13,7 +13,8 @@ import Link from "next/link";
 const DENOMINATIONS = DENOMINATION_NUMBERS;
 
 export function ScanPageClient() {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const { isProcessing, progress, results, imageUrl, recordingError, bondValidation, scan, updateBond, removeBond, saveBonds, retry, reset } = useOcr();
   const [saving, setSaving] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
@@ -32,7 +33,13 @@ export function ScanPageClient() {
   const onFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) await handleFile(file);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
+  }, [handleFile]);
+
+  const onCameraCapture = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) await handleFile(file);
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   }, [handleFile]);
 
   const onDrop = useCallback(async (e: React.DragEvent) => {
@@ -77,24 +84,27 @@ export function ScanPageClient() {
                 "flex flex-col items-center gap-4 py-12 px-6 rounded-[var(--radius-lg)] border-2 border-dashed transition-colors cursor-pointer",
                 dragOver ? "border-gold bg-gold/5" : "border-dark-600 hover:border-dark-500 bg-dark-800/50"
               )}
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => galleryInputRef.current?.click()}
             >
               <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center">
-                <Camera className="h-7 w-7 text-gold" />
+                <ScanLine className="h-7 w-7 text-gold" />
               </div>
               <div className="text-center">
-                <p className="text-base font-medium text-white">Upload a bond image</p>
-                <p className="text-sm text-gray mt-1">Drag & drop or click to browse</p>
+                <p className="text-base font-medium text-white">Scan a prize bond</p>
+                <p className="text-sm text-gray mt-1">Take a photo or choose from your gallery</p>
                 <p className="text-xs text-dark-500 mt-2">Supports JPG, PNG — best results with clear, well-lit photos</p>
               </div>
               <div className="flex items-center gap-3 mt-2">
-                <Button variant="primary" size="sm" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>
-                  <Upload className="h-4 w-4 mr-1" /> Choose Image
+                <Button variant="primary" size="sm" onClick={(e) => { e.stopPropagation(); cameraInputRef.current?.click(); }}>
+                  <Camera className="h-4 w-4 mr-1" /> Take Photo
                 </Button>
-
+                <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); galleryInputRef.current?.click(); }}>
+                  <Upload className="h-4 w-4 mr-1" /> From Gallery
+                </Button>
               </div>
             </div>
-            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onFileChange} />
+            <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onCameraCapture} />
+            <input ref={galleryInputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
           </CardContent>
         </Card>
       )}
