@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
 import { useAuth } from "@/hooks/use-auth";
-import { Vault, ScrollText, PlusCircle, SearchCheck, Settings, Shield, PanelLeftClose, PanelLeft, Upload, Download, CreditCard, Receipt } from "lucide-react";
+import { Vault, ScrollText, PlusCircle, SearchCheck, Settings, Shield, PanelLeftClose, PanelLeft, Upload, Download, CreditCard, Receipt, ScanLine } from "lucide-react";
 
 const navItems = [
   { href: "/vault", label: "Vault", icon: Vault },
@@ -15,6 +15,7 @@ const navItems = [
   { href: "/bonds/add", label: "Add Bond", icon: PlusCircle },
   { href: "/bonds/import", label: "Import Bonds", icon: Upload },
   { href: "/bonds/export", label: "Export", icon: Download },
+  { href: "/bonds/scan", label: "Scan Bonds", icon: ScanLine },
   { href: "/plans", label: "Subscription", icon: CreditCard },
   { href: "/payments", label: "Payments", icon: Receipt },
   { href: "/settings", label: "Settings", icon: Settings },

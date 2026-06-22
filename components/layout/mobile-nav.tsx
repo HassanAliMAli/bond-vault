@@ -3,13 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Vault, ScrollText, PlusCircle, SearchCheck, Settings } from "lucide-react";
+import { Vault, ScrollText, PlusCircle, SearchCheck, Settings, ScanLine, Upload, Download, CreditCard, Receipt } from "lucide-react";
 
 const mobileNavItems = [
   { href: "/vault", label: "Vault", icon: Vault },
   { href: "/bonds", label: "Bonds", icon: ScrollText },
   { href: "/check", label: "Check", icon: SearchCheck },
   { href: "/bonds/add", label: "Add", icon: PlusCircle },
+  { href: "/bonds/scan", label: "Scan", icon: ScanLine },
+  { href: "/bonds/import", label: "Import", icon: Upload },
+  { href: "/bonds/export", label: "Export", icon: Download },
+  { href: "/plans", label: "Plan", icon: CreditCard },
+  { href: "/payments", label: "Pay", icon: Receipt },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOcr } from "@/hooks/use-ocr";
 import { DENOMINATION_NUMBERS } from "@/lib/constants";
-import { Camera, Upload, ScanLine, X, Save, Check, AlertTriangle, RefreshCw } from "lucide-react";
+import { Camera, Upload, ScanLine, X, Save, Check, AlertTriangle, RefreshCw, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const DENOMINATIONS = DENOMINATION_NUMBERS;
 
@@ -351,8 +352,13 @@ export function ScanPageClient() {
           </div>
 
           {savedCount > 0 && (
-            <div className="flex items-center justify-center gap-2 text-sm text-green">
-              <Check className="h-4 w-4" /> {savedCount} bond{savedCount !== 1 ? "s" : ""} added successfully
+            <div className="flex flex-col items-center gap-3 text-sm text-green">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4" /> {savedCount} bond{savedCount !== 1 ? "s" : ""} added successfully
+              </div>
+              <Link href="/bonds">
+                <Button variant="secondary" size="sm"><ArrowRight className="h-3 w-3 mr-1" /> View My Bonds</Button>
+              </Link>
             </div>
           )}
         </>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { MatchCard } from "./match-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,13 @@ interface Match { id: string; bondNumber: string; denomination: string; prizeTyp
 interface ResultsPanelProps { matches: Match[]; totalChecked: number; onCheckAgain: () => void; }
 
 export function ResultsPanel({ matches, totalChecked, onCheckAgain }: ResultsPanelProps) {
+  const router = useRouter();
   if (!matches || matches.length === 0) {
     return (
       <EmptyState illustration="search" title="No winners this time"
         description={`${(totalChecked || 0).toLocaleString()} bonds checked against historical draws.`}
         action={{ label: "Check Again", onClick: onCheckAgain }}
-        secondaryAction={{ label: "View My Bonds", onClick: () => {} }} />
+        secondaryAction={{ label: "View My Bonds", onClick: () => router.push("/bonds") }} />
     );
   }
 
