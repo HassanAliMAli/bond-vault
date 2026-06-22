@@ -90,12 +90,12 @@ export default function HomePage() {
               transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
               className="relative flex justify-center"
             >
-              <div className="relative w-full max-w-2xl">
+              <div className="relative w-full max-w-4xl">
                 <Image
                   src="/hero-vault.png"
                   alt="BondVault secure vault — store and manage your Pakistani prize bonds"
-                  width={720}
-                  height={647}
+                  width={884}
+                  height={811}
                   priority
                   className="w-full h-auto object-contain drop-shadow-2xl"
                 />
