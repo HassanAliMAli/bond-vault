@@ -32,17 +32,7 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="border-b border-dark-600">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white">BondVault</Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login"><Button variant="ghost">Login</Button></Link>
-            <Link href="/register"><Button variant="primary">Get Started</Button></Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       <section className="max-w-6xl mx-auto px-4 py-20">
         <h1 className="text-3xl font-bold text-white text-center mb-4">Simple Pricing</h1>
         <p className="text-gray text-center max-w-2xl mx-auto mb-12">Choose the plan that fits your needs. Upgrade anytime.</p>
@@ -66,6 +56,6 @@ export default function PricingPage() {
           ))}
         </div>
       </section>
-    </div>
+    </>
   );
 }

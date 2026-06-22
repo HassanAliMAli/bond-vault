@@ -1,9 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Shield, Search, Bell, ScanLine, Upload, Download, BarChart3, Clock, Database, Lock, Smartphone, Globe } from "lucide-react";
-import Link from "next/link";
 
 const features = [
   { icon: Shield, title: "Digital Portfolio", description: "Store unlimited prize bonds in a secure digital vault. Organize by denomination, search by number, and access from anywhere." },
@@ -22,17 +20,7 @@ const features = [
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="border-b border-dark-600">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white">BondVault</Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login"><Button variant="ghost">Login</Button></Link>
-            <Link href="/register"><Button variant="primary">Get Started</Button></Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       <section className="max-w-6xl mx-auto px-4 py-20">
         <h1 className="text-3xl font-bold text-white text-center mb-4">Features</h1>
         <p className="text-gray text-center max-w-2xl mx-auto mb-12">Everything you need to manage your prize bond portfolio efficiently.</p>
@@ -47,6 +35,6 @@ export default function FeaturesPage() {
           ))}
         </div>
       </section>
-    </div>
+    </>
   );
 }

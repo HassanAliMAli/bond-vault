@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const faqs = [
@@ -24,17 +22,7 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="border-b border-dark-600">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white">BondVault</Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login"><Button variant="ghost">Login</Button></Link>
-            <Link href="/register"><Button variant="primary">Get Started</Button></Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       <section className="max-w-3xl mx-auto px-4 py-20">
         <h1 className="text-3xl font-bold text-white text-center mb-4">Frequently Asked Questions</h1>
         <p className="text-gray text-center mb-12">Everything you need to know about BondVault.</p>
@@ -56,6 +44,6 @@ export default function FAQPage() {
           ))}
         </div>
       </section>
-    </div>
+    </>
   );
 }

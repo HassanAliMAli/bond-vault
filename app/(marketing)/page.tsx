@@ -16,17 +16,7 @@ const features = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="border-b border-dark-600">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <span className="text-xl font-bold text-white">BondVault</span>
-          <div className="flex items-center gap-4">
-            <Link href="/login"><Button variant="ghost">Login</Button></Link>
-            <Link href="/register"><Button variant="primary">Get Started</Button></Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       <section className="max-w-6xl mx-auto px-4 py-24 text-center">
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl lg:text-6xl font-bold text-white mb-6">
           Your Prize Bond Portfolio,<br /><span className="text-gold">Digitized</span>
@@ -36,7 +26,7 @@ export default function HomePage() {
         </motion.p>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex items-center justify-center gap-4">
           <Link href="/register"><Button variant="primary" size="xl">Start Free</Button></Link>
-          <Link href="/features"><Button variant="outline" size="xl">Learn More</Button></Link>
+          <Link href="/pricing"><Button variant="outline" size="xl">View Pricing</Button></Link>
         </motion.div>
       </section>
 
@@ -53,17 +43,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
-      <footer className="border-t border-dark-600 py-8">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-sm text-gray">BondVault Pakistan. All rights reserved.</span>
-          <div className="flex items-center gap-6 text-sm text-gray">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

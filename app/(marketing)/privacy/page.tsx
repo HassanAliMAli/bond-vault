@@ -1,19 +1,6 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="border-b border-dark-600">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white">BondVault</Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login"><Button variant="ghost">Login</Button></Link>
-            <Link href="/register"><Button variant="primary">Get Started</Button></Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       <section className="max-w-3xl mx-auto px-4 py-20">
         <h1 className="text-3xl font-bold text-white mb-8">Privacy Policy</h1>
         <div className="prose prose-invert max-w-none space-y-6 text-gray">
@@ -32,6 +19,6 @@ export default function PrivacyPage() {
           <p>For privacy-related inquiries, please contact us through our contact page.</p>
         </div>
       </section>
-    </div>
+    </>
   );
 }
