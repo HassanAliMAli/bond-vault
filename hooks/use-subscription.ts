@@ -76,14 +76,6 @@ export function useUploadReceipt() {
   });
 }
 
-export function useSubscriptionHistory() {
-  return useQuery({
-    queryKey: ["subscription", "history"],
-    queryFn: () => api.subscription.history() as Promise<{ history: unknown[] }>,
-    staleTime: 60_000,
-  });
-}
-
 export function usePayments() {
   return useQuery({
     queryKey: ["payments"],

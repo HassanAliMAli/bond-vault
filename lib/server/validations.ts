@@ -25,12 +25,6 @@ export const paymentSchema = z.object({
   planId: z.string().min(1),
 });
 
-export const ocrUsageSchema = z.object({});
-
-export const importSchema = z.object({
-  fileType: z.enum(["csv", "xlsx", "txt"]),
-});
-
 export const txtImportSchema = z.object({
   bonds: z.array(z.object({
     bondNumber: bondNumberSchema,
@@ -73,12 +67,6 @@ export const updateUserSchema = z.object({
 export const updateSettingsSchema = z.object({
   key: z.string().min(1),
   value: z.string().min(1),
-});
-
-export const contactSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  message: z.string().min(10),
 });
 
 export const updateDrawSchema = z.object({

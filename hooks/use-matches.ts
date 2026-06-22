@@ -38,14 +38,6 @@ export function useDashboard() {
   });
 }
 
-export function useMatches(params?: { status?: string; denomination?: number; page?: number }) {
-  return useQuery({
-    queryKey: ["matches", params],
-    queryFn: () => api.matches.list(params as Record<string, string | undefined>),
-    staleTime: 30_000,
-  });
-}
-
 export function useCheckBonds() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -62,10 +54,4 @@ export function useCheckBonds() {
   });
 }
 
-export function useMarkViewed() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => api.matches.markViewed(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["matches"] }); },
-  });
-}
+

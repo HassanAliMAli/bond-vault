@@ -55,23 +55,6 @@ export function useAdminUsers(search?: string, page?: number) {
   });
 }
 
-export function useAdminUser(id: string) {
-  return useQuery({
-    queryKey: ["admin", "user", id],
-    queryFn: () => adminFetch<AdminUser>("/admin/users/" + id),
-    enabled: !!id,
-  });
-}
-
-export function useUpdateUser() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, ...data }: { id: string } & Record<string, unknown>) =>
-      adminFetch("/admin/users/" + id, { method: "PATCH", body: data }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin", "users"] }); qc.invalidateQueries({ queryKey: ["admin", "user"] }); },
-  });
-}
-
 export function useSuspendUser() {
   const qc = useQueryClient();
   return useMutation({

@@ -1,6 +1,6 @@
 import { getDb } from "../db";
 import { notificationBatches, notifications, notificationPreferences, users, type NotificationChannel } from "../schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { generateId } from "../id";
 import { sendWhatsApp } from "../providers/whatsapp";
 import { sendSms } from "../providers/sms";
@@ -142,15 +142,4 @@ async function sendEmail(env: Env, notification: { userId: string; title: string
   }
 }
 
-export async function markNotificationRead(env: Env, userId: string, notificationId: string) {
-  const db = getDb(env.DB);
-  await db
-    .update(notifications)
-    .set({ status: "read", readAt: new Date().toISOString() })
-    .where(
-      and(
-        eq(notifications.id, notificationId),
-        eq(notifications.userId, userId)
-      )
-    );
-}
+

@@ -9,7 +9,7 @@ import {
   notificationPreferences,
   type NotificationChannel,
 } from "../schema";
-import { eq, and, isNull, sql } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import { generateId } from "../id";
 
 export async function generateMatchesForDraw(env: Env, drawId: string): Promise<number> {
@@ -159,67 +159,4 @@ async function createNotificationBatch(
   }
 }
 
-export async function generateMatchesForAllActiveBonds(env: Env, userId: string): Promise<number> {
-  const db = getDb(env.DB);
-  const userBonds = await db
-    .select()
-    .from(bonds)
-    .where(
-      and(
-        eq(bonds.userId, userId),
-        eq(bonds.status, "active"),
-        isNull(bonds.deletedAt)
-      )
-    )
-    .all();
 
-  let totalMatches = 0;
-  for (const bond of userBonds) {
-    const wns = await db
-      .select()
-      .from(winningNumbers)
-      .innerJoin(draws, eq(winningNumbers.drawId, draws.id))
-      .where(
-        and(
-          sql`CAST(${winningNumbers.bondNumber} AS INTEGER) = ${parseInt(bond.bondNumber, 10)}`,
-          eq(draws.denomination, bond.denomination)
-        )
-      )
-      .all();
-
-    for (const row of wns) {
-      const existing = await db
-        .select({ id: matches.id })
-        .from(matches)
-        .where(
-          and(
-            eq(matches.bondId, bond.id),
-            eq(matches.drawId, row.draws.id),
-            eq(matches.winningNumberId, row.winning_numbers.id)
-          )
-        )
-        .get();
-
-      if (existing) continue;
-
-      await db.insert(matches).values({
-        id: generateId(),
-        userId: bond.userId,
-        bondId: bond.id,
-        winningNumberId: row.winning_numbers.id,
-        drawId: row.draws.id,
-        bondNumberSnapshot: bond.bondNumber,
-        denominationSnapshot: bond.denomination,
-        prizeTypeSnapshot: row.winning_numbers.prizeType,
-        prizeAmountSnapshot: row.winning_numbers.prizeAmount,
-        drawDateSnapshot: row.draws.drawDate,
-        status: "unseen",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-      totalMatches++;
-    }
-  }
-
-  return totalMatches;
-}

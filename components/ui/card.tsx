@@ -68,9 +68,5 @@ const CardDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParag
 const CardContent = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("", className)} {...props} />
 );
-const CardFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex items-center pt-4", className)} {...props} />
-);
-
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };
+export { Card, CardHeader, CardTitle, CardDescription, CardContent };
 export type { CardProps };

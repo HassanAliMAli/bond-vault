@@ -5,15 +5,12 @@ import {
   createBondSchema,
   updateBondSchema,
   paymentSchema,
-  ocrUsageSchema,
-  importSchema,
   notificationPrefsSchema,
   updateProfileSchema,
   createDrawSchema,
   createWinningNumberSchema,
   updateUserSchema,
   updateSettingsSchema,
-  contactSchema,
   updateDrawSchema,
 } from "@/lib/server/validations";
 
@@ -92,28 +89,6 @@ describe("paymentSchema", () => {
   it("rejects empty planId", () => {
     expect(paymentSchema.safeParse({ planId: "" }).success).toBe(false);
     expect(paymentSchema.safeParse({}).success).toBe(false);
-  });
-});
-
-describe("ocrUsageSchema", () => {
-  it("accepts empty body", () => {
-    expect(ocrUsageSchema.safeParse({}).success).toBe(true);
-  });
-
-  it("ignores extra body fields", () => {
-    expect(ocrUsageSchema.safeParse({ bondNumber: "abc", denomination: 100 }).success).toBe(true);
-  });
-});
-
-describe("importSchema", () => {
-  for (const ft of ["csv", "xlsx", "txt"] as const) {
-    it(`accepts ${ft} file type`, () => {
-      expect(importSchema.safeParse({ fileType: ft }).success).toBe(true);
-    });
-  }
-
-  it("rejects unsupported file type", () => {
-    expect(importSchema.safeParse({ fileType: "pdf" }).success).toBe(false);
   });
 });
 
@@ -202,24 +177,6 @@ describe("updateSettingsSchema", () => {
 
   it("rejects empty value", () => {
     expect(updateSettingsSchema.safeParse({ key: "max_ocr", value: "" }).success).toBe(false);
-  });
-});
-
-describe("contactSchema", () => {
-  it("accepts valid contact form", () => {
-    expect(contactSchema.safeParse({ name: "John", email: "john@example.com", message: "Hello, I have a question about my account." }).success).toBe(true);
-  });
-
-  it("rejects invalid email", () => {
-    expect(contactSchema.safeParse({ name: "John", email: "not-an-email", message: "Hello, I have a question about my account." }).success).toBe(false);
-  });
-
-  it("rejects short message", () => {
-    expect(contactSchema.safeParse({ name: "John", email: "john@example.com", message: "Hi" }).success).toBe(false);
-  });
-
-  it("rejects missing name", () => {
-    expect(contactSchema.safeParse({ email: "john@example.com", message: "Hello, I have a question about my account." }).success).toBe(false);
   });
 });
 

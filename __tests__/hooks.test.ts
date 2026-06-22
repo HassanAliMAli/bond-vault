@@ -5,7 +5,6 @@ describe("admin hooks", () => {
     const mod: Record<string, unknown> = await import("@/hooks/use-admin");
     expect(mod.useAdminDashboard).toBeInstanceOf(Function);
     expect(mod.useAdminUsers).toBeInstanceOf(Function);
-    expect(mod.useAdminUser).toBeInstanceOf(Function);
     expect(mod.useAdminPayments).toBeInstanceOf(Function);
     expect(mod.useAdminDraws).toBeInstanceOf(Function);
     expect(mod.useAdminSettings).toBeInstanceOf(Function);
@@ -17,7 +16,6 @@ describe("admin hooks", () => {
     expect(mod.useRestoreUser).toBeInstanceOf(Function);
     expect(mod.useApprovePayment).toBeInstanceOf(Function);
     expect(mod.useRejectPayment).toBeInstanceOf(Function);
-    expect(mod.useUpdateUser).toBeInstanceOf(Function);
     expect(mod.useUploadDrawPdf).toBeInstanceOf(Function);
     expect(mod.useAddWinners).toBeInstanceOf(Function);
   });
@@ -30,7 +28,6 @@ describe("subscription hooks", () => {
     expect(mod.useCurrentSubscription).toBeInstanceOf(Function);
     expect(mod.useCreatePayment).toBeInstanceOf(Function);
     expect(mod.useUploadReceipt).toBeInstanceOf(Function);
-    expect(mod.useSubscriptionHistory).toBeInstanceOf(Function);
     expect(mod.usePayments).toBeInstanceOf(Function);
     expect(mod.useOcrUsage).toBeInstanceOf(Function);
   });
@@ -40,7 +37,6 @@ describe("notification hooks", () => {
   it("exports expected hooks (runtime)", async () => {
     const mod: Record<string, unknown> = await import("@/hooks/use-notifications");
     expect(mod.useNotifications).toBeInstanceOf(Function);
-    expect(mod.useUnreadCount).toBeInstanceOf(Function);
     expect(mod.useNotificationPreferences).toBeInstanceOf(Function);
     expect(mod.useUpdateNotificationPreferences).toBeInstanceOf(Function);
   });

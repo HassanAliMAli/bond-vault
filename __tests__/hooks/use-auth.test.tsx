@@ -72,34 +72,4 @@ describe("useAuth", () => {
   });
 });
 
-describe("useLogin", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
 
-  it("calls authClient.signIn.email on mutate", async () => {
-    const { authClient } = await import("@/lib/auth-client");
-    (authClient.signIn.email as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: { user: { id: "u1" } } });
-
-    const { useLogin } = await import("@/hooks/use-auth");
-    const { result } = renderHook(() => useLogin(), { wrapper: createWrapper() });
-
-    result.current.mutate({ email: "test@test.com", password: "password123" });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(authClient.signIn.email).toHaveBeenCalledWith({ email: "test@test.com", password: "password123" });
-  });
-});
-
-describe("useRegister", () => {
-  beforeEach(() => { vi.clearAllMocks(); });
-
-  it("calls authClient.signUp.email on mutate", async () => {
-    const { authClient } = await import("@/lib/auth-client");
-    (authClient.signUp.email as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ data: { user: { id: "u1" } } });
-
-    const { useRegister } = await import("@/hooks/use-auth");
-    const { result } = renderHook(() => useRegister(), { wrapper: createWrapper() });
-
-    result.current.mutate({ email: "new@test.com", password: "password123", fullName: "Test User" });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(authClient.signUp.email).toHaveBeenCalledWith({ email: "new@test.com", password: "password123", name: "Test User" });
-  });
-});

@@ -2,4 +2,4 @@ import { createAuthClient } from "better-auth/client";
 
 export const authClient = createAuthClient();
 
-export const { signIn, signUp, signOut, changePassword, deleteUser } = authClient;
+export const { signIn, signUp, signOut, changePassword } = authClient;

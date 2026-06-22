@@ -28,18 +28,6 @@ export function useCreateBond() {
   });
 }
 
-export function useUpdateBond() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { bondNumber?: string; denomination?: number } }) =>
-      api.bonds.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bonds"] });
-    },
-  });
-}
-
 export function useDeleteBond() {
   const queryClient = useQueryClient();
 
@@ -51,24 +39,4 @@ export function useDeleteBond() {
   });
 }
 
-export function useArchiveBond() {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) => api.bonds.archive(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bonds"] });
-    },
-  });
-}
-
-export function useRestoreBond() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => api.bonds.restore(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bonds"] });
-    },
-  });
-}

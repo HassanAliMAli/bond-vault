@@ -29,12 +29,6 @@ export function useNotifications(limit = 5) {
   });
 }
 
-export function useUnreadCount() {
-  const { data } = useNotifications(100);
-  const unread = (data?.notifications ?? []).filter((n) => n.status === "pending" || n.status === "sent").length;
-  return unread;
-}
-
 export interface NotificationPreferences {
   emailEnabled: boolean;
   whatsappEnabled: boolean;

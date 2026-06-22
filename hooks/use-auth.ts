@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { authClient } from "@/lib/auth-client";
 
@@ -23,16 +23,4 @@ export function useAuth() {
   };
 }
 
-export function useLogin() {
-  return useMutation({
-    mutationFn: (data: { email: string; password: string }) =>
-      authClient.signIn.email(data),
-  });
-}
 
-export function useRegister() {
-  return useMutation({
-    mutationFn: (data: { email: string; password: string; fullName?: string }) =>
-      authClient.signUp.email({ email: data.email, password: data.password, name: data.fullName || "" }),
-  });
-}
