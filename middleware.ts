@@ -21,10 +21,13 @@ export default function middleware(req: NextRequest) {
     pathname === "/check" ||
     pathname === "/settings" ||
     pathname === "/admin" ||
+    pathname === "/plans" ||
+    pathname === "/payments" ||
     pathname.startsWith("/bonds/") ||
     pathname.startsWith("/check/") ||
     pathname.startsWith("/settings/") ||
-    pathname.startsWith("/admin/");
+    pathname.startsWith("/admin/") ||
+    pathname.startsWith("/plans/");
 
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
