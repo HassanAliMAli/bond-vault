@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
+import { toast } from "sonner";
 
 export interface Notification {
   id: string;
@@ -50,6 +51,9 @@ export function useUpdateNotificationPreferences() {
       api.notifications.preferences.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notification-preferences"] });
+    },
+    onError: () => {
+      toast.error("Failed to update notification preferences");
     },
   });
 }

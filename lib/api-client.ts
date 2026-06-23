@@ -100,6 +100,8 @@ export interface UserProfile {
   id: string;
   email: string;
   fullName: string | null;
+  phone: string | null;
+  whatsappNumber: string | null;
   status: string;
 }
 

@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { authClient } from "@/lib/auth-client";
 import { useNotificationPreferences, useUpdateNotificationPreferences } from "@/hooks/use-notifications";
 import { useCurrentSubscription, usePlans, useOcrUsage } from "@/hooks/use-subscription";
 import { Toggle } from "@/components/ui/toggle";
-import { LogOut, Mail, Key, Trash2, Shield, Download, Upload, Check, X, Bell, CreditCard, Clock, AlertCircle, Receipt } from "lucide-react";
+import { LogOut, Mail, Key, User, Trash2, Shield, Download, Upload, Check, X, Bell, CreditCard, Clock, AlertCircle, Receipt } from "lucide-react";
 
 export function SettingsPageClient() {
   const router = useRouter();
@@ -28,6 +28,11 @@ export function SettingsPageClient() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileWhatsApp, setProfileWhatsApp] = useState("");
+
   const { data: prefs } = useNotificationPreferences();
   const updatePrefs = useUpdateNotificationPreferences();
   const { data: subscription } = useCurrentSubscription();
@@ -39,6 +44,8 @@ export function SettingsPageClient() {
   const isPaidUser = !!subscription && subscription.status === "active";
   const ocrUsed = ocrUsage?.used ?? 0;
   const ocrLimit = ocrUsage?.limit ?? currentPlan?.ocrLimit ?? 3;
+
+  const queryClient = useQueryClient();
 
   const { data: permissions } = useQuery({
     queryKey: ["user", "permissions"],
@@ -64,6 +71,24 @@ export function SettingsPageClient() {
     finally { setLoading(false); }
   };
 
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    try {
+      await api.user.updateProfile({
+        fullName: profileName || undefined,
+        phone: profilePhone || undefined,
+        whatsappNumber: profileWhatsApp || undefined,
+      });
+      toast.success("Profile updated");
+      setEditingProfile(false);
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    } catch {
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await authClient.signOut();
     router.push("/login");
@@ -86,6 +111,30 @@ export function SettingsPageClient() {
         <CardHeader><CardTitle className="flex items-center gap-2"><Mail className="h-4 w-4 text-gold" />Account</CardTitle><CardDescription>Your account details</CardDescription></CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {editingProfile ? (
+              <div className="space-y-3">
+                <Input label="Full Name" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="Enter your full name" />
+                <Input label="Phone" type="tel" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="03XX-XXXXXXX" />
+                <Input label="WhatsApp Number" type="tel" value={profileWhatsApp} onChange={(e) => setProfileWhatsApp(e.target.value)} placeholder="03XX-XXXXXXX" />
+                <div className="flex gap-3 pt-2">
+                  <Button variant="primary" size="md" className="flex-1" onClick={handleSaveProfile} loading={loading}>Save Profile</Button>
+                  <Button variant="ghost" size="md" className="flex-1" onClick={() => { setEditingProfile(false); setProfileName(user?.fullName ?? ""); setProfilePhone(user?.phone ?? ""); setProfileWhatsApp(user?.whatsappNumber ?? ""); }}>Cancel</Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+                  <div><p className="text-sm font-medium text-white">Full Name</p><p className="text-sm text-gray">{user?.fullName || "Not set"}</p></div>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+                  <div><p className="text-sm font-medium text-white">Phone</p><p className="text-sm text-gray">{user?.phone || "Not set"}</p></div>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
+                  <div><p className="text-sm font-medium text-white">WhatsApp</p><p className="text-sm text-gray">{user?.whatsappNumber || "Not set"}</p></div>
+                </div>
+                <Button variant="secondary" size="lg" className="w-full" onClick={() => { setEditingProfile(true); setProfileName(user?.fullName ?? ""); setProfilePhone(user?.phone ?? ""); setProfileWhatsApp(user?.whatsappNumber ?? ""); }}><User className="h-4 w-4" />Edit Profile</Button>
+              </>
+            )}
             <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
               <div><p className="text-sm font-medium text-white">Email</p><p className="text-sm text-gray">{user?.email ?? "..."}</p></div>
               <span className="text-xs text-green bg-green/10 px-2 py-1 rounded-full font-medium">Verified</span>
@@ -172,7 +221,7 @@ export function SettingsPageClient() {
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
               <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-gray" /><span className="text-sm text-white">Email Alerts</span></div>
-              <Toggle checked={prefs?.emailEnabled ?? true} onChange={(v) => updatePrefs.mutate({ emailEnabled: v })} />
+              <Toggle checked={prefs?.emailEnabled ?? true} onChange={(v) => updatePrefs.mutate({ emailEnabled: v })} disabled={updatePrefs.isPending} />
             </div>
             <div className="flex items-center justify-between p-3 rounded-[var(--radius-sm)] bg-dark-700">
               <div className="flex items-center gap-2"><Bell className="h-4 w-4 text-gray" /><span className="text-sm text-white">WhatsApp Alerts</span><span className="text-[10px] text-gray bg-dark-600 px-1.5 py-0.5 rounded-sm">Not configured</span></div>
