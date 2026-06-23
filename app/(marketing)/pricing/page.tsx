@@ -33,10 +33,10 @@ const plans = [
 export default function PricingPage() {
   return (
     <>
-      <section className="mx-auto px-4 lg:px-8 py-20">
+      <section className="max-w-7xl mx-auto px-4 py-20">
         <h1 className="text-3xl font-bold text-white text-center mb-4">Simple Pricing</h1>
         <p className="text-gray text-center max-w-2xl mx-auto mb-12">Choose the plan that fits your needs. Upgrade anytime.</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
           {plans.map((plan, i) => (
             <motion.div key={plan.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
               className={cn("relative p-6 lg:p-10 rounded-[var(--radius-lg)] border transition-all", plan.popular ? "border-gold bg-gold/5 shadow-elevation-2" : "border-dark-600 bg-dark-800/50")}>
