@@ -15,7 +15,7 @@ const plans = [
   },
   {
     name: "Monthly",
-    price: "$4.99",
+    price: "$10",
     period: "/month",
     description: "For active bond collectors and regular checkers.",
     popular: true,
@@ -23,7 +23,7 @@ const plans = [
   },
   {
     name: "Annual",
-    price: "$39.99",
+    price: "$100",
     period: "/year",
     description: "Best value for serious bond investors.",
     features: ["Everything in Monthly", "500 OCR scans/month", "Auto-monitoring", "WhatsApp & SMS alerts", "Advanced analytics", "Premium support"],
