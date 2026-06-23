@@ -1,5 +1,6 @@
 import { getDb } from "../db";
 import { plans } from "../schema";
+import { eq } from "drizzle-orm";
 import { generateId } from "../id";
 
 const DEFAULT_PLANS = [
@@ -12,9 +13,12 @@ const DEFAULT_PLANS = [
 
 export async function seedPlans(d1: D1Database) {
   const db = getDb(d1);
-  const existing = await db.select().from(plans).all();
-  if (existing.length > 0) return;
   for (const plan of DEFAULT_PLANS) {
-    await db.insert(plans).values({ id: generateId(), ...plan });
+    const existing = await db.select().from(plans).where(eq(plans.name, plan.name)).get();
+    if (existing) {
+      await db.update(plans).set({ ...plan, updatedAt: new Date().toISOString() }).where(eq(plans.id, existing.id));
+    } else {
+      await db.insert(plans).values({ id: generateId(), ...plan });
+    }
   }
 }
