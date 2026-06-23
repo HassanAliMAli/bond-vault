@@ -44,7 +44,7 @@ export function PlansPageClient() {
         <p className="text-gray mt-2">Unlock premium features to manage your prize bond portfolio</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {plans.map((plan) => {
           const isCurrent = subscription?.planId === plan.id && subscription?.status === "active";
           const isFree = plan.priceUsd === 0;
@@ -62,7 +62,7 @@ export function PlansPageClient() {
                   Current
                 </span>
               )}
-              <CardContent className="flex flex-col gap-4 p-5 pt-6 flex-1">
+              <CardContent className="flex flex-col gap-4 p-6 lg:p-8 pt-7 flex-1">
                 <div>
                   <h3 className="text-lg font-bold text-white">{plan.name}</h3>
                   <div className="mt-2">
